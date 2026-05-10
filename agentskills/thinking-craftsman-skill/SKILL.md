@@ -14,7 +14,8 @@ allowed-tools : bash git sourcemonitor cpd
 
 - **Invoke directly when:** the user asks for a "thinking craftsman" review of a specific change, file, or PR.
 - **Invoke via:** `/tcreview` (single-perspective review) 
-- Use the template defined in `references\templates` as per the task type
+- Use the template defined in `references\templates.md` as per the task type
+- Use the language specific information from `references\<language>.md` e.g. `references\python.md` for information specific to python language
 ## When and How to Apply 
 Apply these guidelines during agentic code generation and during code review. Guidelines that are applicable only at review are tagged with `Review Only`
 
@@ -49,8 +50,11 @@ There are two categories of guidelines.
 	- Minimize the methods that just directly change the member variable of class (set methods)
 	- The class should NEVER return pointer or reference to a internal collection (e.g. vector, List, map) from any member method. 
 - **The class should never violate "Liskov Substitution Principle (LSP)"**
-  If the current class is derived from another class, analyze the assumptions of the base class. Then check if any method of the derived class is violating the assumptions of the base class. Identify and highlight such methods. 
-- Do not generate any methods that violates LSP during the code generation
+	- If the current class is derived from another class, analyze the assumptions of the base class. Then check if any method of the derived class is violating the assumptions of the base class. Identify and highlight such methods. 
+	- Wherever function names are same for base class and derived class, assume that derived class function is overriding the base class function.
+	- Analyze the assumptions of the base class method. Analyze the assumptions of the derived class method. Preconditions of deriver class method MUST be lenient than the base class method. Post conditions of the derived class method must be stricter than the base class method. 
+	- If you are not sure about strictness about the pre or post conditions, ask user to verify the conditions. 
+	- Do not generate any methods that violates LSP during the code generation
 
 ### Guideline at individual function level
 - **Complexity of function (lines of code, cyclomatic complexity and block depth)**
