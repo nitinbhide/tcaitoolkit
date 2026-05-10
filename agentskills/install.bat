@@ -29,13 +29,16 @@ if not exist "%INSTALL_PATH%" (
 
 set "AGENT_SKILL_ROOT="
 if exist "%INSTALL_PATH%\.agents" (
-    set "AGENT_SKILL_ROOT=%INSTALL_PATH%\.agents"
+    set "AGENT_SKILL_ROOT=%INSTALL_PATH%\.agents\skills"
 ) else if exist "%INSTALL_PATH%\.github" (
-    set "AGENT_SKILL_ROOT=%INSTALL_PATH%\.github"
+    set "AGENT_SKILL_ROOT=%INSTALL_PATH%\.github\skills"
+) else if exist "%INSTALL_PATH%\.claude" (
+    set "AGENT_SKILL_ROOT=%INSTALL_PATH%\.claude\skills"
 )
 
+
 if not defined AGENT_SKILL_ROOT (
-    echo Error: Neither '.agents' nor '.github' folder found in '%INSTALL_PATH%'.
+    echo Error: Neither '.agents' nor '.github' not '.claude' folder found in '%INSTALL_PATH%'.
     exit /b 1
 )
 
