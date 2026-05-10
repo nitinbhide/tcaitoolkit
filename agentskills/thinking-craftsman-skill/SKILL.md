@@ -15,7 +15,7 @@ allowed-tools : bash git sourcemonitor cpd
 - **Invoke directly when:** the user asks for a "thinking craftsman" review of a specific change, file, or PR.
 - **Invoke via:** `/tcreview` (single-perspective review) 
 - Use the template defined in `references\templates.md` as per the task type
-- Use the language specific information from `references\<language>.md` e.g. `references\python.md` for information specific to python language
+- Use the language specific information from `references\<language>.md` e.g. `references\python.md` for information specific to python language, C++ use `references\cpp.md`
 ## When and How to Apply 
 Apply these guidelines during agentic code generation and during code review. Guidelines that are applicable only at review are tagged with `Review Only`
 
@@ -41,7 +41,7 @@ There are two categories of guidelines.
 - **Minimize the dependencies on external files, classes**
 	- The includes or imports or using statements at anywhere in the source file indicate dependency on external classes or methods or files. 
 	- Review critically if the new dependency is added in the file. 
-	- While modifying existing file avoid adding new dependencies. 
+	- Avoid adding new dependencies while modifying existing file 
 	- When generating new file minimize the number of external dependencies.
 	- Remember using 'dependency injection' is still adding dependency but at runtime. Prefer compile time dependency over runtime dependency
 - **The class should based on "Tell" principle and avoid 'asking' for internal state**
