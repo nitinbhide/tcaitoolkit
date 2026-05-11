@@ -17,11 +17,6 @@ if not defined INSTALL_PATH (
     exit /b 1
 )
 
-if not exist "%SOURCE_SKILL_PATH%" (
-    echo Error: Skill '%SKILL_NAME%' not found at '%~dp0'.
-    exit /b 1
-)
-
 if not exist "%INSTALL_PATH%" (
     echo Error: Install path '%INSTALL_PATH%' does not exist.
     exit /b 1
@@ -44,6 +39,7 @@ if not defined AGENT_SKILL_ROOT (
 
 set "SOURCE_SKILL_PATH=%~dp0%SKILL_NAME%"
 set "DEST_SKILL_PATH=%AGENT_SKILL_ROOT%\%SKILL_NAME%"
+set "BACKUP_SKILL_NAME=%SKILL_NAME%.bak"
 set "BACKUP_SKILL_PATH=%DEST_SKILL_PATH%.bak"
 
 echo Installing skill '%SKILL_NAME%' to '%AGENT_SKILL_ROOT%'...
@@ -56,8 +52,8 @@ if exist "%BACKUP_SKILL_PATH%" (
 
 REM If the skill folder already exists in the destination, rename it to .bak
 if exist "%DEST_SKILL_PATH%" (
-    echo Backing up existing skill folder to %SKILL_NAME%.bak
-    ren "%DEST_SKILL_PATH%" "%BACKUP_SKILL_PATH%"
+    echo Backing up existing skill folder to %BACKUP_SKILL_PATH%
+    ren "%DEST_SKILL_PATH%" "%BACKUP_SKILL_NAME%"
 )
 
 REM Copy the skill folder to the install path
