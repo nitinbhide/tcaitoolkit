@@ -1,6 +1,6 @@
 
-# Code Review Output Template
-Use the following template to output 
+# Template for Code Review Output
+Use the following template to output points discoverd during the code review.
 
 ```markdown
 ## Review Summary
@@ -14,7 +14,7 @@ Use the following template to output
 - [Positive observation — always include at least one]
 ```
 
-## Test Description Template
+# Template for Describing a Test 
 Use this template only if the project does not have defined unit test guideline or there are no unit tests in the project.  
 
 ```markdown
