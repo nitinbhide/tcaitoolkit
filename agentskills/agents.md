@@ -11,6 +11,7 @@ This agents.md file is developed by Nitin Bhide (Thinking Craftsman). This file 
 ## Code Generation Instructions
 - Use the 'thinking craftsman skill' and generate the code compliant with the Thinking Craftsman Coding Guidelines
 - Follow this project's coding guidelines first, then apply thinking craftsman guidelines.
+- Add the "Purpose" comment to start of the file. Describe what is the purpose of this file or class implemented/declared in this file.
 
 ## Code Review Instructions
 - Use the  'thinking craftsman skill' for reviewing code and ensure that code is compliant with 'thinking craftsman coding guidelines' 
