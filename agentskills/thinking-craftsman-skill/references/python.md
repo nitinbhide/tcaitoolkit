@@ -1,4 +1,8 @@
 
+---
+applyTo: "*.py*"
+---
+
 **About**
 This file defines additional information for Thinking Craftsman Coding Skill specific to python
 programming language
@@ -10,4 +14,6 @@ programming language
 - Equivalent of catch : except
 - Equivalent of Null : None
 - Equivalent of import : import
-- 
+
+
+## Code checkers

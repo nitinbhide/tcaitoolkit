@@ -1,3 +1,7 @@
+---
+applyTo: "*.cpp, *.c++, *.cxx, *.hpp, *.hxx, *.h++"
+---
+
 **About**
 This file defines additional information for Thinking Craftsman Coding Skill specific to C++ /Cpp programming language
 
@@ -9,3 +13,5 @@ This file defines additional information for Thinking Craftsman Coding Skill spe
 - Equivalent of Null : NULL, nullptr
 - Equivalent of import : \#include
 - 
+
+## Code checkers

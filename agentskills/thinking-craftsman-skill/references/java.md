@@ -1,3 +1,7 @@
+---
+applyTo: "*.java"
+---
+
 **About**
 This file defines additional information for Thinking Craftsman Coding Skill specific to java
 programming language
@@ -10,3 +14,5 @@ programming language
 - Equivalent of Null : null
 - Equivalent of import : import
 - 
+
+## Code checkers
