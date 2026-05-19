@@ -7,6 +7,7 @@ metadata:
 license: Apache 2.0
 allowed-tools : bash git sourcemonitor cpd 
 ---
+
 # Thinking Craftsman Coding Skill
 
 [Thinking Craftsman](http://thinkingcraftsman.in) coding skill defines the coding concepts and principles that apply across broad range of technologies and programming languages. 
@@ -89,10 +90,10 @@ There are two categories of guidelines.
 	
 ## Additional Guidelines for Code Review
 - Diff Review
-	- Identify the differences between two given revisions or latest revision of branch and master/main branch or two different branches. 
+	- Identify the differences between two given revisions or latest revision of branch and master/main branch or two different branches.  
 	- Generate a 'diff view' of changes between these revisions. 
-		- If you are using 'git' as version control, Use `git diff`  command to identify what is changed between two revisions.  
 	- Use 'unified diff' format for generating the 'diff views'
+	- Use the information in 'version control skill' to generate the diff or 'diff view'
 	- Analyze the diff view using the File level and function level code review guidelines defined in this file.
 	- "New dependency" added is important check in 'diff review'
 - Periodically do a full file review applying all the guidelines.
