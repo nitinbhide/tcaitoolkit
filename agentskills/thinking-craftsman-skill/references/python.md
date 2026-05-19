@@ -1,6 +1,6 @@
 
 ---
-applyTo: "*.py*"
+applyTo: "*.py"
 
 ---
 
