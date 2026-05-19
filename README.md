@@ -1,6 +1,6 @@
-# Thinking Craftsman Agentic Engineering Coding Toolkit
+# Thinking Craftsman Agentic Code Engineering Toolkit
 
-These are my experiments and useful scripts that I am making available to everyone. These scripts, agent skill files etc are for deploying "Agentic Code Engineering" in project/team/company/startup. 
+These are my experiments and useful scripts related to Agentic Code Engineering. I am making these tools available to everyone. These scripts, agent skill files etc are for deploying "Agentic Code Engineering" in a project/team/company/startup. 
 
 ## Shameless plug
-If you want help in implementing these ideas, reach out to me (Nitin hide) at nitinbhide@thinkingcraftsman.in. 
+If you want help in implementing these ideas, reach out to me (Nitin Bhide) at nitinbhide@thinkingcraftsman.in. 

@@ -1,11 +1,12 @@
 
 ---
 applyTo: "*.py*"
+
 ---
 
 **About**
 This file defines additional information for Thinking Craftsman Coding Skill specific to python
-programming language
+programming language.  
 
 ## Python language specific information
 - File extensions : .py
