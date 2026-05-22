@@ -6,6 +6,8 @@ metadata:
 	version : "1.0"
 license: Apache 2.0
 allowed-tools : bash git sourcemonitor cpd 
+user-invocable: true
+disable-model-invocation: true
 ---
 
 # Thinking Craftsman Coding Skill

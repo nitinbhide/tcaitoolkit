@@ -6,6 +6,8 @@ metadata:
 	version : "1.0"
 license: Apache 2.0
 allowed-tools : bash git hg svn  
+user-invocable: true
+disable-model-invocation: true
 ---
 
 # Version Control - Activity Skill
