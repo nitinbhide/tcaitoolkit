@@ -1,11 +1,11 @@
 ---
 name: thinking-craftsman-skill
-description: This skill defines the coding and code review guidelines based on principles documented by Nitin Bhide (Thinking Craftsman). These guidelines are indepedant of programming language or technology stack.
+description: This skill defines the coding and code review guidelines based on principles documented by Nitin Bhide (Thinking Craftsman). These guidelines are independant of programming language or technology stack.
 metadata: 
 	author: Nitin Bhide (nitinbhide@thinkingcraftsman.in)
 	version : "1.0"
 license: Apache 2.0
-allowed-tools : bash git sourcemonitor cpd 
+allowed-tools : bash git sourcemonitor cpd hg svn 
 user-invocable: true
 disable-model-invocation: true
 ---
@@ -25,11 +25,6 @@ Apply these guidelines during agentic code generation and during code review. Gu
 There are two categories of guidelines. 
 - Guidelines that are applicable at entire file scope or at entire class scope. Typically these are at the start of the source code file.
 - Guidelines that are applicable at individual function level. These are applicable to global scope functions or class member functions
-
-
-#### File & Directory Boundaries
-- Keep configuration separate from runtime logic
-
 ### Guidelines at File or Class Level
 
 - `Review Only` **Check for dead code or redundant code.** 
@@ -60,7 +55,7 @@ There are two categories of guidelines.
 	- Minimize the methods that just directly change the member variable of class (set methods)
 	- The class should NEVER return pointer or reference to a internal collection (e.g. vector, List, map) from any member method. 
 - **The class should never violate "Liskov Substitution Principle (LSP)"**
-	- If the current class is derived from another class, analyze the assumptions of the base class. Then check if any method of the derived class is violating the assumptions of the base class. Identify and highlight such methods. 
+	- If the current class is derived from another class (base class), analyze the assumptions of the base class. Then check if any method of the derived class is violating the assumptions of the base class. Identify and highlight such methods. 
 	- Wherever function names are same for base class and derived class, assume that derived class function is overriding the base class function.
 	- Analyze the assumptions of the base class method. Analyze the assumptions of the derived class method. Preconditions of deriver class method MUST be lenient than the base class method. Post conditions of the derived class method must be stricter than the base class method. 
 	- If you are not sure about strictness about the pre or post conditions, ask user to verify the conditions. 
@@ -68,7 +63,7 @@ There are two categories of guidelines.
 	- 
 - Respect module boundaries and layering
 - Do not move files unless explicitly instructed
-
+ - Keep configuration separate from runtime logic
 ### Guideline at individual function level
 -  Keep functions small and single-purpose
 - **Complexity of function (lines of code, cyclomatic complexity and block depth)**
@@ -121,5 +116,5 @@ There are two categories of guidelines.
 - Read the spec or task description and related existing code and  comments before  generating new code
 - Write the Tests Before writing the code. 
 	- Generate the unit tests as per the project unit test guidelines
-	- If there are no unit test guidelines, then generate the test descriptions are template define in the ```references\Templates```
+	- If there are no unit test guidelines, then generate the test descriptions and not code. Use the template "Test Description template" defined in the ```references\Templates``` for generating test descriptions. 
 - If you're uncertain about something, say so and suggest investigation rather than guessing

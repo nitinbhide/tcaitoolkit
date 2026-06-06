@@ -19,7 +19,8 @@ You will be given the name of the skill to evaluate and the path to a markdown f
 
 Your task is to perform the following steps:
 
-1.  **Parse the Evaluation File**: Read the specified markdown file. The file contains one or more evaluation cases. Each case is separated by one or more blank lines and follows this exact format:
+1.  **Parse the Evaluation File**: Read the specified markdown file. The file contains one or more evaluation test cases. Evaluations are in the section named "Evaluations". 
+Each case is separated by one or more blank lines and follows this exact format:
     ```markdown
     **Eval Id**: {unique identifier for the test}
     **prompt**: {the prompt to send to the target skill. The prompt may use the list of filenames provided in the input. This such case add the file in the context.}

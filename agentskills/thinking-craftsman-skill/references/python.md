@@ -16,5 +16,4 @@ programming language.
 - Equivalent of Null : None
 - Equivalent of import : import
 
-
 ## Code checkers
