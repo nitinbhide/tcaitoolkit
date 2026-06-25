@@ -34,6 +34,9 @@ This AGENTS.md file is developed by Nitin Bhide (Thinking Craftsman). Use this f
 - Use the 'thinking craftsman skill' and generate the code compliant with the Thinking Craftsman Coding Guidelines
 - Follow this project's coding guidelines first, then apply thinking craftsman guidelines.
 - Add the "Purpose" code comment to start of any new source code file that you generate. Describe what is the purpose of this file or class implemented/declared in this file.
+- Add an entry for the new source code file in `docs/design/sourcemap.md`. The entry must contain the name of the source code file (path relative to project root) and the purpose of the file.
+- Use `sourcemap.md` to decide which existing files to modify.
+- Analyze the changes in specifications and design documents using the version control diff command then update the code for differences in the specification and design documents.
 
 ## Code Review Instructions
 - Use the  'thinking craftsman skill' for reviewing code and ensure that code is compliant with 'thinking craftsman coding guidelines' 
