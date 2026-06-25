@@ -1,0 +1,67 @@
+
+
+> [!NOTE] Thinking Craftsman Agents.md template. 
+> Add the contents of this file into your own AGENTS.md file.
+
+# Thinking Craftsman Agent Instructions
+
+**About**
+This AGENTS.md file is developed by Nitin Bhide (Thinking Craftsman). Use this file as reference to add instructions in your project on how to use various Thinking Craftsman Agentic Engineering skills
+
+# Working Rules
+- Make small, focused changes.
+- Preserve behavior unless the task explicitly requires a change.
+- Do not change public APIs unless instructed.
+- Follow existing project patterns before introducing new ones.
+- Write the unit tests before making any changes.
+- Run the unit tests and ensure that all tests are passing after making any changes.
+- Do not overwrite any file in `docs/` folder.
+- Modify files in `docs/` folder only when explicitly told by user. Do not modify on your own.
+
+### DO NOT
+- implement anything that conflicts with approved specs or architecture decisions.
+- Rewrite large parts of the codebase unless explicitly asked.
+- Reformat unrelated files.
+- Remove TODOs/comments without addressing their intent.
+- Assume undocumented behavior is safe to change.
+- Generate or modify files that I did not explicitly ask.
+
+### When Unsure
+- Ask for clarification instead of guessing.
+- Briefly state trade-offs in review notes.
+
+## Code Generation Instructions
+- Use the 'thinking craftsman skill' and generate the code compliant with the Thinking Craftsman Coding Guidelines
+- Follow this project's coding guidelines first, then apply thinking craftsman guidelines.
+- Add the "Purpose" code comment to start of any new source code file that you generate. Describe what is the purpose of this file or class implemented/declared in this file.
+
+## Code Review Instructions
+- Use the  'thinking craftsman skill' for reviewing code and ensure that code is compliant with 'thinking craftsman coding guidelines' 
+- Follow this project's review guidelines first, then apply thinking craftsman guidelines.
+
+## Required Reading Before Changes
+- store your memories in `.agents/memory` folder
+- Read Coding Agent configuration files. Including the SKILL files as needed from `.agents/` folder.
+- Read `docs/specifications/specindex.md`, then all relevant specification files.
+- Follow `docs/design/ARCHITECTURE.md`.
+- Follow decisions in `docs/design/ADR.md`.
+
+## Project Folder Map
+In case folder does not exist, Create the neccessary folder as needed.
+Create subfolders as needed when folder is marked with $SUBFOLDERS_AS_NEEDED.
+
+- `.agents/` : Coding Agent configuration files. Including the SKILL files.
+- `docs/`: project documentation
+- `docs/devenv.md` : instructions to setup the development environment for the new developer
+- `docs/specifications/`: requirements and specs
+- `docs/specifications/specindex.md`: index of specification documents
+- `docs/design/`: architecture and design decisions
+- `docs/design/ARCHITECTURE.md`: architecture rules and constraints
+- `docs/design/ADR.md`: architecture decision records
+- `build/` : built tool configuration files and any temporary files generated during the compilation and build process.
+- `src/`: application code
+- `src/{{projectname}}/` : main application source code. $SUBFOLDERS_AS_NEEDED
+- `test` : information, plans, test source code, test data etc.
+- `test/plans` : test plans are stored in this folder. $SUBFOLDERS_AS_NEEDED
+- `test/unit` : unit tests source code. $SUBFOLDERS_AS_NEEDED
+- `test/testdata` : all neccessary test data required for unit or integration tests. $SUBFOLDERS_AS_NEEDED
