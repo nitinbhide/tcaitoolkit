@@ -1,4 +1,5 @@
 # Coding Agent Working Rules
+Strictly follow these rules. DO NOT VIOLATE UNDER ANY CIRCUMSTANCES.
 
 # Working Rules
 - Make small, focused changes.
