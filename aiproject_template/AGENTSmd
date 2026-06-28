@@ -11,12 +11,6 @@ This AGENTS.md file is developed by Nitin Bhide (Thinking Craftsman). Use this f
 ## Working Rules
 Read and strictly follow the working rules defined in `.agents/workingrules.md`
 
-## Required Reading Before Changes
-- store your memories in `.agents/memory` folder
-- Read Coding Agent configuration files. Including the SKILL files as needed from `.agents/` folder.
-- Read `docs/specifications/specindex.md`, then all relevant specification files.
-- Follow `docs/design/ARCHITECTURE.md`.
-- Follow decisions in `docs/design/ADR.md`.
 
 ## Project Folder Map
 In case folder does not exist, Create the neccessary folder as needed.
@@ -37,3 +31,10 @@ Create subfolders as needed when folder is marked with $SUBFOLDERS_AS_NEEDED.
 - `test/plans` : test plans are stored in this folder. $SUBFOLDERS_AS_NEEDED
 - `test/unit` : unit tests source code. $SUBFOLDERS_AS_NEEDED
 - `test/testdata` : all neccessary test data required for unit or integration tests. $SUBFOLDERS_AS_NEEDED
+
+## Required Reading Before Changes
+- read your memories from `.agents/memory` folder
+- Read Coding Agent configuration files. Including the SKILL files as needed from `.agents/` folder.
+- Read `docs/specifications/specindex.md`, then all relevant specification files.
+- Follow `docs/design/ARCHITECTURE.md`.
+- Follow decisions in `docs/design/ADR.md`.

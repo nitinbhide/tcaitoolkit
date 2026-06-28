@@ -10,6 +10,7 @@ Strictly follow these rules. DO NOT VIOLATE UNDER ANY CIRCUMSTANCES.
 - Run the unit tests and ensure that all tests are passing after making any changes.
 - Do not overwrite any file in `docs/` folder.
 - Modify files in `docs/` folder only when explicitly told by user. Do not modify on your own.
+- Store your memories in `.agents/memory/` folder.
 
 ### DO NOT
 - implement anything that conflicts with approved specs or architecture decisions.
