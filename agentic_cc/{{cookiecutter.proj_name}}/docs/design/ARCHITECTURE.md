@@ -1,10 +1,10 @@
-# ARCHITECTURE OF {{PROJECT NAME}}
+# ARCHITECTURE OF {{cookiecutter.proj_full_name}}
 
 ## Key Architecture Guidelines
 Always follow the decisions in `ADR.md`
 
 ### Modules
-- each folder in the `src/{{project}}` represents a module or a submodule
+- each folder in the `src/{{cookiecutter.proj_name}}` represents a module or a submodule
 - modules must have acyclic dependency
 - Higher layer modules can depend on lower layer module
 - Modules in the Same layer cannot depend on each other

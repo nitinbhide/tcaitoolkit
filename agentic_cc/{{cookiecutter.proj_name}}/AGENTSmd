@@ -1,22 +1,16 @@
+# Instructions for Coding Agents for {{cookiecutter.proj_full_name}}
 
-
-> [!NOTE] Thinking Craftsman Agents.md template. 
-> Add the contents of this file into your own AGENTS.md file.
-
-# Thinking Craftsman Agent Instructions
-
-**About**
-This AGENTS.md file is developed by Nitin Bhide (Thinking Craftsman). Use this file as reference to add instructions in your project on how to use various Thinking Craftsman Agentic Engineering skills
+## About {{cookiecutter.proj_full_name}}
+{{cookiecutter.description}}
 
 ## Working Rules
 Read and strictly follow the working rules defined in `.agents/workingrules.md`
-
 
 ## Project Folder Map
 In case folder does not exist, Create the neccessary folder as needed.
 Create subfolders as needed when folder is marked with $SUBFOLDERS_AS_NEEDED.
 
-- `.agents/` : Coding Agent configuration files. Including the SKILL files.
+- `.agents/` : Coding Agent configuration files. Including the SKILL files. $SUBFOLDERS_AS_NEEDED
 - `docs/`: project documentation
 - `docs/devenv.md` : instructions to setup the development environment for the new developer
 - `docs/specifications/`: requirements and specs
@@ -24,9 +18,9 @@ Create subfolders as needed when folder is marked with $SUBFOLDERS_AS_NEEDED.
 - `docs/design/`: architecture and design decisions
 - `docs/design/ARCHITECTURE.md`: architecture rules and constraints
 - `docs/design/ADR.md`: architecture decision records
-- `build/` : built tool configuration files and any temporary files generated during the compilation and build process.
+- `build/` : built tool configuration files and any temporary files generated during the compilation and build process. $SUBFOLDERS_AS_NEEDED
 - `src/`: application code
-- `src/{{projectname}}/` : main application source code. $SUBFOLDERS_AS_NEEDED
+- `src/{{cookiecutter.proj_name}}/` : main application source code. $SUBFOLDERS_AS_NEEDED
 - `test` : information, plans, test source code, test data etc.
 - `test/plans` : test plans are stored in this folder. $SUBFOLDERS_AS_NEEDED
 - `test/unit` : unit tests source code. $SUBFOLDERS_AS_NEEDED

@@ -1,4 +1,4 @@
-# {{PROJECT/APPLICATION NAME}} Development Environment Setup
+# {{cookiecutter.proj_full_name}} Development Environment Setup
 
 Use this checklist for onboarding a new developer:
 

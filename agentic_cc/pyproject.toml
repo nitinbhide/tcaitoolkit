@@ -1,0 +1,9 @@
+[project]
+name = "agentic-cc"
+version = "0.1.0"
+description = "Cookie Cutter for Agentic Engineering Based Software Development project"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "cookiecutter>=2.7.1",
+]
