@@ -46,8 +46,7 @@ Enable AI agents to efficiently query history, compute differences, and follow s
 4. Format output as chronological log (latest first preferred).
 
 #### Output Format
-Will as per the version control that you are using.
-
+Will be as per the version control that you are using.
 
 ### 2. Log Between Two Branches
 
@@ -85,7 +84,7 @@ Same as change logs.
    - deletions (-)
 
 #### Output Format
-Standard unified diff.
+Standard unified diff format
 
 ---
 
@@ -113,4 +112,4 @@ Standard unified diff.
 - See `/references/hg.md`
 - See `/references/subversion.md`
 
-Each reference maps these flows to concrete commands for specific version control system.s
+Each reference maps these flows to concrete commands for specific version control system.
