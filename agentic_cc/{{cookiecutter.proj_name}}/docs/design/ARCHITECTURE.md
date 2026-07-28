@@ -18,8 +18,18 @@ backend :
 frontend : 
 build tool : 
 unit test framework : 
+web server : (tomcat, apache, nginx)
+Other tools/libraries/frameworks : (bootstrap, tailwind, )
+package managers:
 
 ## Technolgy stack specific instructions for Code generation
+
+## Development Setup
+IDE : 
+
+## Deployment Setup
+_Desktop installer, docker deployment, etc etc
+Operating System : 
 
 ## Design Documents
 - `docs/design/sourcemap.md` : list of source code files and their purpose. Use this information to decide which files to modify or update during the code generation.
