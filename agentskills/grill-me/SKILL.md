@@ -12,5 +12,5 @@ Ask the questions one at a time.
 
 If a question can be answered by exploring the codebase, explore the codebase instead. Refer the ARCHITECTURE.md , ADR.md and source map wherever possible
 
-If this is source code file (e.g. python, c++, java, typescript, javascript, rust, html etc), then do not ask questions. Tell your that you cannot analyze source code files and quit.
+If this is source code file (e.g. python, c++, java, typescript, javascript, rust, html etc), then do not ask questions. Tell your user that you cannot analyze source code files and quit.
 
