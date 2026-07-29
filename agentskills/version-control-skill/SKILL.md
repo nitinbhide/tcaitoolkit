@@ -2,8 +2,8 @@
 name: version-control-skill
 description: Enable AI agents to efficiently query history, compute differences, and follow safe workflows across version control systems.
 metadata: 
-	author: Nitin Bhide (nitinbhide@thinkingcraftsman.in)
-	version : "1.0"
+    author: Nitin Bhide (nitinbhide@thinkingcraftsman.in)
+    version : "1.0"
 license: Apache 2.0
 allowed-tools : bash git hg svn  
 user-invocable: true

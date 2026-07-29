@@ -2,8 +2,8 @@
 name: skill-eval-skill
 description: This skill evaluates other agent skills based on a set of test cases defined in a markdown file. It parses sthe file, executes the prompts against the target skill, and compares the output to the expected results.
 metadata: 
-	author: Nitin Bhide (nitinbhide@thinkingcraftsman.in)
-	version : "1.0"
+    author: Nitin Bhide (nitinbhide@thinkingcraftsman.in)
+    version : "1.0"
 license: Apache 2.0
 allowed-tools : 
 user-invocable: true

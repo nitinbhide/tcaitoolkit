@@ -2,8 +2,8 @@
 name: thinking-craftsman-skill
 description: This skill defines the coding and code review guidelines based on principles documented by Nitin Bhide (Thinking Craftsman). These guidelines are independant of programming language or technology stack.
 metadata: 
-	author: Nitin Bhide (nitinbhide@thinkingcraftsman.in)
-	version : "1.0"
+    author: Nitin Bhide (nitinbhide@thinkingcraftsman.in)
+    version : "1.0"
 license: Apache 2.0
 allowed-tools : bash git sourcemonitor cpd hg svn 
 user-invocable: true
