@@ -15,15 +15,20 @@ This skill evaulates AGENTS.md file at the root of the project for following cri
 
 ## How to Audit the AGENTS.md file
 - Use the "evaluation criteria" given below and check each item the list
-- Check all the files refered in the AGENTS.md for evaluation. Do not check Directories/folders.
+- Check all the first-level files refered in the AGENTS.md for evaluation. Do not check Directories/folders.
+- Stop at first-level references from AGENTS.md. Do not recurse into files referenced by those files.
 - Output the results are criteria fulfilled or not fulfilled.
 
 ## Evaluation criteria
 
 - [ ] It should give a one or two paragraph description about the project at the start.
+  - The description must be project-specific and explain what the project does.
+  - Template placeholders, boilerplate text, or empty descriptions do not satisfy this criterion.
 - [ ] There must 'project structure' or 'repository structure' defined in the AGENTS.md. 
   - This project structure should refer the relative directory or file paths.
   - It should refere to 'index' files for documents like specifications, design and architecture, test plans etc
+  - If the repository has specifications, design docs, ADRs, or test plans, AGENTS.md should point to the key index or entry documents for each of those document sets.
+  - A plain directory listing without these key document references does not satisfy this criterion.
 - [ ] It should define basic working rules for the project. The working rules can be in file refered in the AGENTS.md
 - [ ] The AGENTS.md file size must be less 250 lines
 - Check if the AGENTS.md refers the DESIGN.md file. If not, recommend the user to define a DESIGN.md file
@@ -31,9 +36,11 @@ This skill evaulates AGENTS.md file at the root of the project for following cri
 - [ ] It should document the technology stack (programming language, build system, unit test framework, webserver, thirdparty packages etc).
   - Usually 'technology stack' should documents desired versions of various tools, packages, languages 
   - The technology stack can be documented in a dedicated stack document or in an architecture/design document such as `ARCHITECTURE.md`.
-  - Mark this criterion as fulfilled if AGENTS.md refers to that document and the referenced document contains the technology stack details.
+  - Mark this criterion as fulfilled only if AGENTS.md refers to that document and the referenced document contains concrete technology stack details.
+  - Empty sections, blank values, TODO markers, or template placeholders do not satisfy this criterion.
 - [ ] It should document the list of packages/libraries/modules and their expected dependencies. 
   - The package dependencies are usually documented as mermaid diagram
   - The technology stack can be documented in a dedicated document or in an architecture/design document such as `ARCHITECTURE.md`
-  - Mark this criterion as fulfilled if AGENTS.md refers to that document and the referenced document contains the package depedency details.
+  - Mark this criterion as fulfilled only if AGENTS.md refers to that document and the referenced document contains concrete package dependency details.
+  - Empty sections, blank values, TODO markers, or template placeholders do not satisfy this criterion.
   
