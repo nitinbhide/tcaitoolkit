@@ -9,7 +9,6 @@ allowed-tools : bash
 user-invocable: true
 disable-model-invocation: true
 ---
-
 # Agent Audit Skill
 
 This skill evaulates AGENTS.md file at the root of the project for following criteria. Objective is to improve the quality of results fromLLMs, reduce the number of turns in agent loop and reduce the LLM token consumptions 
@@ -30,7 +29,11 @@ This skill evaulates AGENTS.md file at the root of the project for following cri
 - Check if the AGENTS.md refers the DESIGN.md file. If not, recommend the user to define a DESIGN.md file
 - [ ] If the project is using relational database, check that AGENTS.md refers to a file that documents the schema (tables, index, views etc) for relational database
 - [ ] It should document the technology stack (programming language, build system, unit test framework, webserver, thirdparty packages etc).
+  - Usually 'technology stack' should documents desired versions of various tools, packages, languages 
   - The technology stack can be documented in a dedicated stack document or in an architecture/design document such as `ARCHITECTURE.md`.
   - Mark this criterion as fulfilled if AGENTS.md refers to that document and the referenced document contains the technology stack details.
-
+- [ ] It should document the list of packages/libraries/modules and their expected dependencies. 
+  - The package dependencies are usually documented as mermaid diagram
+  - The technology stack can be documented in a dedicated document or in an architecture/design document such as `ARCHITECTURE.md`
+  - Mark this criterion as fulfilled if AGENTS.md refers to that document and the referenced document contains the package depedency details.
   
