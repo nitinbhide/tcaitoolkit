@@ -39,8 +39,8 @@ This skill evaulates AGENTS.md file at the root of the project for following cri
   - Mark this criterion as fulfilled only if AGENTS.md refers to that document and the referenced document contains concrete technology stack details.
   - Empty sections, blank values, TODO markers, or template placeholders do not satisfy this criterion.
 - [ ] It should document the list of packages/libraries/modules and their expected dependencies. 
-  - The package dependencies are usually documented as mermaid diagram
-  - The technology stack can be documented in a dedicated document or in an architecture/design document such as `ARCHITECTURE.md`
-  - Mark this criterion as fulfilled only if AGENTS.md refers to that document and the referenced document contains concrete package dependency details.
+  - A textual list of dependencies is enough for now.
+  - Mark this criterion as fulfilled if AGENTS.md refers to a document that contains concrete package dependency details, even if it is only a textual list.
+  - If there is no explicit dependency diagram and only a textual list, recommend using a mermaid package diagram, preferably a C4 component diagram.
   - Empty sections, blank values, TODO markers, or template placeholders do not satisfy this criterion.
   
