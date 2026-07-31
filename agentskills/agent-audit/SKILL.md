@@ -31,7 +31,7 @@ This skill evaulates AGENTS.md file at the root of the project for following cri
   - A plain directory listing without these key document references does not satisfy this criterion.
 - [ ] It should define basic working rules for the project. The working rules can be in file refered in the AGENTS.md
 - [ ] The AGENTS.md file size must be less 250 lines
-- Check if the AGENTS.md refers the DESIGN.md file. If not, recommend the user to define a DESIGN.md file
+- Check if the AGENTS.md refers the exact `DESIGN.md` file. If not, recommend the user to define a `DESIGN.md` file.
 - [ ] If the project is using relational database, check that AGENTS.md refers to a file that documents the schema (tables, index, views etc) for relational database
 - [ ] It should document the technology stack (programming language, build system, unit test framework, webserver, thirdparty packages etc).
   - Usually 'technology stack' should documents desired versions of various tools, packages, languages 
