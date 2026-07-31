@@ -19,12 +19,14 @@ disable-model-invocation: true
 - **Invoke via:** `/tcreview` (single-perspective review) 
 - Use the template defined in `references\templates.md` as per the task type
 - Use the language specific information from `references\<language>.md` e.g. `references\python.md` for information specific to python language, C++ use `references\cpp.md`
+
 ## When and How to Apply 
 Apply these guidelines during agentic code generation and during code review. Guidelines that are applicable only at review are tagged with `Review Only`
 
 There are two categories of guidelines. 
 - Guidelines that are applicable at entire file scope or at entire class scope. Typically these are at the start of the source code file.
 - Guidelines that are applicable at individual function level. These are applicable to global scope functions or class member functions
+
 ### Guidelines at File or Class Level
 
 - `Review Only` **Check for dead code or redundant code.** 
@@ -60,12 +62,15 @@ There are two categories of guidelines.
 	- Analyze the assumptions of the base class method. Analyze the assumptions of the derived class method. Preconditions of deriver class method MUST be lenient than the base class method. Post conditions of the derived class method must be stricter than the base class method. 
 	- If you are not sure about strictness about the pre or post conditions, ask user to verify the conditions. 
 	- Do not generate any methods that violates LSP during the code generation
-	- 
-- Respect module boundaries and layering
-- Do not move files unless explicitly instructed
- - Keep configuration separate from runtime logic
+	
+- **Dependency Management**
+	- Respect module boundaries and layering
+	- Do not move files unless explicitly instructed
+ 	- Keep configuration separate from runtime logic
+
 ### Guideline at individual function level
 -  Keep functions small and single-purpose
+
 - **Complexity of function (lines of code, cyclomatic complexity and block depth)**
 	- Maximum size of the function should be 25 lines. Entire function should be visible without doing any page up/down operation
 	- The cyclomatic complexity of the function should be less 10
@@ -81,6 +86,7 @@ There are two categories of guidelines.
 	 - It is ok to use Builder Pattern or jquery style function chaining. 
 	 - Avoid digging into the internals of a class.
 	 - Avoid chaining of 'get' methods.
+
  - **Handle the errors and exceptions. Do not suppress them**
 	 - Prefer unchecked exceptions over checked exceptions
 	 - Do not swallow exceptions silently
@@ -91,14 +97,17 @@ There are two categories of guidelines.
 	 - Catch the exceptions as late as possible. 
 	 - Avoid catching the exceptions in private and protected methods. Catch the exceptions in public methods.
 	 - Avoid catching exceptions in low level modules/packages. Catch the exceptions in high level modules/packages.
+	 - Do not catch exceptions in private/protected methods. 
  - **Do not create easy to misuse function**
    Functions and classes must be 'easy to use' but 'hard to misuse'. Mutability of class increases possibility of misuse
 	 - Minimize 'set/get' methods
 	 - Implicit assumptions can make a function easy to misuse
  - **Function should Fail Fast**
-	 - Return errors quickly
-	 - Assert the assumptions that function has, if any
+	 - Return errors early the function scope.
+	 - Assert the assumptions that function has, if any. 
+	 - Prefer Assertions over exceptions for validating assumptions in function input/outputs
 	 - Throw the exceptions as early as possible in the program logic
+	 - Prefer 'unchecked exception' over 'checked exceptions'. 
 	
 ## Additional Guidelines for Code Review
 - Diff Review
