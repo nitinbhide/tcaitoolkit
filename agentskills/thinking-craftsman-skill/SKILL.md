@@ -21,101 +21,116 @@ disable-model-invocation: true
 - Use the language specific information from `references\<language>.md` e.g. `references\python.md` for information specific to python language, C++ use `references\cpp.md`
 
 ## When and How to Apply 
-Apply these guidelines during agentic code generation and during code review. Guidelines that are applicable only at review are tagged with `Review Only`
+Apply these guidelines during agentic code generation and during code review.
 
-There are two categories of guidelines. 
-- Guidelines that are applicable at entire file scope or at entire class scope. Typically these are at the start of the source code file.
-- Guidelines that are applicable at individual function level. These are applicable to global scope functions or class member functions
+### Enforcement Levels
 
-### Guidelines at File or Class Level
+- **Mandatory**
+	- Treat these as hard constraints by default.
+	- Violate them only when the user explicitly asks for a tradeoff or the target codebase has an established conflicting convention.
+	- If a mandatory rule cannot be followed, explain the reason clearly.
+- **Preferred**
+	- Treat these as strong defaults.
+	- They guide design and implementation, but they may be relaxed with justification.
+	- During review, call out deviations as design risks, not automatic failures.
+- **Review Only**
+	- Use these as review prompts and inspection checks.
+	- Do not block code generation on these alone unless they expose a concrete defect, regression, or architectural problem.
 
-- `Review Only` **Check for dead code or redundant code.** 
-	- Dead code is the code that exists in source files but is not called from any where. 
-	- It may be private function not called from many public member function. Or a variable declared but not used. 
-	- In general use Compiler features/warnings to detect these.
-- `Review Only` **Detect code duplication**
-	- Detect /check if there is exact duplicate code in multiple functions. 
-	- Duplication can be in the same file or across multiple files. 
-	- In general use tools like CPD (Copy Paste Detector) in detecting the exact duplicates. 
-	- Highlight the code duplication in different files as potential design issue. 
-- **Minimize /Avoid Mutable Global State**
-	- The global variables, class static variables, fil level or namespace level static variables, classes that follow singleton patterns are global state. 
-	- Avoid adding global state to the source . 
-	- Immutable global state is ok. 
-	- However, minimize the mutable global state
-- **Minimize the dependencies on external files, classes**
-	- The includes or imports or using statements at anywhere in the source file indicate dependency on external classes or methods or files. 
-	- Review critically if the new dependency is added in the file. 
-	- Avoid adding new dependencies while modifying existing file 
-	- If a new dependency is required, explain why
-	- When generating new file minimize the number of external dependencies.
-	- Remember using 'dependency injection' is still adding dependency but at runtime. Prefer compile time dependency over runtime dependency
-	- Avoid circular dependencies (imports or includes )
-- **The class should based on "Tell" principle and avoid 'asking' for internal state**
-	- The class should follow 'Tell, Dont Ask' principle. The class methods should be about 'telling the class to do some operation on its internal state'. 
-	- Minimize the methods that query the internal state of the class (get methods) 
-	- Minimize the methods that just directly change the member variable of class (set methods)
-	- The class should NEVER return pointer or reference to a internal collection (e.g. vector, List, map) from any member method. 
-- **The class should never violate "Liskov Substitution Principle (LSP)"**
-	- If the current class is derived from another class (base class), analyze the assumptions of the base class. Then check if any method of the derived class is violating the assumptions of the base class. Identify and highlight such methods. 
-	- Wherever function names are same for base class and derived class, assume that derived class function is overriding the base class function.
-	- Analyze the assumptions of the base class method. Analyze the assumptions of the derived class method. Preconditions of deriver class method MUST be lenient than the base class method. Post conditions of the derived class method must be stricter than the base class method. 
-	- If you are not sure about strictness about the pre or post conditions, ask user to verify the conditions. 
-	- Do not generate any methods that violates LSP during the code generation
-	
-- **Dependency Management**
-	- Respect module boundaries and layering
-	- Do not move files unless explicitly instructed
- 	- Keep configuration separate from runtime logic
+There are two scopes of guidelines.
+- File or class scope guidelines
+- Function scope guidelines
 
-### Guideline at individual function level
--  Keep functions small and single-purpose
+## Mandatory Rules
 
-- **Complexity of function (lines of code, cyclomatic complexity and block depth)**
-	- Maximum size of the function should be 25 lines. Entire function should be visible without doing any page up/down operation
-	- The cyclomatic complexity of the function should be less 10
-	- Block depth of the function should be less than 6
-- **Check Assumptions and the Side Effects**
-	- Prefer explicit code over clever or implicit behavior
-	- Do not make implicit assumptions about the input of the function and output of the called functions.
-	- Avoid hard code values for array bounds, flags, etc
-	- Use annotations (e.g. NotNull, Nullable), standard decorators to validate the assumptions
-	- In case, annotation is not available, Use assertions to validate the assumptions about the inputs and outputs. 
-	- Check if there are any unintended side effects for given code. For example, assignment to a variable will overwrite the original value. If the variable is object instance or a pointer, it may result in dangling objects.
-- **Do not violate Law of Demeter**
-	 - It is ok to use Builder Pattern or jquery style function chaining. 
-	 - Avoid digging into the internals of a class.
-	 - Avoid chaining of 'get' methods.
+### Mandatory File or Class Scope Rules
 
- - **Handle the errors and exceptions. Do not suppress them**
-	 - Prefer unchecked exceptions over checked exceptions
-	 - Do not swallow exceptions silently
-		 - Do not create empty catch blocks. 
-		 - The catch blocks that just print or log the errors/exceptions are empty catch blocks
-	 - Do not catch base exception for your programming language. The 'base exception class' in the base class of all exceptions in the given programming language. Catch specific types of exceptions. For example, in python do not catch 'Exception'
-	 - Do not catch '...' exceptions
-	 - Catch the exceptions as late as possible. 
-	 - Avoid catching the exceptions in private and protected methods. Catch the exceptions in public methods.
-	 - Avoid catching exceptions in low level modules/packages. Catch the exceptions in high level modules/packages.
-	 - Do not catch exceptions in private/protected methods. 
- - **Do not create easy to misuse function**
-   Functions and classes must be 'easy to use' but 'hard to misuse'. Mutability of class increases possibility of misuse
-	 - Minimize 'set/get' methods
-	 - Implicit assumptions can make a function easy to misuse
- - **Function should Fail Fast**
-	 - Return errors early the function scope.
-	 - Assert the assumptions that function has, if any. 
-	 - Prefer Assertions over exceptions for validating assumptions in function input/outputs
-	 - Throw the exceptions as early as possible in the program logic
-	 - Prefer 'unchecked exception' over 'checked exceptions'. 
+- **Respect module boundaries and layering**
+	- Do not move files unless explicitly instructed.
+	- Keep configuration separate from runtime logic.
+	- Avoid circular dependencies.
+- **Do not generate code that violates Liskov Substitution Principle (LSP)**
+	- If a class derives from another class, analyze the assumptions of the base class before changing derived behavior.
+	- Where function names are the same in base and derived classes, assume the derived function overrides the base function.
+	- Preconditions of the derived method must be no stricter than the base method.
+	- Postconditions of the derived method must be at least as strong as the base method.
+	- If the preconditions or postconditions are unclear, ask the user to verify them.
+- **Handle errors and exceptions without suppressing them**
+	- Do not swallow exceptions silently.
+	- Do not create empty catch blocks.
+	- Catch specific exception types instead of the language's root exception type.
+	- Do not catch catch-all forms such as `...`.
+	- Catch exceptions as late as practical, usually in higher-level public entry points.
+- **Read the relevant task context before generating or reviewing code**
+	- Read the spec, task description, and relevant code comments before making changes.
+	- If you are uncertain about something, say so and suggest investigation rather than guessing.
+
+### Mandatory Function Scope Rules
+
+- **Keep functions small and single-purpose**
+- **Fail fast on invalid assumptions**
+	- Return errors early within the function scope.
+	- Assert assumptions about inputs and outputs where appropriate.
+	- Throw exceptions as early as practical in the program logic.
+- **Do not create functions that are easy to misuse**
+	- Functions and classes must be easy to use and hard to misuse.
+	- Implicit assumptions increase misuse risk and should be surfaced or removed.
+
+## Preferred Guidelines
+
+### Preferred File or Class Scope Guidelines
+
+- **Minimize mutable global state**
+	- Global variables, class statics, file-level statics, namespace-level statics, and singleton-style objects are global state.
+	- Avoid adding new mutable global state.
+	- Immutable global state is acceptable when justified.
+- **Minimize dependencies on external files and classes**
+	- Imports, includes, and using statements indicate dependencies.
+	- Avoid adding new dependencies while modifying an existing file unless they are necessary.
+	- If a new dependency is required, explain why.
+	- When generating a new file, minimize the number of external dependencies.
+	- Dependency injection is still a runtime dependency; prefer simpler compile-time structure where appropriate.
+- **Prefer Tell, Don't Ask for class design**
+	- Class methods should tell the class to do useful work on its own state.
+	- Minimize getters that only expose internal state.
+	- Minimize setters that only mutate fields directly.
+	- Do not return direct pointers or references to internal collections.
+
+### Preferred Function Scope Guidelines
+
+- **Keep function complexity under control**
+	- Prefer functions that are short enough to understand without scrolling.
+	- Prefer cyclomatic complexity below 10.
+	- Prefer block depth below 6.
+	- The 25-line guideline is a heuristic, not a rigid limit.
+- **Make assumptions and side effects explicit**
+	- Prefer explicit code over clever or implicit behavior.
+	- Do not make implicit assumptions about inputs or callee behavior.
+	- Avoid hard-coded values for array bounds, flags, and similar control data.
+	- Use annotations or decorators where available to document assumptions.
+	- Where annotations are unavailable, prefer assertions or equivalent guard logic.
+	- Watch for unintended side effects, especially overwrites, aliasing, and lifetime issues.
+- **Prefer Law of Demeter friendly code**
+	- Avoid digging through the internals of another object.
+	- Avoid long chains of getter calls.
+	- Builder-style or fluent APIs are acceptable when they are the intended interface.
 	
 ## Additional Guidelines for Code Review
+- `Review Only` **Check for dead code or redundant code**
+	- Dead code is code that exists in source files but is not called from anywhere.
+	- This may be a private function with no callers or a variable that is declared but never used.
+	- Use compiler warnings and static analysis where available.
+- `Review Only` **Detect code duplication**
+	- Check for exact duplicate code in multiple functions.
+	- Duplication can exist in the same file or across multiple files.
+	- Use tools such as CPD where available.
+	- Highlight duplication as a potential design issue.
 - Diff Review
 	- Identify the differences between two given revisions or latest revision of branch and master/main branch or two different branches.  
 	- Generate a 'diff view' of changes between these revisions. 
 	- Use 'unified diff' format for generating the 'diff views'
 	- Use the information in 'version control skill' to generate the diff or 'diff view'
-	- Analyze the diff view using the File level and function level code review guidelines defined in this file.
+	- Analyze the diff view using the mandatory, preferred, and review-only guidelines defined in this file.
 	- "New dependency" added is important check in 'diff review'
 - Periodically do a full file review applying all the guidelines.
 ## Rules for reviewing code
