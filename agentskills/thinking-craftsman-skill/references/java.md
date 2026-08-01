@@ -1,6 +1,5 @@
 ---
 applyTo: "*.java"
-
 ---
 
 **About**

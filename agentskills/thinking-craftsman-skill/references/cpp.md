@@ -1,6 +1,5 @@
 ---
 applyTo: "*.cpp, *.c++, *.cxx, *.hpp, *.hxx, *.h++"
-
 ---
 
 **About**
