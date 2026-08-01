@@ -1,7 +1,5 @@
-
 ---
 applyTo: "*.py"
-
 ---
 
 **About**
