@@ -1,6 +1,6 @@
 ---
 name: agent-audit
-description: Evaluates AGENTS.md and all the files referenced by AGENTS.md for predefined quality criteria. The objective is to improve the effectiveness of AGETNS.md file and reduce the overall token consumption.
+description: Evaluates the repository-root AGENTS.md and its first-level referenced files against predefined quality criteria. If the repository-root AGENTS.md is missing, the audit must stop and report a hard failure. The objective is to improve the effectiveness of AGENTS.md and reduce overall token consumption.
 metadata: 
     author: Nitin Bhide (nitinbhide@thinkingcraftsman.in)
     version : "1.0"
@@ -14,10 +14,40 @@ disable-model-invocation: true
 This skill evaulates AGENTS.md file at the root of the project for following criteria. Objective is to improve the quality of results fromLLMs, reduce the number of turns in agent loop and reduce the LLM token consumptions 
 
 ## How to Audit the AGENTS.md file
+- Audit only the repository-root `AGENTS.md` file.
+- If the repository root does not contain an `AGENTS.md` file, stop immediately and report that the audit could not run because the repository-root `AGENTS.md` is missing.
 - Use the "evaluation criteria" given below and check each item the list
-- Check all the first-level files refered in the AGENTS.md for evaluation. Do not check Directories/folders.
-- Stop at first-level references from AGENTS.md. Do not recurse into files referenced by those files.
-- Output the results are criteria fulfilled or not fulfilled.
+- Treat a "first-level referenced file" as an explicit repository-relative file path written directly in the repository-root `AGENTS.md`.
+- Check only first-level referenced paths for evaluation. Evaluate files that resolve to existing files and skip directories/folders.
+- If a first-level referenced path is unresolved or invalid, record it as a warning only. Do not fail the entire audit because of unresolved or invalid referenced paths.
+- Do not infer file paths, search the repository for matching filenames, or follow vague references such as "see design docs" unless a concrete file path is given.
+- Stop at first-level references from `AGENTS.md`. Do not recurse into files referenced by those files.
+- Output the report using the fixed format defined below.
+
+## Output format
+Use the following sections in this exact order.
+
+1. Target
+  - Repository root path.
+  - Audited file path (must be repository-root `AGENTS.md`).
+
+2. Preflight
+  - Repository-root `AGENTS.md` present: yes/no.
+  - If no, report hard failure and stop.
+
+3. Criteria results
+  - Report one line per criterion.
+  - Allowed status values: fulfilled, not-fulfilled, not-applicable.
+  - Include a short rationale for each status.
+  - Include the evidence file paths used for evaluation.
+
+4. Reference path warnings
+  - List unresolved or invalid first-level referenced file paths as warnings.
+  - Explicitly state that these warnings do not cause audit failure.
+
+5. Summary
+  - Report counts for fulfilled, not-fulfilled, not-applicable, and warnings.
+  - Provide top recommended fixes (maximum 5).
 
 ## Evaluation criteria
 
@@ -43,4 +73,5 @@ This skill evaulates AGENTS.md file at the root of the project for following cri
   - Mark this criterion as fulfilled if AGENTS.md refers to a document that contains concrete package dependency details, even if it is only a textual list.
   - If there is no explicit dependency diagram and only a textual list, recommend using a mermaid package diagram, preferably a C4 component diagram.
   - Empty sections, blank values, TODO markers, or template placeholders do not satisfy this criterion.
-  
+- [ ] It should not define a 'role' for AI Agent. For example, "You are Senior Software Engineer". 
+  - AGENTS.md is used for all Coding Agents. It is starting point of 'context'. Hence AGENTS.md in project root should not define any 'role' for the AI Agent
