@@ -51,11 +51,16 @@ Use the following sections in this exact order.
 
 ## Evaluation criteria
 
+- **Path Rules** : All the file paths in the AGENTS.md file should follow these rules
+  - [ ] All paths in AGENTS.md are resolved relative to the directory containing AGENTS.md.
+  - [ ] Do not use OS‑absolute paths (C:/…, /usr/…).
+  - [ ] Do not use URL paths (file://…).
+  - [ ] Reject references that escape the project root (../../../../). Folder of the AGENTS.md file is the project root.
 - [ ] It should give a one or two paragraph description about the project at the start.
   - The description must be project-specific and explain what the project does.
   - Template placeholders, boilerplate text, or empty descriptions do not satisfy this criterion.
 - [ ] There must 'project structure' or 'repository structure' defined in the AGENTS.md. 
-  - This project structure should refer the relative directory or file paths.
+  - This project structure should refer paths as per the "Path Rules".
   - It should refere to 'index' files for documents like specifications, design and architecture, test plans etc
   - If the repository has specifications, design docs, ADRs, or test plans, AGENTS.md should point to the key index or entry documents for each of those document sets.
   - A plain directory listing without these key document references does not satisfy this criterion.

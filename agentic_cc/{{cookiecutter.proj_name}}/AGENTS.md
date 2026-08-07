@@ -6,6 +6,12 @@
 ## Working Rules
 Read and strictly follow the working rules defined in `.agents/workingrules.md`
 
+## Path Rules
+- All paths in this `AGENTS.md` are resolved relative to the directory containing `AGENTS.md`.
+- Skill files (SKILL.md) resolve paths relative to their own directory.
+- Scripts referenced inside a skill must use SKILL.md file relative paths (e.g., `scripts/resize.py`).
+- Skills are self‑contained: scripts should normally live inside the `<skill>/scripts` directory.
+
 ## Project Folder Map
 In case folder does not exist, Create the neccessary folder as needed.
 Create subfolders as needed when folder is marked with $SUBFOLDERS_AS_NEEDED.
