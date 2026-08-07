@@ -11,7 +11,7 @@ Always follow the decisions in `ADR.md`
 
 ### Implementation guidelines
 - Generate the top level file (containing the main or entry point function) for application in the `src/` folder.
-- Generate and update package design diagram in `docs/design/packagedesign.md`. The file will be in markdown format with diagrams in mermaid.js format.
+- Generate and update package design diagram in `docs/design/packagedesign.md` when a new package is added to the system. The file will be in markdown format and diagrams in mermaid.js format.
 
 ## Technology Stack
 backend : 
