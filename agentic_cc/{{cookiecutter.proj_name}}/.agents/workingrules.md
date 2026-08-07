@@ -35,3 +35,36 @@ Strictly follow these rules. DO NOT VIOLATE UNDER ANY CIRCUMSTANCES.
 ## Code Review Instructions
 - Use the  'thinking craftsman skill' for reviewing code and ensure that code is compliant with 'thinking craftsman coding guidelines' 
 - Follow this project's review guidelines first, then apply thinking craftsman guidelines.
+
+## Executing Commands with Environment Configuration
+
+Always chain the environment setup script (environment.bat or environment.sh) before executing commands to ensure required variables and paths are properly configured.
+
+### Windows (PowerShell)
+```powershell
+# Basic command execution with environment setup
+.\environment.bat && command-here
+
+# Examples:
+.\environment.bat && ant build
+.\environment.bat && ant clean build test
+.\environment.bat && java -version
+```
+
+### Unix/Linux (Bash)
+```bash
+# Basic command execution with environment setup
+source ./environment.sh && command-here
+
+# Examples:
+source ./environment.sh && python -m pytest tests/
+source ./environment.sh && python src/aicalc/main.py
+```
+
+### Best Practices
+- **Always chain before executing**: Use `&&` (PowerShell/Bash) to ensure environment loads before the command runs.
+- **Verify environment**: After running the environment script, it should display confirmation output (e.g., "Environment configured").
+- **Project-specific setup**: Navigate to the project root before executing the environment script.
+- **CI/CD pipelines**: Include the environment chaining step in all build and test scripts.
+    
+    
