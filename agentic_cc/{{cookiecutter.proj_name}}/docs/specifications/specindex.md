@@ -9,5 +9,5 @@ The index format is
 - Do not load all specification documents every time.
 - Update the index whenever you add a new specification document. 
 
-## Document Index
+## Specification Document Index
 
