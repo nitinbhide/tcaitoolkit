@@ -24,6 +24,7 @@ Create subfolders as needed when folder is marked with $SUBFOLDERS_AS_NEEDED.
 - `docs/design/`: architecture and design decisions
 - `docs/design/ARCHITECTURE.md`: architecture rules and constraints
 - `docs/design/ADR.md`: architecture decision records
+- `docs/implementation_plan.md` : Phase wise implementation plan of this project.
 - `build/` : built tool configuration files and any temporary files generated during the compilation and build process. $SUBFOLDERS_AS_NEEDED
 - `src/`: application code
 - `src/{{cookiecutter.proj_name}}/` : main application source code. $SUBFOLDERS_AS_NEEDED
@@ -33,8 +34,10 @@ Create subfolders as needed when folder is marked with $SUBFOLDERS_AS_NEEDED.
 - `test/testdata` : all neccessary test data required for unit or integration tests. $SUBFOLDERS_AS_NEEDED
 
 ## Required Reading Before Making Any Changes
-- Read Coding Agent configuration files. Including the SKILL files as needed from `.agents/` folder.
-- read your memories from `.agents/memory` folder
-- Read `docs/specifications/specindex.md`, then all relevant specification files.
+- Read Coding Agent configuration files from `.agents`
+- Read SKILL files as needed from `.agents/skills`.
+- Read your memories from `.agents/memory` folder
+- Read `docs/implementation_plan.md` to understant the planned roadmap and timeline
+- Read `docs/specifications/specindex.md`, then all relevant specification files as needed.
 - Follow `docs/design/ARCHITECTURE.md`.
 - Follow decisions in `docs/design/ADR.md`.

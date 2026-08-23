@@ -6,12 +6,13 @@ Strictly follow these rules. DO NOT VIOLATE UNDER ANY CIRCUMSTANCES.
 - Preserve behavior unless the task explicitly requires a change.
 - **Do not change public APIs** unless instructed.
 - Follow existing project patterns before introducing new ones.
+- ALWAYS Generate the "plan" BEFORE setting up the environmment making any changes, updating/modifying any documents or generating any code/tests.
+- Show the plan to me (the user) and get confirmation. 
 - Write the unit tests before making any changes.
 - Run the unit tests and ensure that all tests are passing after making any changes.
-- Generate the "plan" BEFORE making any changes, updating any documents or generating any code/tests.
-- Show the plan to me (the user) and get my confirmation. 
 - Modify files in `docs/` folder only when explicitly told by user. Do not modify on your own.
 - Store your memories in `.agents/memory/` folder.
+
 
 ### DO NOT
 - implement anything that conflicts with approved specs or architecture decisions.
@@ -71,5 +72,4 @@ source ./environment.sh && python src/aicalc/main.py
 - **Verify environment**: After running the environment script, it should display confirmation output (e.g., "Environment configured").
 - **Project-specific setup**: Navigate to the project root before executing the environment script.
 - **CI/CD pipelines**: Include the environment chaining step in all build and test scripts.
-    
     
