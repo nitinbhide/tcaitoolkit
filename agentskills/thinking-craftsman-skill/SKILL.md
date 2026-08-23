@@ -115,7 +115,7 @@ There are two scopes of guidelines.
 	- Avoid long chains of getter calls.
 	- Builder-style or fluent APIs are acceptable when they are the intended interface.
 	
-## Additional Guidelines for Code Review
+### Additional Guidelines for Code Review
 - `Review Only` **Check for dead code or redundant code**
 	- Dead code is code that exists in source files but is not called from anywhere.
 	- This may be a private function with no callers or a variable that is declared but never used.
@@ -133,12 +133,25 @@ There are two scopes of guidelines.
 	- Analyze the diff view using the mandatory, preferred, and review-only guidelines defined in this file.
 	- "New dependency" added is important check in 'diff review'
 - Periodically do a full file review applying all the guidelines.
-## Rules for reviewing code
+
+## Additional Guidelines for Writing Unit Tests
+- Use the Arrange-Act-Assert (AAA) pattern.
+- Test happy paths, boundary values, null/undefined inputs, and expected exceptions.
+- Use specification documents, design documents and test plans to identify conditions to test.
+- Mock all external dependencies and network calls, database calls
+- Name tests clearly to describe the scenario and expected outcome.
+- Do not include placeholder comments; write fully working code.
+
+## How to Apply these rules
+
+### Applying Rules for reviewing code
  - Read the spec or task description, related code comment before analyzing /reviewing code
  - If you're uncertain about something, say so and suggest investigation rather than guessing
-## Rules for generating code
+
+### Applying Rules for generating code
 - Read the spec or task description and related existing code and  comments before  generating new code
 - Write the Tests Before writing the code. 
 	- Generate the unit tests as per the project unit test guidelines
 	- If there are no unit test guidelines, then generate the test descriptions and not code. Use the template "Test Description template" defined in the ```references\Templates``` for generating test descriptions. 
 - If you're uncertain about something, say so and suggest investigation rather than guessing
+
