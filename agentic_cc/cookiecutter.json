@@ -1,5 +1,9 @@
 {
     "proj_name" : "proj",
-    "proj_full_name" : "full name of the project",
-    "description" : "5-6 line description of the project"
+    "proj_full_name" : "Full name of the project",
+    "description" : "5-6 line description of the project",
+    "__prompts__" : {
+        "proj_name" : "Short name of the project. This will be folder name",
+        "proj_full_name" : "Full (or long name) of the project"
+    }
 }
