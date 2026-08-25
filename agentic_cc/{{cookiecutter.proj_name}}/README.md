@@ -1,6 +1,10 @@
 # Thinking Craftsman Agentic Engineering Project Template
 
-This is a cookie cutter template developed by Nitin Bhide (nitinbhide@thinkingcraftsman.in). 
+**NOTE FOR AI AGENT**
+This file is for use of human developers. If you are AI agent, ignore everything in this file.
+
+This is a cookie cutter template developed by 
+[Nitin Bhide](mailto:nitinbhide@thinkingcraftsman.in). 
 
 The purpose of this template is to setup a folder structure and few important files like AGENTS.md and instructions for Coding Agents like Codex, Github Copilot etc. It is based on the concepts of Agentic Engineering.
 

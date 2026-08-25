@@ -9,3 +9,12 @@ It creates following
 3. Recommended set of files like specification index, Architecture, ADR (Architecture Decision Records) etc
 
 It does not assume any particular 'coding agent'
+
+## How to use this cookie cutter
+
+- Clone the repository of [TC AI Toolkit](https://github.com/nitinbhide/tcaitoolkit.git)
+- create an empty directory and change to it.
+- Use the [cookiecutter](https://cookiecutter.readthedocs.io/en/stable/index.html) to create your own project from this template.
+    ```cookiecutter <path of agentic_cc folder in the cloned tcaitoolkit>```
+- Install the Thinking Craftsman Agent SKILLS. Run the instskill.bat or 'instskill.sh' from the `agentskills` folder of the TC AI Toolkit
+
