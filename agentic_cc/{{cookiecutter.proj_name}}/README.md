@@ -16,4 +16,5 @@ The purpose of this template is to setup a folder structure and few important fi
     ```cookiecutter <path of agentic_cc folder in the cloned tcaitoolkit>```
 - Install the Thinking Craftsman Agent SKILLS. Run the install.bat or 'install.sh' from the `agentskills` folder of the TC AI Toolkit
 
+**REPLACE THE CONTENTS OF THIS FILE WITH YOUR OWN README TEXT**
 
