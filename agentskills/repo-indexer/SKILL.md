@@ -94,14 +94,19 @@ The root `INDEX.md` **must include a section** explaining:
 - No bug/issue analysis
 
 ## Steps
-1. Scan repository recursively.
-2. Identify folders and text-based files.
-3. Extract metadata (semantic tags, TODO/FIXME/NOTE).
-4. Generate file summaries.
-5. Generate folder summaries.
+1. Scan repository recursively for folders only.
+2. For Each folder, do the following. Start from the deepest folder. And recursively go up. Check each folder with ignore list.
+  1. identify the text based files.
+  2. Generate file summaries. Extract metadata (semantic tags, TODO/FIXME/NOTE) while generating the file summary.. 
+  3. Generate folder summary.
+  4. Use `references/folderindex_tmpl.md` to generate each folder’s `index.md`.
+  5. Perform incremental update of folder level `index.md`
 6. Build dependency graph.
-7. Perform incremental update.
-8. Use `references/folderindex_tmpl.md` to generate each folder’s `index.md`.
 9. Use `references/rootindex_tmpl.md` to generate the root `INDEX.md`.
+10. Use `.agents/memory/indexer_progress.md` to plan the index generation at granular steps and to track progress of the index generation executation.
+11. Use the `.agents/memory/filelist.md` to list down the input files that will be used in index generation in each folder. Overwrite this file for individual folder index generation
+12. DO NOT TRY TO GENERATE EVERYTHING WITH ONE SCRIPT. Usually Projects are large the single script generation will fail.
+
+
 
 
