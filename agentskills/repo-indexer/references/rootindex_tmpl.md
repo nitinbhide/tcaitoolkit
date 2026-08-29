@@ -21,13 +21,13 @@ dependencies: [<moduleA>, <moduleB>, ...]
 # Files
 - `<filename1>` : <4–5 line summary>
     - Tags: [<tags>]
-    - TODO/FIXME/NOTE:
+    - TODO/FIXME/NOTE: <only if there is a TODO/FIXME/NOTE>
     - <line or short description>
     - <line or short description>
 
 - `<filename2>` : <4–5 line summary>
     - Tags: [<tags>]
-    - TODO/FIXME/NOTE:
+    - TODO/FIXME/NOTE: <only if there is a TODO/FIXME/NOTE>
     - <line or short description>
 
 (Repeat for all files)

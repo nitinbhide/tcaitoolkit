@@ -8,18 +8,18 @@ dependencies: [<moduleA>, <moduleB>, ...]
 ---
 
 # Folder Summary
-<4–5 line summary describing the folder’s purpose, responsibilities, types of files, semantic themes, and presence of TODO/FIXME/NOTE.>
+<4–5 line summary describing the folder’s purpose, responsibilities, types of files, semantic themes, and presence of TODO/FIXME/NOTE.> 
 
 # Files
 - `<filename1>` : <4–5 line summary>
     - Tags: [<tags>]
-    - TODO/FIXME/NOTE:
+    - TODO/FIXME/NOTE: <only if there is a TODO/FIXME/NOTE>
     - <line or short description>
     - <line or short description>
 
 - `<filename2>` : <4–5 line summary>
     - Tags: [<tags>]
-    - TODO/FIXME/NOTE:
+    - TODO/FIXME/NOTE: <only if there is a TODO/FIXME/NOTE>
     - <line or short description>
 
 (Repeat for all files)
