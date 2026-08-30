@@ -41,3 +41,4 @@ Create subfolders as needed when folder is marked with $SUBFOLDERS_AS_NEEDED.
 - Read `docs/specifications/specindex.md`, then all relevant specification files as needed.
 - Follow `docs/design/ARCHITECTURE.md`.
 - Follow decisions in `docs/design/ADR.md`.
+- If `INDEX.md` exists then Read `INDEX.md`
