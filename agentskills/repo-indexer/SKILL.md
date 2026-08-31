@@ -1,6 +1,6 @@
 ---
 name: repo-indexer
-description: Generate hierarchical Markdown index files for a project  repository folder structure using progressive disclosure.
+description: Generate hierarchical Markdown index files (docmap.md) for a project  repository folder structure using progressive disclosure.
 version: 1.1.0
 author: Nitin Bhide (nitinbhide@thinkingcraftsman.in)
 tags:
@@ -55,6 +55,7 @@ The root `DOCMAP.md` **must include a section** explaining:
 ## Included File Types
 - Source code (any language)
 - Design documents
+- Architecture documents and Architecture Decision Records (ADR)
 - Specification documents
 - Test plans and test cases
 - Implementation plans
@@ -66,6 +67,12 @@ The root `DOCMAP.md` **must include a section** explaining:
 - Binary files
 - Vendor libraries
 - Generated code
+- file names is starting with '.'
+- any file mentioned in ".gitignore" and other ignore files
+
+## Excluded Folders
+- folder name starting with '.' (".git", ".agents", ".github")
+- any folder mentioned in ".gitignore" and other ignore files
 
 ## Summarization Rules
 - Folder summaries: 4–5 lines
@@ -96,9 +103,9 @@ The root `DOCMAP.md` **must include a section** explaining:
 
 ## Steps
 1. ALWAYS Prepare the **indexing operation plan** using the following steps. **Instructions for indexing opperation plan creation**
-  - Use the root `/.agents/memory/indexing_plan.md` to store the plan of the indexing operation at granular steps and to track progress of the index generation executation. 
+  - Use the root `/.agents/memory/docmap_plan.md` to store the plan of the indexing operation at granular steps and to track progress of the index generation executation. 
   - ALWAYS Get the user's approval on plan BEFORE starting the plan execution. 
-  - If the root `indexing_plan.md` exists, then update the file. 
+  - If the root `/.agents/memory/docmap_plan.md` exists, then update the file. 
 2. Scan repository recursively for folders only.
 3. For Each folder, do the following. Start from the deepest folder. And recursively go up. Check each folder with ignore list.
   1. identify the text based files for this folder.
@@ -109,8 +116,9 @@ The root `DOCMAP.md` **must include a section** explaining:
   6. Perform incremental update of folder level `docmap.md`
   7. Use a 'subagent' to generate the steps for each folder.
 4. Build dependency graph.
-5. Use the template `./references/rootdocmap_tmpl.md` to generate the root `DOCMAP.md`. Always update the root index as project root (`/DOCMAP.md`) if even you are updating some specific subfolder of the project.
+5. Use the template `./references/rootdocmap_tmpl.md` to generate (and/or update) the project root `DOCMAP.md`. Always update the root index as project root `/DOCMAP.md` if even you are updating some specific subfolder of the project.
 6. DO NOT TRY TO GENERATE EVERYTHING WITH ONE SCRIPT. Usually Projects are large the single script generation will fail.
+7. DO NOT deviate from this SKILL instructions.
 
 
 
