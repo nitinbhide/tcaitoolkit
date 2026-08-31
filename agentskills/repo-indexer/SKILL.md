@@ -12,7 +12,7 @@ tags:
 # Project Repository Indexer Skill
 
 ## Purpose
-Generate Markdown index files (`INDEX.md` at root, `index.md` in each folder) that summarize the contents of a local repository using progressive disclosure.  
+Generate Markdown index files (`DOCMAP.md` at root, `docmap.md` in each folder) that summarize the contents of a local repository using progressive disclosure.  
 This skill **only generates index files** and is **not used by coding agents for project decision making**.
 
 ## Inputs
@@ -35,18 +35,18 @@ The skill performs a recursive scan of the repository and generates index files 
 - Use the templates defined in this skills `references/` folder only
 
 ### Template Usage
-- **Root Index File (`INDEX.md`)**  
+- **Root Index File (`DOCMAP.md`)**  
   Must be generated using the template in:  
   `rootindex_tmpl.md`
 
-- **Folder Index Files (`index.md`)**  
+- **Folder Index Files (`docmap.md`)**  
   Must be generated using the template in:  
   `folderindex_tmpl.md`
 
 The skill must fill these templates with actual repository data.
 
 ### Root Index Requirements
-The root `INDEX.md` **must include a section** explaining:
+The root `DOCMAP.md` **must include a section** explaining:
 - how the index hierarchy is organized  
 - how AI coding agents should use the index  
 
@@ -76,7 +76,7 @@ The root `INDEX.md` **must include a section** explaining:
 
 ## Dependency Graph
 - Folder-level dependency graph inferred from import/include/require statements
-- Included only in root `INDEX.md`
+- Included only in root `DOCMAP.md`
 
 ## Incremental Update Rules
 - Load existing index files if present
@@ -105,11 +105,11 @@ The root `INDEX.md` **must include a section** explaining:
   2. Use the root `/.agents/memory/filelist.md` to list down the input files that will be used in index generation in each folder. Overwrite this file for individual folder index generation for each folder.
   3. Generate file summaries. Extract metadata (semantic tags, TODO/FIXME/NOTE) while generating the file summary.. 
   4. Generate folder summary.
-  5. Use the template `./references/folderindex_tmpl.md` to generate this folder’s `index.md`.
-  6. Perform incremental update of folder level `index.md`
+  5. Use the template `./references/folderindex_tmpl.md` to generate this folder’s `docmap.md`.
+  6. Perform incremental update of folder level `docmap.md`
   7. Use a 'subagent' to generate the steps for each folder.
 4. Build dependency graph.
-5. Use the template `./references/rootindex_tmpl.md` to generate the root `INDEX.md`. Always update the root index as project root (`/INDEX.md`) if even you are updating some specific subfolder of the project.
+5. Use the template `./references/rootindex_tmpl.md` to generate the root `DOCMAP.md`. Always update the root index as project root (`/DOCMAP.md`) if even you are updating some specific subfolder of the project.
 6. DO NOT TRY TO GENERATE EVERYTHING WITH ONE SCRIPT. Usually Projects are large the single script generation will fail.
 
 
