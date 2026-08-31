@@ -105,11 +105,11 @@ The root `DOCMAP.md` **must include a section** explaining:
   2. Use the root `/.agents/memory/filelist.md` to list down the input files that will be used in index generation in each folder. Overwrite this file for individual folder index generation for each folder.
   3. Generate file summaries. Extract metadata (semantic tags, TODO/FIXME/NOTE) while generating the file summary.. 
   4. Generate folder summary.
-  5. Use the template `./references/folderindex_tmpl.md` to generate this folder’s `docmap.md`.
+  5. Use the template `./references/folderdocmap_tmpl.md` to generate this folder’s `docmap.md`.
   6. Perform incremental update of folder level `docmap.md`
   7. Use a 'subagent' to generate the steps for each folder.
 4. Build dependency graph.
-5. Use the template `./references/rootindex_tmpl.md` to generate the root `DOCMAP.md`. Always update the root index as project root (`/DOCMAP.md`) if even you are updating some specific subfolder of the project.
+5. Use the template `./references/rootdocmap_tmpl.md` to generate the root `DOCMAP.md`. Always update the root index as project root (`/DOCMAP.md`) if even you are updating some specific subfolder of the project.
 6. DO NOT TRY TO GENERATE EVERYTHING WITH ONE SCRIPT. Usually Projects are large the single script generation will fail.
 
 
