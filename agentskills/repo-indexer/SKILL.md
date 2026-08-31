@@ -15,13 +15,15 @@ tags:
 Generate Markdown index files (`DOCMAP.md` at root, `docmap.md` in each folder) that summarize the contents of a local repository using progressive disclosure.  
 This skill **only generates index files** and is **not used by coding agents for project decision making**.
 
+DO NOT deviate from this SKILL instructions.
+
 ## Inputs
 - Root directory path of the local repository.
 
 ## Outputs
 - Markdown index files written directly into each folder of the repository.
-- The root index file must be generated using `rootindex_tmpl.md`.
-- All folder-level index files must be generated using `folderindex_tmpl.md`.
+- The root index file must be generated using `rootdocmap_tmpl.md`.
+- All folder-level index files must be generated using `folderdocmap_tmpl.md`.
 
 ## Behavior
 The skill performs a recursive scan of the repository and generates index files containing:
@@ -36,12 +38,10 @@ The skill performs a recursive scan of the repository and generates index files 
 
 ### Template Usage
 - **Root Index File (`DOCMAP.md`)**  
-  Must be generated using the template in:  
-  `rootindex_tmpl.md`
+  Must be generated using the template defined in `rootdocmap_tmpl.md`
 
 - **Folder Index Files (`docmap.md`)**  
-  Must be generated using the template in:  
-  `folderindex_tmpl.md`
+  Must be generated using the template defined in `folderdocmap_tmpl.md`
 
 The skill must fill these templates with actual repository data.
 
@@ -50,7 +50,7 @@ The root `DOCMAP.md` **must include a section** explaining:
 - how the index hierarchy is organized  
 - how AI coding agents should use the index  
 
-(The actual instruction text is defined inside `rootindex_tmpl.md`.)
+(The actual instruction text is defined inside `rootdocmap_tmpl.md`.)
 
 ## Included File Types
 - Source code (any language)
@@ -99,6 +99,7 @@ The root `DOCMAP.md` **must include a section** explaining:
 - No AST parsing
 - No call graph
 - No bug/issue analysis
+- DO NOT TRY TO GENERATE EVERYTHING WITH ONE SCRIPT. Usually Projects are large and the single script generation will fail.
 
 ## Steps
 1. ALWAYS Prepare the **indexing operation plan** using the following steps. **Instructions for indexing opperation plan creation**
@@ -109,15 +110,14 @@ The root `DOCMAP.md` **must include a section** explaining:
 3. For Each folder, do the following. Start from the deepest folder. And recursively go up. Check each folder with ignore list.
   1. identify the text based files for this folder.
   2. Use the root `/.agents/memory/filelist.md` to list down the input files that will be used in index generation in each folder. Overwrite this file for individual folder index generation for each folder.
-  3. Generate file summaries. Extract metadata (semantic tags, TODO/FIXME/NOTE) while generating the file summary.. 
+  3. Generate file summaries. Extract metadata (semantic tags, TODO/FIXME/NOTE) while generating the file summary. File summary must be generated using the LLM summarization.
   4. Generate folder summary.
   5. Use the template `./references/folderdocmap_tmpl.md` to generate this folder’s `docmap.md`.
   6. Perform incremental update of folder level `docmap.md`
   7. Use a 'subagent' to generate the steps for each folder.
 4. Build dependency graph.
 5. Use the template `./references/rootdocmap_tmpl.md` to generate (and/or update) the project root `DOCMAP.md`. Always update the root index as project root `/DOCMAP.md` if even you are updating some specific subfolder of the project.
-6. DO NOT TRY TO GENERATE EVERYTHING WITH ONE SCRIPT. Usually Projects are large the single script generation will fail.
-7. DO NOT deviate from this SKILL instructions.
+
 
 
 
