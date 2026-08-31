@@ -16,19 +16,18 @@ dependencies: [<moduleA>, <moduleB>, ...]
 # Top-Level Folders
 - `<folder1>/docmap.md` — <short description>
 - `<folder2>/docmap.md` — <short description>
-- `<folder3>/docmap.mddocmap.md` — <short description>
+- `<folder3>/docmap.md` — <short description>
 
 # Files
-- `<filename1>` : <4–5 line summary>
+- `<filename1>` : <4–5 line summary/description>
+    - Size : <file size in bytes>
     - Tags: [<tags>]
     - TODO/FIXME/NOTE: <only if there is a TODO/FIXME/NOTE>
-    - <line or short description>
-    - <line or short description>
 
-- `<filename2>` : <4–5 line summary>
+- `<filename2>` : <4–5 line summary/description>
+    - Size : <file size in bytes>
     - Tags: [<tags>]
     - TODO/FIXME/NOTE: <only if there is a TODO/FIXME/NOTE>
-    - <line or short description>
 
 (Repeat for all files)
 
@@ -39,14 +38,14 @@ dependencies: [<moduleA>, <moduleB>, ...]
 ## How This Index Is Organized
 This repository uses a progressive disclosure index hierarchy.  
 Each folder contains an `docmap.md` summarizing its contents.  
-This root `Index.md` provides the top-level overview and links to major modules.
+This root `DOCMAP.md` provides the top-level overview and links to major modules.
 
 Hierarchy:
 - Root `DOCMAP.md` → repository overview + dependency graph  
 - Folder `docmap.md` → folder summary + file summaries  
 - File entries → purpose + responsibilities + semantic tags + TODO/FIXME/NOTE  
 
-## How to Use This Index
+## How to Use This Index/DOCMAP
 1. Start at this root `DOCMAP.md` to understand the repository structure.  
 2. Navigate into relevant folders using the links above.  
 3. Use folder-level summaries to narrow down your search.  

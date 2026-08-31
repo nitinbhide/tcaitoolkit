@@ -14,8 +14,10 @@ tags:
 ## Purpose
 Generate Markdown index files (`DOCMAP.md` at root, `docmap.md` in each folder) that summarize the contents of a local repository using progressive disclosure.  
 This skill **only generates index files** and is **not used by coding agents for project decision making**.
+The skill generates documentation that may target coding agents; this skill itself does not perform coding-agent decision workflows.
 
 DO NOT deviate from this SKILL instructions.
+
 
 ## Inputs
 - Root directory path of the local repository.
@@ -33,7 +35,7 @@ The skill performs a recursive scan of the repository and generates index files 
 - Semantic tags
 - TODO / FIXME / NOTE detections
 - Child folder references
-- Module-level dependency graph (root only)
+- Dependency graph generation is disabled for now
 - Use the templates defined in this skills `references/` folder only
 
 ### Template Usage
@@ -52,7 +54,9 @@ The root `DOCMAP.md` **must include a section** explaining:
 
 (The actual instruction text is defined inside `rootdocmap_tmpl.md`.)
 
-## Included File Types
+## File/Folder Inclusion/Exclusion Rules
+
+### Included File Types
 - Source code (any language)
 - Design documents
 - Architecture documents and Architecture Decision Records (ADR)
@@ -63,16 +67,22 @@ The root `DOCMAP.md` **must include a section** explaining:
 - Protobuf schema files
 - Markdown, text, YAML, JSON
 
-## Excluded File Types
+### Excluded File Types
 - Binary files
 - Vendor libraries
 - Generated code
 - file names is starting with '.'
 - any file mentioned in ".gitignore" and other ignore files
 
-## Excluded Folders
+### Excluded Folders
 - folder name starting with '.' (".git", ".agents", ".github")
 - any folder mentioned in ".gitignore" and other ignore files
+
+### Ignore precedence:
+- Apply hard excludes first (binary, vendor, generated, hidden files/folders)
+- Then Apply "Excluded Folders"
+- Then apply ".gitignore" and other ignore files
+- Then apply included file type filtering
 
 ## Summarization Rules
 - Folder summaries: 4–5 lines
@@ -80,18 +90,25 @@ The root `DOCMAP.md` **must include a section** explaining:
 - Detect TODO / FIXME / NOTE
 - Extract semantic tags heuristically
 - Summaries generated using an LLM
+- Child folders must be ordered lexicographically by relative path
+- Files must be ordered lexicographically by filename within each folder
+- Semantic tags must be lowercase, deduplicated, and sorted
+- TODO / FIXME / NOTE entries for each file must be sorted by line number
 
 ## Dependency Graph
-- Folder-level dependency graph inferred from import/include/require statements
-- Included only in root `DOCMAP.md`
+- Dependency extraction and dependency graph generation are disabled for now
+- Keep `dependencies` metadata as an empty list `[]`
 
 ## Incremental Update Rules
 - Load existing index files if present
-- Re-summarize only changed files
+- Detect changed files using file size only
+- Re-summarize only files with changed file size
 - Remove deleted files
 - Preserve unchanged summaries
 - Update folder summaries when needed
 - Rename detection not required
+- Do not run a full sweep automatically
+- Full sweep is only when explicitly requested by the developer
 
 ## Constraints
 - No external systems (Jira, GitHub, etc.)
@@ -106,16 +123,16 @@ The root `DOCMAP.md` **must include a section** explaining:
   - Use the root `/.agents/memory/docmap_plan.md` to store the plan of the indexing operation at granular steps and to track progress of the index generation executation. 
   - ALWAYS Get the user's approval on plan BEFORE starting the plan execution. 
   - If the root `/.agents/memory/docmap_plan.md` exists, then update the file. 
-2. Scan repository recursively for folders only.
-3. For Each folder, do the following. Start from the deepest folder. And recursively go up. Check each folder with ignore list.
+2. Scan repository recursively for folders only to build the folder tree.
+3. For Each folder, do the following. Start from the deepest folder. And recursively go up. Check each folder with ignore list, then scan files for that folder.
   1. identify the text based files for this folder.
-  2. Use the root `/.agents/memory/filelist.md` to list down the input files that will be used in index generation in each folder. Overwrite this file for individual folder index generation for each folder.
+  2. Use the folder-scoped `/.agents/memory/repo-indexer/<folder-relative-path>/filelist.md` to list down the input files that will be used in index generation in each folder.
   3. Generate file summaries. Extract metadata (semantic tags, TODO/FIXME/NOTE) while generating the file summary. File summary must be generated using the LLM summarization.
   4. Generate folder summary.
   5. Use the template `./references/folderdocmap_tmpl.md` to generate this folder’s `docmap.md`.
   6. Perform incremental update of folder level `docmap.md`
   7. Use a 'subagent' to generate the steps for each folder.
-4. Build dependency graph.
+4. Skip dependency graph generation for now.
 5. Use the template `./references/rootdocmap_tmpl.md` to generate (and/or update) the project root `DOCMAP.md`. Always update the root index as project root `/DOCMAP.md` if even you are updating some specific subfolder of the project.
 
 
