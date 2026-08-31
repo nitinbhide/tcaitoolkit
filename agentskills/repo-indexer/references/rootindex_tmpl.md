@@ -56,4 +56,4 @@ Hierarchy:
 ## Notes
 - Summaries are intentionally short (4–5 lines).  
 - Semantic tags highlight functional areas.  
-- TODO/FIXME/NOTE markers indicate hotspots.  
+- TODO/FIXME/NOTE markers indicate hotspots/pending actions.  
