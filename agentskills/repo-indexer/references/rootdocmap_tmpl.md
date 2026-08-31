@@ -19,12 +19,12 @@ dependencies: [<moduleA>, <moduleB>, ...]
 - `<folder3>/docmap.md` — <short description>
 
 # Files
-- `<filename1>` : <4–5 line summary/description>
+- `<filename1>` : <one short paragraph summary/description.>
     - Size : <file size in bytes>
     - Tags: [<tags>]
     - TODO/FIXME/NOTE: <only if there is a TODO/FIXME/NOTE>
 
-- `<filename2>` : <4–5 line summary/description>
+- `<filename2>` : <one short paragraph summary/description.>
     - Size : <file size in bytes>
     - Tags: [<tags>]
     - TODO/FIXME/NOTE: <only if there is a TODO/FIXME/NOTE>
