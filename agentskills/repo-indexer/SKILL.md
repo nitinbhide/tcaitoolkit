@@ -94,7 +94,6 @@ The root `DOCMAP.md` **must include a section** explaining:
 - Rename detection not required
 
 ## Constraints
-- Single monolithic skill
 - No external systems (Jira, GitHub, etc.)
 - No embeddings
 - No AST parsing
