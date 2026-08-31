@@ -89,7 +89,7 @@ The root `DOCMAP.md` **must include a section** explaining:
 - File summaries: 4–5 lines
 - Detect TODO / FIXME / NOTE
 - Extract semantic tags heuristically
-- Summaries generated using an LLM
+- Summaries generated using an LLM. The summaries will be different for different files. Do not use templated summaries
 - Child folders must be ordered lexicographically by relative path
 - Files must be ordered lexicographically by filename within each folder
 - Semantic tags must be lowercase, deduplicated, and sorted
@@ -123,7 +123,7 @@ The root `DOCMAP.md` **must include a section** explaining:
   - Use the root `/.agents/memory/docmap_plan.md` to store the plan of the indexing operation at granular steps and to track progress of the index generation executation. 
   - ALWAYS Get the user's approval on plan BEFORE starting the plan execution. 
   - If the root `/.agents/memory/docmap_plan.md` exists, then update the file. 
-2. Scan repository recursively for folders only to build the folder tree.
+2. Scan repository recursively for folders only to build the folder tree. if available, prefer the use "ripgrep"/"rg" for searching the files and folders.
 3. For Each folder, do the following. Start from the deepest folder. And recursively go up. Check each folder with ignore list, then scan files for that folder.
   1. identify the text based files for this folder.
   2. Use the folder-scoped `/.agents/memory/repo-indexer/<folder-relative-path>/filelist.md` to list down the input files that will be used in index generation in each folder.
