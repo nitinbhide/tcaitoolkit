@@ -14,9 +14,9 @@ dependencies: [<moduleA>, <moduleB>, ...]
 <High-level folder/module dependency relationships inferred from imports/includes.>
 
 # Top-Level Folders
-- `<folder1>/docmap.md` — <short description>
-- `<folder2>/docmap.md` — <short description>
-- `<folder3>/docmap.md` — <short description>
+- `<folder1>/docmap.md` — <short summary of content of the folder/description>
+- `<folder2>/docmap.md` — <short summary of content of the folder/description>short summary of content of the folder/description
+- `<folder3>/docmap.md` — <short summary of content of the folder/description>
 
 # Files
 - `<filename1>` : <one short paragraph summary/description.>
