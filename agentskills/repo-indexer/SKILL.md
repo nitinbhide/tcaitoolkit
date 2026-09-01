@@ -65,7 +65,7 @@ The root `DOCMAP.md` **must include a section** explaining:
 - Implementation plans
 - SQL files
 - Protobuf schema files
-- Markdown, text, YAML, JSON
+- Markdown (`.md`), text, Restructured Text (`.rst`)
 
 ### Excluded File Types
 - Binary files
@@ -73,6 +73,9 @@ The root `DOCMAP.md` **must include a section** explaining:
 - Generated code
 - file names is starting with '.'
 - any file mentioned in ".gitignore" and other ignore files
+- AGENTS.md 
+- CLAUDE.md 
+- Configuration and settings files (java property files, e.g., `.properties`, `.xml`, `.yaml`, `.yml`, `.ini`, `.settings`)
 
 ### Excluded Folders
 - folder name starting with '.' (".git", ".agents", ".github")
