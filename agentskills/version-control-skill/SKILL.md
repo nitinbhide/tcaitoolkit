@@ -108,8 +108,8 @@ Standard unified diff format
 
 ## References
 
-- See `/references/git.md`
-- See `/references/hg.md`
-- See `/references/subversion.md`
+- See `/references/git.md` for using Git version control
+- See `/references/hg.md` for using Mercurial (hg) version control
+- See `/references/subversion.md` for using Subversion version control
 
 Each reference maps these flows to concrete commands for specific version control system.
