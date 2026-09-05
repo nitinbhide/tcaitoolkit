@@ -18,11 +18,12 @@ Enable AI agents to efficiently query history, compute differences, and follow s
 
 ## Core Principles
 
-1. Always ensure working copy is synchronized before performing operations.
+1. Enforce hard-gate safety checks before modification operations.
 2. Prefer read-only operations for history exploration.
-3. Use explicit time ranges or branch references when querying logs.
+3. Keep user time-range inputs as: today, yesterday, last week; normalize them internally to concrete timestamps before command execution.
 4. Generate outputs in a consistent, human-readable format.
 5. Delegate actual command execution to VCS-specific references.
+6. Auto-detect VCS backend from repository markers (`.git`, `.hg`, `.svn`); if ambiguous, ask user and do not guess.
 
 
 ## Scenarios
@@ -52,6 +53,8 @@ Will be as per the version control that you are using.
 
 #### Assumption
 Branches share a common ancestor.
+
+No explicit pre-check is required; rely on version control command outcomes.
 
 #### Inputs
 - source branch
@@ -92,17 +95,20 @@ Standard unified diff format
 
 #### Flow
 1. Check if local working copy is clean.
-2. Synchronize with remote repository.
-3. Handle conflicts if detected.
-4. Only then allow further operations (outside scope).
+2. Synchronize with remote repository when a remote is configured.
+3. If no remote is configured, treat synchronization as not applicable.
+4. If dirty working copy or synchronization/conflict checks fail, stop immediately (hard gate).
+5. Only then allow further operations (outside scope).
 
 ---
 
 ## Error Handling
 
 - If branches do not share a common ancestor → abort with explanation.
-- If working directory is dirty → warn before proceeding.
+- If working directory is dirty for a modification flow → stop immediately (hard gate).
 - If time range yields no commits → return empty result.
+- If repository backend is ambiguous (multiple of `.git`, `.hg`, `.svn`) → ask user to choose backend; do not guess.
+- For command errors, return raw command output and add an extra comment to help user resolve the error.
 
 ---
 
