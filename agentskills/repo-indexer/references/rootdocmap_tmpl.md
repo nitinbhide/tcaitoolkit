@@ -52,6 +52,19 @@ Hierarchy:
 4. Use file summaries and semantic tags to identify candidate files.  
 5. Always read the actual source code before making changes.  
 
+## When to Use This Index/DOCMAP
+- Understand repository architecture
+- Understand major business capabilities
+- Locate implementation areas
+- Understand technology stacks
+- Understand dependencies
+- Locate related tests
+- Locate related specifications
+- Evaluate change impact
+- Determine which files to read
+- Determine which files to modify
+- Avoid unnecessary repository exploration
+
 ## Notes
 - Summaries are intentionally short (4–5 lines).  
 - Semantic tags highlight functional areas.  
