@@ -138,8 +138,38 @@ The root `DOCMAP.md` **must include a section** explaining:
 4. Skip dependency graph generation for now.
 5. Use the template `./references/rootdocmap_tmpl.md` to generate (and/or update) the project root `DOCMAP.md`. Always update the root index as project root `/DOCMAP.md` if even you are updating some specific subfolder of the project.
 
+# Confidence Rules
 
+Only state information that can be supported by repository evidence.
 
+When uncertainty exists:
+
+```yaml
+confidence: low
+```
+
+When supported by multiple sources:
+
+```yaml
+confidence: high
+```
+
+Never fabricate architecture, requirements, dependencies, or business purpose.
+
+---
+
+# Success Criteria
+
+The generated indexes/docmaps are successful when a coding agent can:
+
+1. Understand repository purpose from `DOCMAP.md`
+2. Navigate to relevant modules without scanning the entire repository
+3. Locate implementation files faster
+4. Understand feature ownership
+5. Assess change impact
+6. Discover related tests and requirements
+7. Determine likely modification locations
+8. Use progressive disclosure to avoid unnecessary file reads
 
 
 
