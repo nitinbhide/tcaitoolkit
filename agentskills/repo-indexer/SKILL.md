@@ -12,13 +12,41 @@ tags:
 # Project Repository Indexer Skill
 
 ## Purpose
+Analyze a software repository and generate a hierarchy of index files that enables AI coding agents to rapidly understand the repository structure, architecture, implementation details, business features, dependencies, and change impact.
+
 Generate Markdown index files (`DOCMAP.md` at root, `docmap.md` in each folder) that summarize the contents of a local repository using progressive disclosure.  
-This skill **only generates index files** and is **not used by coding agents for project decision making**.
-The skill generates documentation that may target coding agents; this skill itself does not perform coding-agent decision workflows.
+
+This skill **only generates index files** and is **not to be used by coding agents for project decision making**.
+
+**Progressive Disclosure principle:**
+
+1. A coding agent should be able to understand the repository at a high level by reading a small number of files.
+2. The agent should be guided toward the most relevant folders and files.
+3. Detailed information should only appear at deeper levels of the hierarchy.
+4. Each index/docmap should help the agent decide what to read next.
+5. Each index should help the agent decide what files are likely to require modification.
+
+The primary consumers of the generated indexes are AI coding agents.
 
 DO NOT deviate from this SKILL instructions.
 
+## Objectives
 
+The generated indexes/docmap shall help agents:
+
+- Understand repository architecture
+- Understand major business capabilities
+- Locate implementation areas
+- Understand technology stacks
+- Understand dependencies
+- Locate related tests
+- Locate related specifications
+- Evaluate change impact
+- Determine which files to read
+- Determine which files to modify
+- Avoid unnecessary repository exploration
+
+---
 ## Inputs
 - Root directory path of the local repository.
 
@@ -79,13 +107,29 @@ The root `DOCMAP.md` **must include a section** explaining:
 
 ### Excluded Folders
 - folder name starting with '.' (".git", ".agents", ".github")
-- any folder mentioned in ".gitignore" and other ignore files
+- any folder mentioned in ".gitignore" , ".hgignore" and other version control "ignore" files
 
 ### Ignore precedence:
 - Apply hard excludes first (binary, vendor, generated, hidden files/folders)
 - Then Apply "Excluded Folders"
-- Then apply ".gitignore" and other ignore files
+- Then apply ".gitignore" , ".hgignore" , and other version control ignore files
 - Then apply included file type filtering
+
+## Search Strategy
+
+When searching the project folder structure/codebase:
+
+Priority order:
+
+1. `rg --files`        (file discovery)
+2. `rg <pattern>`      (content search)
+3. `rg --files | rg`   (filename search)
+
+Only use alternative tools if:
+- `rg` (i.e. ripgrep) is not installed, or
+- a specific filesystem operation cannot be expressed through `rg`.
+
+Minimize repository scans and prefer targeted `rg` queries.
 
 ## Summarization Rules
 - Folder summaries: 4–5 lines
@@ -123,6 +167,7 @@ The root `DOCMAP.md` **must include a section** explaining:
 
 ## Steps
 1. ALWAYS Prepare the **indexing operation plan** using the following steps. **Instructions for indexing opperation plan creation**
+
   - Use the root `/.agents/memory/docmap_plan.md` to store the plan of the indexing operation at granular steps and to track progress of the index generation executation. 
   - ALWAYS Get the user's approval on plan BEFORE starting the plan execution. 
   - If the root `/.agents/memory/docmap_plan.md` exists, then update the file. 
