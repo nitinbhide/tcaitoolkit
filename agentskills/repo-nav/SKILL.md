@@ -1,6 +1,7 @@
 ---
-name: repo-indexer
-description: Generate hierarchical Markdown index files (docmap.md) for a project  repository folder structure using progressive disclosure.
+name: repo-nav
+description: Generate hierarchical Markdown index files (docmap.md) for a project repository folder structure using progressive disclosure. Also called as Repository Navigation
+Index generation or docmap generation
 version: 1.1.0
 author: Nitin Bhide (nitinbhide@thinkingcraftsman.in)
 tags:
@@ -9,7 +10,7 @@ tags:
   - codebase-analysis
 ---
 
-# Project Repository Indexer Skill
+# Project Repository Navigation Index Generation Skill
 
 ## Purpose
 Analyze a software repository and generate a hierarchy of index files that enables AI coding agents to rapidly understand the repository structure, architecture, implementation details, business features, dependencies, and change impact.
