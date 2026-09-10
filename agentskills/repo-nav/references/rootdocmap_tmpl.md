@@ -8,17 +8,41 @@ dependencies: [<moduleA>, <moduleB>, ...]
 ---
 
 # Repository Overview
-<concise summary of the entire repository, its purpose, major components, and architectural themes.>
+<4–5 line summary of the entire repository, its purpose, major components, and architectural themes.>
+
+- Repository purpose
+- Business domain
+- Overall architecture summary
+
+## Technology Summary
+
+Detected:
+
+- Languages
+- Frameworks
+- Databases
+- Build systems
+- Testing frameworks
+
+## Architecture Summary
+
+High-level architecture overview.
+
+## Business Capability Summary
+
+Major capabilities supported by the repository.
 
 # Module Dependency Graph
 <High-level folder/module dependency relationships inferred from imports/includes.>
 
-# Top-Level Folders
-- `<folder1>/docmap.md` — <short concise summary of content of the folder/description>
-- `<folder2>/docmap.md` — <short concise summary of content of the folder/description>short summary of content of the folder/description
-- `<folder3>/docmap.md` — <short concise summary of content of the folder/description>
+# Repository Navigation
 
-# Files
+## Folders
+- `<folder1>/docmap.md` — <short summary of content of the folder/description>
+- `<folder2>/docmap.md` — <short summary of content of the folder/description>short summary of content of the folder/description
+- `<folder3>/docmap.md` — <short summary of content of the folder/description>
+
+## Files
 - `<filename1>` : <one concise  paragraph summary/description.>
     - Size : <file size in bytes>
     - Tags: [<tags>]

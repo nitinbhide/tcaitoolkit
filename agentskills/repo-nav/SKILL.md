@@ -26,6 +26,8 @@ This skill **only generates index files** and is **not to be used by coding agen
 3. Detailed information should only appear at deeper levels of the hierarchy.
 4. Each index/docmap should help the agent decide what to read next.
 5. Each index should help the agent decide what files are likely to require modification.
+6. Each child index must provide greater detail than its parent.
+7. Each parent index must summarize child content.
 
 The primary consumers of the generated indexes are AI coding agents.
 
@@ -82,6 +84,7 @@ The root `DOCMAP.md` **must include a section** explaining:
 - how AI coding agents should use the index  
 
 (The actual instruction text is defined inside the template `rootdocmap_tmpl.md`.)
+This file is the primary entry point for all AI agents.
 
 ## File/Folder Inclusion/Exclusion Rules
 
