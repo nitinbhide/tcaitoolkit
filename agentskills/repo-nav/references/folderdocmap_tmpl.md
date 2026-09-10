@@ -8,15 +8,15 @@ dependencies: [<moduleA>, <moduleB>, ...]
 ---
 
 # Folder Summary
-<4–5 line summary describing the folder’s purpose, responsibilities, types of files, semantic themes, and presence of TODO/FIXME/NOTE.> 
+<4–5 concise sentences summary describing the folder’s purpose, responsibilities, types of files, semantic themes, and presence of TODO/FIXME/NOTE.> 
 
 # Files
-- `<filename1>` : <one short paragraph summary/description.>
+- `<filename1>` : <one short concise paragraph summary/description.>
     - Size : <file size in bytes>
     - Tags: [<tags>]
     - TODO/FIXME/NOTE: <only if there is a TODO/FIXME/NOTE>
 
-- `<filename2>` : <one short paragraph summary/description.>
+- `<filename2>` : <one short concise paragraph summary/description.>
     - Size : <file size in bytes>
     - Tags: [<tags>]
     - TODO/FIXME/NOTE: <only if there is a TODO/FIXME/NOTE>
@@ -26,5 +26,5 @@ dependencies: [<moduleA>, <moduleB>, ...]
 ---
 
 # Child Folders
-- `<child1>/docmap.md` — <short summary of content of the folder "child1" /description>
-- `<child2>/docmap.md` — <short summary of content of the folder "child2" /description>
+- `<child1>/docmap.md` — <short concise summary of content of the folder "child1" /description>
+- `<child2>/docmap.md` — <short concise summary of content of the folder "child2" /description>

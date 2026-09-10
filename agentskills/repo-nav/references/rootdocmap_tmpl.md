@@ -8,23 +8,23 @@ dependencies: [<moduleA>, <moduleB>, ...]
 ---
 
 # Repository Overview
-<4–5 line summary of the entire repository, its purpose, major components, and architectural themes.>
+<concise summary of the entire repository, its purpose, major components, and architectural themes.>
 
 # Module Dependency Graph
 <High-level folder/module dependency relationships inferred from imports/includes.>
 
 # Top-Level Folders
-- `<folder1>/docmap.md` — <short summary of content of the folder/description>
-- `<folder2>/docmap.md` — <short summary of content of the folder/description>short summary of content of the folder/description
-- `<folder3>/docmap.md` — <short summary of content of the folder/description>
+- `<folder1>/docmap.md` — <short concise summary of content of the folder/description>
+- `<folder2>/docmap.md` — <short concise summary of content of the folder/description>short summary of content of the folder/description
+- `<folder3>/docmap.md` — <short concise summary of content of the folder/description>
 
 # Files
-- `<filename1>` : <one short paragraph summary/description.>
+- `<filename1>` : <one concise  paragraph summary/description.>
     - Size : <file size in bytes>
     - Tags: [<tags>]
     - TODO/FIXME/NOTE: <only if there is a TODO/FIXME/NOTE>
 
-- `<filename2>` : <one short paragraph summary/description.>
+- `<filename2>` : <one concise  paragraph summary/description.>
     - Size : <file size in bytes>
     - Tags: [<tags>]
     - TODO/FIXME/NOTE: <only if there is a TODO/FIXME/NOTE>
@@ -66,6 +66,6 @@ Hierarchy:
 - Avoid unnecessary repository exploration
 
 ## Notes
-- Summaries are intentionally short (4–5 lines).  
+- Summaries are intentionally short (4–5 sentences, one paragraph).  
 - Semantic tags highlight functional areas.  
 - TODO/FIXME/NOTE markers indicate hotspots/pending actions.  

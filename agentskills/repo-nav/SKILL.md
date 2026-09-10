@@ -53,8 +53,8 @@ The generated indexes/docmap shall help agents:
 
 ## Outputs
 - Markdown index files written directly into each folder of the repository.
-- The root index file must be generated using `rootdocmap_tmpl.md`.
-- All folder-level index files must be generated using `folderdocmap_tmpl.md`.
+- The root index file must be generated using the template `rootdocmap_tmpl.md`.
+- All folder-level index files must be generated using the template `folderdocmap_tmpl.md`.
 
 ## Behavior
 The skill performs a recursive scan of the repository and generates index files containing:
@@ -69,10 +69,10 @@ The skill performs a recursive scan of the repository and generates index files 
 
 ### Template Usage
 - **Root Index File (`DOCMAP.md`)**  
-  Must be generated using the template defined in `rootdocmap_tmpl.md`
+  Must be generated using the template defined in `./references/rootdocmap_tmpl.md`
 
 - **Folder Index Files (`docmap.md`)**  
-  Must be generated using the template defined in `folderdocmap_tmpl.md`
+  Must be generated using the template defined in `./folderdocmap_tmpl.md`
 
 The skill must fill these templates with actual repository data.
 
@@ -81,7 +81,7 @@ The root `DOCMAP.md` **must include a section** explaining:
 - how the index hierarchy is organized  
 - how AI coding agents should use the index  
 
-(The actual instruction text is defined inside `rootdocmap_tmpl.md`.)
+(The actual instruction text is defined inside the template `rootdocmap_tmpl.md`.)
 
 ## File/Folder Inclusion/Exclusion Rules
 
@@ -133,8 +133,8 @@ Only use alternative tools if:
 Minimize repository scans and prefer targeted `rg` queries.
 
 ## Summarization Rules
-- Folder Summary: 4–5 concise sentences 
-- File summaries: 4–5 concise sentences
+- Folder Summary: concise summary in one paragraph about 4–5 sentences
+- File Summary: concise summary in one paragraph about 4–5 sentences
 - Detect TODO / FIXME / NOTE. Detect TODO, FIXME, and NOTE case-insensitively in comments and documentation text. Record each occurrence with its line number and exact marker.
 - Generate lowercase, deduplicated, alphabetically sorted tags describing the file’s technologies, role, and major concepts.
 - Summaries must be evidence-based and generated from the file’s actual contents; Do not use fixed templates.
@@ -147,6 +147,7 @@ The file summary must consider
 - what is documented in this file (e.g. test case, usecase, specification, architecture, design, tech stack etc)
 - purpose of the file 
 - what are the key concepts in this file ?
+- What are the responsibilities, types of files, semantic themes
 
 ### Source code (e.g. *.cpp, *.java, *.py ) File Summary Considerations
 The file summary must consider 
@@ -155,6 +156,7 @@ The file summary must consider
 - what are the key concepts in this file ?
 - How does this file interact with other files in the project?
 - Are there any known bugs/limitations ? Report only explicitly documented or directly observable limitations. Do not perform separate bug analysis.
+- What are the responsibilities, roles, and semantic themes?
 
 **Good Example of Summary**
 Implements authentication using the Passkey, JWT and OAuth2. Considers security considers like 2FA and progressive delays for authentication failures. Uses Factory and Observer patterns. SHA1024 hash algorithm is used.
@@ -200,7 +202,7 @@ The folder summary must consider
 2. Scan repository recursively for folders only to build the folder tree. if available, prefer the use "ripgrep"/"rg" for searching the files and folders.
 3. For Each folder, do the following. Start from the deepest folder. And recursively go up. Check each folder with ignore list, then scan files for that folder.
   1. identify the text based files for this folder.
-  2. Use the folder-scoped `/.agents/memory/repo-indexer/<folder-relative-path>/filelist.md` to list down the input files that will be used in index generation in each folder.
+  2. Use the folder-scoped `/.agents/memory/repo-nav/<folder-relative-path>/filelist.md` to list down the input files that will be used in index generation in each folder.
   3. Generate file summaries. Extract metadata (semantic tags, TODO/FIXME/NOTE) while generating the file summary. File summary must be generated using the LLM summarization.
   4. Generate folder summary.
   5. Use the template `./references/folderdocmap_tmpl.md` to generate this folder’s `docmap.md`.
