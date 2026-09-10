@@ -201,15 +201,15 @@ The folder summary must consider
   - If the root `/.agents/memory/docmap_plan.md` exists, then update the file. 
 2. Scan repository recursively for folders only to build the folder tree. if available, prefer the use "ripgrep"/"rg" for searching the files and folders.
 3. For Each folder, do the following. Start from the deepest folder. And recursively go up. Check each folder with ignore list, then scan files for that folder.
-  1. identify the text based files for this folder.
+  1. identify the text files (documents and source code) for this folder.
   2. Use the folder-scoped `/.agents/memory/repo-nav/<folder-relative-path>/filelist.md` to list down the input files that will be used in index generation in each folder.
   3. Generate file summaries. Extract metadata (semantic tags, TODO/FIXME/NOTE) while generating the file summary. File summary must be generated using the LLM summarization.
   4. Generate folder summary.
-  5. Use the template `./references/folderdocmap_tmpl.md` to generate this folder’s `docmap.md`.
+  5. Use the template as per `./references/folderdocmap_tmpl.md` to generate this folder’s `docmap.md`.
   6. Perform incremental update of folder level `docmap.md`
-  7. Use a 'subagent' to generate the steps for each folder.
+  7. **Use a 'subagent' to generate the steps for each folder.**
 4. Skip dependency graph generation for now.
-5. Use the template `./references/rootdocmap_tmpl.md` to generate (and/or update) the project root `DOCMAP.md`. Always update the root index as project root `/DOCMAP.md` if even you are updating some specific subfolder of the project.
+5. Use the template as per `./references/rootdocmap_tmpl.md` to generate (and/or update) the project root `DOCMAP.md`. Always update the root index as project root `/DOCMAP.md` if even you are updating some specific subfolder of the project.
 
 # Confidence Rules
 
