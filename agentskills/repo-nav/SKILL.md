@@ -133,15 +133,40 @@ Only use alternative tools if:
 Minimize repository scans and prefer targeted `rg` queries.
 
 ## Summarization Rules
-- Folder summaries: 4–5 lines
-- File summaries: 4–5 lines
-- Detect TODO / FIXME / NOTE
-- Extract semantic tags heuristically
-- Summaries generated using an LLM. The summaries will be different for different files. Do not use templated summaries
+- Folder Summary: 4–5 concise sentences 
+- File summaries: 4–5 concise sentences
+- Detect TODO / FIXME / NOTE. Detect TODO, FIXME, and NOTE case-insensitively in comments and documentation text. Record each occurrence with its line number and exact marker.
+- Generate lowercase, deduplicated, alphabetically sorted tags describing the file’s technologies, role, and major concepts.
+- Summaries must be evidence-based and generated from the file’s actual contents; Do not use fixed templates.
 - Child folders must be ordered lexicographically by relative path
 - Files must be ordered lexicographically by filename within each folder
-- Semantic tags must be lowercase, deduplicated, and sorted
 - TODO / FIXME / NOTE entries for each file must be sorted by line number
+
+### Documentation (e.g. *.md, *.rst) File Summary Considerations
+The file summary must consider 
+- what is documented in this file (e.g. test case, usecase, specification, architecture, design, tech stack etc)
+- purpose of the file 
+- what are the key concepts in this file ?
+
+### Source code (e.g. *.cpp, *.java, *.py ) File Summary Considerations
+The file summary must consider 
+- What is feature/functionality implemented in this file ?
+- what are the design patterns, architecture patterns, unique data structures and algorithms used in this file ?
+- what are the key concepts in this file ?
+- How does this file interact with other files in the project?
+- Are there any known bugs/limitations ? Report only explicitly documented or directly observable limitations. Do not perform separate bug analysis.
+
+**Good Example of Summary**
+Implements authentication using the Passkey, JWT and OAuth2. Considers security considers like 2FA and progressive delays for authentication failures. Uses Factory and Observer patterns. SHA1024 hash algorithm is used.
+Limitation- Automatic logout after some time is not implemented yet.
+
+**Bad Example of Summary**
+Implement JWTAuth, PasskeyAuth classes. Derived from AuthBase class.
+
+### Folder Summary Considerations
+The folder summary must consider
+- Summaries of files in the folder
+- Folder summaries of child folders
 
 ## Dependency Graph
 - Dependency extraction and dependency graph generation are disabled for now
