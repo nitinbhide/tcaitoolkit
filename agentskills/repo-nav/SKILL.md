@@ -282,7 +282,7 @@ Authentication Change
   4. Generate folder summary.
   5. Use the template as per `./references/folderdocmap_tmpl.md` to generate this folder’s `docmap.md`.
   6. Perform incremental update of folder level `docmap.md`
-  7. **Use a 'subagent' to generate the steps for each folder.**
+  7. **Use the 'subagent' to generate and execute steps for individual folder.**
 4. Skip dependency graph generation for now.
 5. Generate the **Specialized Repository Navigation Maps**
 6. Use the template as per `./references/rootdocmap_tmpl.md` to generate (and/or update) the project root `DOCMAP.md`. Always update the root index as project root `/DOCMAP.md` if even you are updating some specific subfolder of the project.
