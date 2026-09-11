@@ -121,7 +121,9 @@ This file is the primary entry point for all AI agents.
 
 ## Search Strategy
 
-When searching the project folder structure/codebase:
+When searching the project folder structure/codebase, prefer 'rg' (ripgrep) for both file discovery and content search over other tools.
+
+Use `rg -h` to view the help and available options for ripgrep.
 
 Priority order:
 
@@ -132,6 +134,7 @@ Priority order:
 Only use alternative tools if:
 - `rg` (i.e. ripgrep) is not installed, or
 - a specific filesystem operation cannot be expressed through `rg`.
+
 
 Minimize repository scans and prefer targeted `rg` queries.
 
