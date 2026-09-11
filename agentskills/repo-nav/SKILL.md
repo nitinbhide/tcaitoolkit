@@ -135,7 +135,7 @@ Only use alternative tools if:
 
 Minimize repository scans and prefer targeted `rg` queries.
 
-## Summarization Rules
+## Summary Generation Rules
 - Folder Summary: concise summary in one paragraph about 4–5 sentences
 - File Summary: concise summary in one paragraph about 4–5 sentences
 - Detect TODO / FIXME / NOTE. Detect TODO, FIXME, and NOTE case-insensitively in comments and documentation text. Record each occurrence with its line number and exact marker.
@@ -144,6 +144,13 @@ Minimize repository scans and prefer targeted `rg` queries.
 - Child folders must be ordered lexicographically by relative path
 - Files must be ordered lexicographically by filename within each folder
 - TODO / FIXME / NOTE entries for each file must be sorted by line number
+
+- All summaries shall:
+  - Be concise
+  - Be factual
+  - Avoid speculation
+  - Avoid marketing language
+  - Describe intent before implementation
 
 ### Documentation (e.g. *.md, *.rst) File Summary Considerations
 The file summary must consider 
@@ -196,6 +203,68 @@ The folder summary must consider
 - No bug/issue analysis
 - DO NOT TRY TO GENERATE EVERYTHING WITH ONE SCRIPT. Usually Projects are large and the single script generation will fail.
 
+---
+
+# Specialized Repository Navigation Index/Maps
+
+In addition to folder indexes, generate the following cross-cutting indexes when possible.
+
+## FEATURE_MAP.md
+
+Contains information about the important features of the system.  
+
+Feature information containss
+- Requirements
+- Design
+- Source
+- Tests
+- Issues
+
+## ARCHITECTURE_MAP.md
+
+Contains:
+
+- Architecture overview
+- Architectural patterns
+- Layer definitions
+- Major responsibilities
+- Architectural constraints
+
+## TECHNOLOGY_MAP.md
+
+Contains:
+
+- Languages
+- Frameworks
+- Libraries
+- Build tooling
+- Version information if discoverable
+
+## TESTING_MAP.md
+
+Contains:
+
+- Test strategy
+- Test suites
+- Coverage areas
+- Feature to test mapping
+
+## CHANGE_IMPACT_MAP.md
+
+Contains:
+
+Common modification scenarios and likely affected files.
+
+Example:
+
+```text
+Authentication Change
+  -> AuthService.java
+  -> UserRepository.java
+  -> SessionManager.java
+  -> AuthenticationTests.java
+```
+
 ## Steps
 1. ALWAYS Prepare the **indexing operation plan** using the following steps. **Instructions for indexing opperation plan creation**
 
@@ -212,7 +281,9 @@ The folder summary must consider
   6. Perform incremental update of folder level `docmap.md`
   7. **Use a 'subagent' to generate the steps for each folder.**
 4. Skip dependency graph generation for now.
-5. Use the template as per `./references/rootdocmap_tmpl.md` to generate (and/or update) the project root `DOCMAP.md`. Always update the root index as project root `/DOCMAP.md` if even you are updating some specific subfolder of the project.
+5. Generate the **Specialized Repository Navigation Maps**
+6. Use the template as per `./references/rootdocmap_tmpl.md` to generate (and/or update) the project root `DOCMAP.md`. Always update the root index as project root `/DOCMAP.md` if even you are updating some specific subfolder of the project.
+7. Review and validate the generated `DOCMAP.md` and folder-level `docmap.md` files to ensure accuracy and completeness.
 
 # Confidence Rules
 

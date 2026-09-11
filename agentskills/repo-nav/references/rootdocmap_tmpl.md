@@ -37,6 +37,11 @@ Major capabilities supported by the repository.
 
 # Repository Navigation
 
+## Specialized Cross Navigation Maps
+List of specialized navigation maps generated. Use the format
+
+- `<navigation map file name>` : one line purpose of the map.
+
 ## Folders
 - `<folder1>/docmap.md` — <short summary of content of the folder/description>
 - `<folder2>/docmap.md` — <short summary of content of the folder/description>short summary of content of the folder/description
