@@ -182,6 +182,15 @@ The folder summary must consider
 - Summaries of files in the folder
 - Folder summaries of child folders
 
+### Small-Folder Docmap Merge
+- After generating or updating a folder's `docmap.md`, count the folder's immediate file entries plus immediate child-folder entries represented in that docmap.
+- If the total count is less than 10, merge that folder's docmap content into its parent folder's `docmap.md` rather than keeping a separate child index.
+- Perform merges from the deepest folders upward so that a parent receives the final content of all eligible descendants.
+- Preserve the merged folder's summary, file summaries, child-folder summaries, tags, and TODO/FIXME/NOTE entries in the parent index.
+- Rewrite every merged file and folder link relative to the parent docmap's location. Do not leave links relative to the absorbed child folder, and preserve anchors or other link fragments when present.
+- Update the parent folder summary and entry counts after each merge, then remove the absorbed child `docmap.md` only after its content and corrected paths have been incorporated successfully.
+- Do not merge the root `DOCMAP.md` into another file. If a merged parent also has fewer than 10 entries, continue applying this rule to that parent.
+
 ## Dependency Graph
 - Dependency extraction and dependency graph generation are disabled for now
 - Keep `dependencies` metadata as an empty list `[]`
@@ -193,6 +202,7 @@ The folder summary must consider
 - Remove deleted files
 - Preserve unchanged summaries
 - Update folder summaries when needed
+- Apply the Small-Folder Docmap Merge rule after each folder index is generated or incrementally updated
 - Rename detection not required
 - Do not run a full sweep automatically
 - Full sweep is only when explicitly requested by the developer
