@@ -39,8 +39,8 @@ dependencies: [<moduleA>, <moduleB>, ...]
 ---
 
 ## Child Folders
-- `<child1>/docmap.md` — <short concise summary of content of the folder "child1" /description>
-- `<child2>/docmap.md` — <short summary of content of the folder "child2" /description>
+- `<child1>/docmap.md` — <short concise summary of content of the folder "child1" >
+- `<child2>/docmap.md` — <short summary of content of the folder "child2">
 
 # Related Features
 

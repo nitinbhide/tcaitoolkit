@@ -148,6 +148,7 @@ Keep searches scoped to the smallest relevant folder, honor repository ignore ru
 - Detect TODO / FIXME / NOTE. Detect TODO, FIXME, and NOTE case-insensitively in comments and documentation text. Record each occurrence with its line number and exact marker.
 - Generate lowercase, deduplicated, alphabetically sorted tags describing the file’s technologies, role, and major concepts.
 - Summaries must be evidence-based and generated from the file’s actual contents; Do not use fixed templates.
+- Every child-folder entry must link to that folder's `docmap.md` using a relative path from the current index, whether the child index already exists or is pending generation. Use the form ``- `child/docmap.md` — <summary>``; do not list a child folder without its `docmap.md` link.
 - Child folders must be ordered lexicographically by relative path
 - Files must be ordered lexicographically by filename within each folder
 - TODO / FIXME / NOTE entries for each file must be sorted by line number
