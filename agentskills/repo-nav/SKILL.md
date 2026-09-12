@@ -31,7 +31,18 @@ This skill **only generates index files** and is **not to be used by coding agen
 
 The primary consumers of the generated indexes are AI coding agents.
 
-DO NOT deviate from this SKILL instructions.
+DO NOT deviate from this SKILL instructions during the execution of the repo-nav workflow.
+
+## Scope and boundaries
+
+This skill is only for repository navigation and docmap generation. It is not a general project workflow, coding standard, or repo-wide operating rule.
+
+All instructions in this file are limited to the workflow of generating or updating repository index files such as DOCMAP.md and docmap.md.
+
+This skill must not be interpreted as a replacement for project-wide rules in AGENTS.md. Any rule that is meant to apply to all project work, all coding sessions, or all agent behavior belongs in AGENTS.md, not here.
+
+This skill is active only when the repo-nav workflow is explicitly invoked. If the skill is not invoked, its rules do not apply.
+
 
 ## Objectives
 
