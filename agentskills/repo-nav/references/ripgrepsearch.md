@@ -34,4 +34,6 @@ Use `rg --files` as the first and authoritative repository-discovery command. Do
 
 `rg` automatically honors `.gitignore` and other ignore files. Keep the default behavior for repository analysis. Use `--hidden` to include hidden files, `--no-ignore` to bypass ignore rules, or `-uu` to include both hidden and ignored files only when the task explicitly requires them.
 
+Treat the repository’s ignore files as authoritative and avoid reproducing their patterns.
+
 Minimize repeated repository scans and prefer targeted, file-type- or glob-filtered `rg` queries. Use `rg --files` to establish the searchable file set before content searches when repository scope is unclear.
