@@ -90,7 +90,10 @@ The skill establishes one authoritative repository inventory, processes eligible
   Must be generated using the template defined in `./references/rootdocmap_tmpl.md`
 
 - **Folder Index Files (`docmap.md`)**  
-  Must be generated using the template defined in `./folderdocmap_tmpl.md`
+  Must be generated using the template defined in `./references/folderdocmap_tmpl.md`
+
+- **Indexing Plan File (`docmap_plan.md`)**  
+  Must be generated and tracked using the template defined in `./references/docmap_plan_tmpl.md`
 
 The skill must fill these templates with actual repository data.
 
@@ -297,9 +300,10 @@ Authentication Change
 ```
 
 ## Steps
-1. ALWAYS Prepare the **indexing operation plan** using the following steps. **Instructions for indexing opperation plan creation**
+1. ALWAYS Prepare the **indexing operation plan** using the following steps. **Instructions for indexing operation plan creation**
 
-  - Use the root `/.agents/memory/docmap_plan.md` to store the plan of the indexing operation at granular steps and to track progress of the index generation executation. 
+  - Use the template as per `./references/docmap_plan_tmpl.md` to create and update `/.agents/memory/docmap_plan.md`.
+  - Use the root `/.agents/memory/docmap_plan.md` to store the plan of the indexing operation at granular steps and to track progress of the index generation execution. 
   - ALWAYS Get the user's approval on plan BEFORE starting the plan execution. 
   - If the root `/.agents/memory/docmap_plan.md` exists, then update the file. 
 2. Scan repository recursively for folders only to build the folder tree. if available, prefer the use "ripgrep"/"rg" for searching the files and folders.
