@@ -142,6 +142,8 @@ If the check fails, do not attempt to use `rg`. Use the platform-native fallback
 
 Keep searches scoped to the smallest relevant folder, honor repository ignore rules where the fallback command supports them, and minimize repeated recursive scans. Use PowerShell or shell commands for operations that the selected search tool cannot express.
 
+Use only shell scripts (powershell, bash, batch files) for automation and repository navigation tasks. Do not generate any other types of scripts or code for these purposes.
+
 ## Summary Generation Rules
 - Folder Summary: concise summary in one paragraph about 4–5 sentences
 - File Summary: concise summary in one paragraph about 4–5 sentences
