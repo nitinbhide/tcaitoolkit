@@ -34,9 +34,15 @@ The primary consumers of the generated indexes are AI coding agents.
 DO NOT deviate from this SKILL instructions during the execution of the repo-nav workflow.
 
 ## Reference Workflow and Tools
-Use PowerShell on Windows and Bash on Unix-like systems. Use the reference files in this section as part of the workflow. First check whether `rg` is available, then follow [`references/ripgrepsearch.md`](references/ripgrepsearch.md) for repository discovery, retained inventories, content searches, and `rg`-based validation. When PowerShell is the selected shell, also follow [`references/powershell.md`](references/powershell.md) for path handling and shell-side validation operations. When Bash is the selected shell on a Unix-like system, also follow [`references/bash.md`](references/bash.md) for path handling and shell-side validation operations.
+- Use PowerShell on Windows and Bash on Unix-like systems. 
+- Use the reference files in this section as part of the workflow. 
+  - First check whether `rg` is available, then follow [`references/ripgrepsearch.md`](references/ripgrepsearch.md) for repository discovery, retained inventories, content searches, and `rg`-based validation. 
+  - When PowerShell is the selected shell, also follow [`references/powershell.md`](references/powershell.md) for path handling and shell-side validation operations. 
+  - When Bash is the selected shell on a Unix-like system, also follow [`references/bash.md`](references/bash.md) for path handling and shell-side validation operations.
 
-The reference workflow is mandatory: do not replace its authoritative inventory with an ad hoc recursive scan, and do not generate Python, Node.js, or other helper scripts for docmap discovery or validation.
+- The reference workflow is mandatory: 
+  - Do not replace its authoritative inventory with an ad hoc recursive scan,  
+  - Do not generate Python, Node.js, or other helper scripts for docmap discovery or validation. 
 
 ## Scope and boundaries
 
@@ -69,7 +75,7 @@ The generated indexes/docmap shall help agents:
 - All folder-level index files must be generated using the template `folderdocmap_tmpl.md`.
 
 ## Behavior
-The skill performs a recursive analysis from one retained, authoritative file inventory and generates index files containing:
+The skill establishes one authoritative repository inventory, processes eligible folders from deepest to shallowest, and generates index files containing:
 - YAML frontmatter metadata
 - Folder-level summary (4–5 lines)
 - File listings with short summaries
