@@ -14,8 +14,11 @@ tags:
 
 ## Purpose
 Analyze a software repository and generate a hierarchy of index files that enables AI coding agents to rapidly understand the repository structure, architecture, implementation details, business features, dependencies, and change impact.
+Use the reference files in this section as part of the workflow. First check whether `rg` is available, then follow [`references/ripgrepsearch.md`](references/ripgrepsearch.md) for repository discovery, retained inventories, content searches, and `rg`-based validation. When PowerShell is the selected shell, also follow [`references/powershell.md`](references/powershell.md) for path handling and shell-side validation operations.
 
-Generate Markdown index files (`DOCMAP.md` at root, `docmap.md` in each folder) that summarize the contents of a local repository using progressive disclosure.  
+The reference workflow is mandatory: do not replace its authoritative inventory with an ad hoc recursive scan, and do not generate Python, Node.js, or other helper scripts for docmap discovery or validation.
+
+Generate Markdown index files (`DOCMAP.md` at root, `docmap.md` in each folder) that summarize the contents of a local repository using progressive disclosure.
 
 This skill **only generates index files** and is **not to be used by coding agents for project decision making**.
 
@@ -150,8 +153,8 @@ Use only shell scripts (powershell, bash, batch files) for automation and reposi
 - Detect TODO / FIXME / NOTE. Detect TODO, FIXME, and NOTE case-insensitively in comments and documentation text. Record each occurrence with its line number and exact marker.
 - Generate lowercase, deduplicated, alphabetically sorted tags describing the file’s technologies, role, and major concepts.
 - Summaries must be evidence-based and generated from the file’s actual contents; Do not use fixed templates.
-- Every child-folder entry must link to that folder's `docmap.md` using a relative path from the current index, whether the child index already exists or is pending generation. Use the form ``- `child/docmap.md` — <summary>``; do not list a child folder without its `docmap.md` link.
 - Child folders must be ordered lexicographically by relative path
+- Every child-folder entry must link to that folder's `docmap.md` using a relative path from the current index, whether the child index already exists or is pending generation. Use the form ``- `child/docmap.md` — <summary>``; do not list a child folder without its `docmap.md` link.
 - Files must be ordered lexicographically by filename within each folder
 - TODO / FIXME / NOTE entries for each file must be sorted by line number
 

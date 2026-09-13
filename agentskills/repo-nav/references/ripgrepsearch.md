@@ -1,4 +1,4 @@
-# `rg' (ripgrep) use to search the files
+# `rg` (ripgrep) for Search and Validation of files
 
 # Search Strategy
 When searching the project folder structure/codebase, prefer `rg` (ripgrep) for both file discovery and content search over other tools.
@@ -37,3 +37,20 @@ Use `rg --files` as the first and authoritative repository-discovery command. Do
 Treat the repository’s ignore files as authoritative and avoid reproducing their patterns.
 
 Minimize repeated repository scans and prefer targeted, file-type- or glob-filtered `rg` queries. Use `rg --files` to establish the searchable file set before content searches when repository scope is unclear.
+
+## Repository Scan Contract
+
+- Check availability first: use `Get-Command rg -ErrorAction SilentlyContinue` on Windows PowerShell or `command -v rg` on Unix-like shells.
+- When available, establish one authoritative inventory with `rg --files` and retain it for grouping, candidate selection, metadata extraction, and final checks. Do not rescan the repository for each phase.
+- `rg --files` already honors `.gitignore`, `.ignore`, and `.git/info/exclude`. Do not copy repository ignore patterns into additional globs. The only normal workflow-specific exclusion is `--glob '!**/docmap.md'` when generated indexes must be omitted from the input inventory.
+- Apply file-type, hidden-name, configuration, binary, `AGENTS.md`, and `CLAUDE.md` eligibility filtering after discovery. Do not replace the authoritative inventory with recursive PowerShell enumeration.
+- Keep discovery, folder selection, metadata extraction, index generation, and validation as separate phases. A validation command must consume the selected folder or retained inventory; it must not silently perform a new full-repository scan.
+- If `rg` is unavailable, use the platform-native fallback only: `Get-ChildItem -Recurse -File` and `Select-String` on Windows, or `find` and `grep` on Unix-like systems. Keep fallback searches scoped and honor ignore rules where supported.
+
+## Ripgrep Validation Contract
+
+- Use `rg -n` for marker discovery and `rg --only-matching` for child-link extraction. Do not parse child links with `[regex]::Matches`.
+- Extract child links with a line-oriented pattern such as `rg --no-filename --only-matching '^- `[^`]+/docmap\.md`' <docmap>`. Use the shell only to remove the Markdown wrapper and compare arrays.
+- Validate the exact relative `child/docmap.md` strings and their lexicographic order. A link to a pending child index is valid; child-index existence must not be treated as a validation failure.
+- Validate one edited folder immediately after generation or merge. Check direct file inventory, marker lines, child links, and absorbed-folder removal with targeted `rg` queries before selecting another folder.
+- If a validation command fails because of parsing, path, timeout, or null-value handling, classify it as inconclusive, repair the command, and rerun the same focused check. Do not regenerate the index until the check is discriminating.
