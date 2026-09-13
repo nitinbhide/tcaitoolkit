@@ -9,7 +9,7 @@ The plan tracks repository inventory, execution order, folder merge decisions, i
 
 ```markdown
 ---
-plan_version: "1.0.0"
+plan_version: "1.1.0"
 mode: "<full_baseline | incremental>"
 status: "<PENDING_APPROVAL | IN_PROGRESS | COMPLETED | FAILED>"
 created_at: "<ISO-8601 Timestamp>"
@@ -27,7 +27,7 @@ last_interrupted_folder: "<relative/folder/path or null>"
 - **Repository Root**: `<absolute or root-relative path>`
 - **Discovery Tool**: `<rg | powershell_fallback | bash_fallback>`
 - **Execution Strategy**: Bottom-up (deepest leaf folders to repository root)
-- **Small-Folder Merge Threshold**: `< 10 direct entries (files + immediate child docmaps)`
+- **Small-Folder Merge Threshold**: `< 10 direct entries (direct files + immediate child docmap links + absorbed files)`
 
 ## 2. Incremental Change Detection (Only for mode: incremental)
 <!-- If mode is full_baseline, mark this section as 'N/A - Full Baseline Scan' -->
@@ -48,22 +48,29 @@ last_interrupted_folder: "<relative/folder/path or null>"
 <!--
 Folders MUST be ordered by Depth descending (deepest first), then lexicographically by relative path.
 
-Status Lifecycle:
+Status Lifecycle & Merge Protocol:
 - PENDING: Queued for execution.
-- IN_PROGRESS: Subagent or worker currently analyzing folder and generating filelist/docmap.
-- COMPLETED: docmap.md generated, validated, and entry count >= 10 (or root DOCMAP.md).
-- MERGED_INTO_PARENT: Total direct entries < 10; content absorbed into parent; child docmap removed.
-- SKIPPED_CLEAN: In incremental mode, folder and its subtree had zero changes.
+- IN_PROGRESS: Subagent or worker currently analyzing files in folder and writing filelist.md.
+- MARKED_FOR_MERGE: Folder analyzed and effective entries < 10. Summary and file entries are staged in agent memory (/.agents/memory/repo-nav/<path>/) awaiting parent folder incorporation. Child docmap.md is NOT published.
+- MERGED_INTO_PARENT: Parent folder has processed and incorporated this child's staged summaries with rewritten relative links. Child docmap.md is confirmed deleted or absent from disk.
+- COMPLETED: Standalone docmap.md generated, validated, and effective entry count >= 10 (or root DOCMAP.md).
+- SPLIT_REQUIRED: (Incremental mode) Folder was previously merged in parent, but added files increased its count to >= 10; requires dedicated docmap.md generation and removal of inlined entries from parent docmap.
+- SKIPPED_CLEAN: (Incremental mode) Folder and all its descendant subtrees had zero changes.
+
+Effective Entries Calculation:
+Effective Entries = Direct Files + Immediate Child Docmap Links + Absorbed Child Files
 -->
 
-| Depth | Folder Path | File Count | Invalidation Reason | Status | Target Output | Absorbed By |
-| :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-| 3 | `src/auth/crypto` | 3 | DIRECT_CHANGE | COMPLETED | `src/auth/crypto/docmap.md` | - |
-| 3 | `src/auth/tokens` | 2 | FULL_BASELINE | MERGED_INTO_PARENT | absorbed | `src/auth` |
-| 2 | `src/auth` | 5 | CHILD_INVALIDATED | IN_PROGRESS | `src/auth/docmap.md` | - |
-| 2 | `src/utils` | 8 | UNCHANGED | SKIPPED_CLEAN | `src/utils/docmap.md` | - |
-| 1 | `src` | 2 | CHILD_INVALIDATED | PENDING | `src/docmap.md` | - |
-| 0 | `/` | 1 | ROOT_UPDATE | PENDING | `DOCMAP.md` | - |
+| Depth | Folder Path | Direct Files | Effective Entries | Invalidation Reason | Status | Target Docmap | Absorbed By (Parent) | Surviving Docmap |
+| :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
+| 3 | `src/auth/crypto` | 11 | 11 | DIRECT_CHANGE | COMPLETED | `src/auth/crypto/docmap.md` | - | `src/auth/crypto/docmap.md` |
+| 3 | `src/auth/tokens` | 3 | 3 | FULL_BASELINE | MERGED_INTO_PARENT | (staged in memory) | `src/auth` | `src/auth/docmap.md` |
+| 2 | `src/auth` | 6 | 10 | CHILD_INVALIDATED | IN_PROGRESS | `src/auth/docmap.md` | - | `src/auth/docmap.md` |
+| 2 | `src/utils` | 12 | 12 | UNCHANGED | SKIPPED_CLEAN | `src/utils/docmap.md` | - | `src/utils/docmap.md` |
+| 1 | `src` | 2 | 4 | CHILD_INVALIDATED | PENDING | `src/docmap.md` | - | `src/docmap.md` |
+| 0 | `/` | 2 | 3 | ROOT_UPDATE | PENDING | `DOCMAP.md` | - | `DOCMAP.md` |
+
+*(Note on effective entries above: `src/auth` has 6 direct files + 1 child link (`crypto/docmap.md`) + 3 absorbed files from `tokens` = 10 effective entries $\ge 10$, so it becomes a standalone docmap).*
 
 ---
 
@@ -82,14 +89,20 @@ Status Lifecycle:
 
 1. **On Session Interruption / Resume**:
    - Read `/.agents/memory/docmap_plan.md`.
-   - Locate the highest-depth (deepest) folder with status `IN_PROGRESS` or `PENDING`.
+   - Locate the highest-depth (deepest) folder with status `IN_PROGRESS`, `MARKED_FOR_MERGE`, or `PENDING`.
    - If an `IN_PROGRESS` folder exists:
      - Check `/.agents/memory/repo-nav/<folder-relative-path>/filelist.md` to resume incomplete file summaries.
-     - Finalize `docmap.md` (or merge into parent if entries < 10).
-     - Update status to `COMPLETED` or `MERGED_INTO_PARENT`.
+     - Count effective entries:
+       - If effective entries $< 10$ and not root: stage content in `/.agents/memory/repo-nav/<folder-path>/` and mark status `MARKED_FOR_MERGE`. Ensure no child `docmap.md` is left on disk.
+       - If effective entries $\ge 10$ or root: write `docmap.md`, validate, and mark status `COMPLETED`.
+   - If a folder is `MARKED_FOR_MERGE`:
+     - Verify staged memory exists, then proceed to its parent folder when the queue reaches it.
    - Continue processing remaining `PENDING` items in queue order.
-2. **State Transition Rules**:
-   - Never re-analyze folders marked `COMPLETED` or `SKIPPED_CLEAN`.
-   - If a folder is marked `MERGED_INTO_PARENT`, ensure its content is carried forward in parent queue processing and its child `docmap.md` does not remain on disk.
+2. **Cascading Merge Handling**:
+   - When a parent folder processes, it must check all immediate child folders in the queue marked `MARKED_FOR_MERGE`.
+   - The parent incorporates their staged summaries, rewrites their links relative to itself, and updates child status to `MERGED_INTO_PARENT`.
+   - If the parent's resulting effective count is still $< 10$ (and not root `/`), the parent itself transitions to `MARKED_FOR_MERGE` for absorption into the grandparent.
+3. **State Transition Invariants**:
+   - Never re-analyze folders marked `COMPLETED`, `MERGED_INTO_PARENT`, or `SKIPPED_CLEAN`.
    - Always update `DOCMAP.md` at root as the final folder step before or alongside specialized maps.
 ```
