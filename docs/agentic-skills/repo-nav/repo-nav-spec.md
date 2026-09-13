@@ -1,4 +1,4 @@
-# Designing Repository Indexing SKILL
+# Designing Repository Navigation Index Genration SKILL
 
 ## Need
 There are many exising software projects. If we want to introduce coding agents to these projects, then we need a way to help Coding Agents **navigate** these project. Otherwise Coding Agents typically search (find/grep) in the source code files and try to make sense about the project. They may create 'agent memories' but these are usually not sufficient. This skill is an attempt to generate basic document source code navigation indices that a Coding Agent can use.
@@ -35,3 +35,8 @@ The index hierarchy is a navigation aid for AI coding agents, not a replacement 
  
 Agents should use index files to identify relevant folders and files before reading implementation artifacts. The objective is to minimize repository exploration while preserving sufficient architectural understanding to make correct implementation decisions.
 What will be your strategy guideline for cross cutting indexes ? 
+
+**CAUTION**
+This document describes the initial thoughts of repo-nav SKILL. It was originally called the repoindexer SKILL. The implementation and design is incrementally improved. And the current implementation has many more features and ideas compared to this spec document
+
+The latest design document is at [repo-nav-design.md](./repo-nav-design.md)
