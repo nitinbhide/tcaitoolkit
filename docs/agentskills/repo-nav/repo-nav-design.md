@@ -66,9 +66,13 @@ Summaries are never generated top-down (which leads to speculative hallucination
 
 ### 2.3 Information Density: Small-Folder Merging Rule
 Deep, sparse directory trees (e.g., `src/main/java/com/org/app/module/impl/`) create navigation fatigue where an agent must traverse multiple docmaps containing 1–2 files each.
-- **Rule:** If a folder's direct entries (files + immediate child docmap links) count is **less than 10**, its content is merged directly into its parent's `docmap.md`.
-- **Merge Propagation:** Merges happen bottom-up. The absorbed child's summaries, file entries, tags, and TODO markers are rolled into the parent docmap with rewritten relative paths, and the child's `docmap.md` is removed.
-- **Root Protection:** The root `DOCMAP.md` is never merged into another folder.
+- **Rule:** If a folder's effective entry count is **less than 10**, its content is merged directly into its parent folder's docmap rather than keeping a separate child index.
+- **Effective Entries Formula:**
+  $$\text{Effective Entries} = \text{Direct Files} + \text{Immediate Child Docmap Links} + \sum \text{Absorbed Child Files}$$
+- **Staged Merge Protocol:** Merges happen bottom-up. When a child folder is processed with $< 10$ entries, its summaries and metadata are staged in working memory (`/.agents/memory/repo-nav/<path>/`) with status `MARKED_FOR_MERGE` (no child `docmap.md` is emitted to disk).
+- **Parent Absorption & Link Rewriting:** When the parent folder is processed, it incorporates all immediate children marked `MARKED_FOR_MERGE`, rewrites their file and folder links relative to the parent docmap, and marks child status as `MERGED_INTO_PARENT`.
+- **Cascading Merges:** If the parent folder itself (including direct files and absorbed content) still totals $< 10$ entries, it cascades upward to its grandparent as `MARKED_FOR_MERGE`.
+- **Root Protection:** The root `DOCMAP.md` is never merged into another file regardless of entry count.
 
 ---
 
@@ -139,11 +143,13 @@ Generating or updating repository docmaps can involve hundreds of files and sign
 State tracking is separated into two clean layers under `/.agents/memory/`:
 
 1. **Tier 1 — Global Plan & Execution State (`/.agents/memory/docmap_plan.md`):**
-   - Stores the authoritative repository inventory, scan mode, traversal queue, merge states, and high-level progress.
+   - Stores the authoritative repository inventory, scan mode, bottom-up traversal queue, merge states, dirty invalidation breakdowns, and specialized map progress.
    - Structured per the schema in [agentskills/repo-nav/references/docmap_plan_tmpl.md](agentskills/repo-nav/references/docmap_plan_tmpl.md).
+   - Tracks explicit table attributes per folder: `Depth`, `Folder Path`, `Direct Files`, `Effective Entries`, `Invalidation Reason`, `Status`, `Target Docmap`, `Absorbed By (Parent)`, and `Surviving Docmap`.
 2. **Tier 2 — Local Folder Inventory State (`/.agents/memory/repo-nav/<folder-path>/filelist.md`):**
    - Scoped strictly to one folder.
    - Tracks individual file analysis, byte sizes, extracted tags, line-numbered TODO markers, and summarization status (`PENDING`, `SUMMARIZED`).
+   - Serves as the staging area when a folder is in `MARKED_FOR_MERGE` state awaiting parent consumption.
 
 ### 4.2 Folder Lifecycle State Machine
 Each folder in the execution queue transitions through an explicit state machine:
@@ -153,8 +159,11 @@ stateDiagram-v2
     [*] --> PENDING: Plan Initialized
     PENDING --> SKIPPED_CLEAN: Incremental Mode (No Changes)
     PENDING --> IN_PROGRESS: Subagent / Worker Starts
-    IN_PROGRESS --> MERGED_INTO_PARENT: Entries < 10 (Absorbed)
-    IN_PROGRESS --> COMPLETED: Entries >= 10 (docmap.md Written)
+    IN_PROGRESS --> MARKED_FOR_MERGE: Effective Entries < 10 (Staged in Memory)
+    IN_PROGRESS --> COMPLETED: Effective Entries >= 10 or Root (docmap.md Written)
+    MARKED_FOR_MERGE --> MERGED_INTO_PARENT: Parent Incorporates Child & Cleans Disk
+    PENDING --> SPLIT_REQUIRED: Incremental Mode (Grew to >= 10 Entries)
+    SPLIT_REQUIRED --> IN_PROGRESS: Split & Generate Dedicated docmap.md
     MERGED_INTO_PARENT --> [*]
     COMPLETED --> [*]
     SKIPPED_CLEAN --> [*]
@@ -163,8 +172,10 @@ stateDiagram-v2
 - **`PENDING`**: Folder queued for analysis.
 - **`SKIPPED_CLEAN`**: In incremental updates, folder and all descendant subtrees have zero modifications; completely bypassed.
 - **`IN_PROGRESS`**: Folder is currently being analyzed, file summaries are generating in `filelist.md`.
-- **`COMPLETED`**: `docmap.md` has been generated, validated, and entry count is $\ge 10$ (or is root `/`).
-- **`MERGED_INTO_PARENT`**: Direct entry count is $< 10$; content incorporated into parent folder queue item; child `docmap.md` deleted.
+- **`MARKED_FOR_MERGE`**: Folder analysis is complete and effective entry count is $< 10$. Summaries are staged in memory awaiting parent folder incorporation. Child `docmap.md` is omitted or removed from disk.
+- **`MERGED_INTO_PARENT`**: Parent folder has incorporated the child's staged summaries with rewritten relative links.
+- **`COMPLETED`**: `docmap.md` has been generated, validated, and effective entry count is $\ge 10$ (or is root `/`).
+- **`SPLIT_REQUIRED`**: In incremental mode, a previously merged child folder grew to $\ge 10$ entries and requires a new standalone `docmap.md` and cleanup from its parent docmap.
 
 ---
 
@@ -178,6 +189,7 @@ sequenceDiagram
     participant RG as ripgrep (rg --files)
     participant Plan as docmap_plan.md
     participant Worker as Folder Subagent
+    participant Staging as Memory Staging (filelist.md)
     participant FS as Local Filesystem
 
     Agent->>RG: Run rg --files (authoritative scan)
@@ -191,14 +203,17 @@ sequenceDiagram
     loop For each folder in post-order queue
         Agent->>Worker: Delegate folder processing
         Worker->>FS: Read files in folder
-        Worker->>Worker: Generate file summaries & tags
-        Worker->>FS: Write folder docmap.md
-        alt Direct entries < 10 (not root)
-            Worker->>Agent: Signal MERGE into parent
-            Agent->>FS: Remove child docmap.md
-            Agent->>Plan: Mark status MERGED_INTO_PARENT
-        else Direct entries >= 10 or root
-            Agent->>Plan: Mark status COMPLETED
+        Worker->>Staging: Write filelist.md with summaries & tags
+        Worker->>Worker: Check child folders marked MARKED_FOR_MERGE
+        Worker->>Worker: Calculate Effective Entries = Direct Files + Child Links + Absorbed Files
+        alt Effective entries < 10 and not root
+            Worker->>Staging: Stage merged content in memory
+            Worker->>Plan: Mark status MARKED_FOR_MERGE
+        else Effective entries >= 10 or root
+            Worker->>Worker: Incorporate staged children & rewrite paths
+            Worker->>FS: Write folder docmap.md
+            Worker->>Plan: Mark status COMPLETED
+            Worker->>Plan: Update absorbed children status to MERGED_INTO_PARENT
         end
     end
 
@@ -211,22 +226,28 @@ sequenceDiagram
 2. **Post-Order Depth Queue:** Sort unique folders by `Depth` descending, then lexicographically by path.
 3. **Plan Generation:** Create `/.agents/memory/docmap_plan.md` with all folders initialized to `PENDING`.
 4. **Approval Checkpoint:** Present plan to user for confirmation before starting LLM synthesis.
-5. **Folder Processing Loop:**
-   - Create folder-scoped `filelist.md`.
-   - Summarize files, extract tags and TODO markers.
-   - Assemble `docmap.md` using [agentskills/repo-nav/references/folderdocmap_tmpl.md](agentskills/repo-nav/references/folderdocmap_tmpl.md).
-   - Evaluate small-folder merge condition ($< 10$ entries).
-   - Commit folder status (`COMPLETED` or `MERGED_INTO_PARENT`) to `docmap_plan.md`.
+5. **Folder Processing Loop (Bottom-Up):**
+   - Create folder-scoped `filelist.md` to track per-file summarization.
+   - Summarize files, extract tags and line-numbered TODO markers.
+   - Query `docmap_plan.md` for any immediate child folders marked `MARKED_FOR_MERGE`.
+   - Calculate effective entries: $\text{Direct Files} + \text{Immediate Child Docmap Links} + \sum \text{Absorbed Child Files}$.
+   - **Branching Decision:**
+     - **If Effective Entries $< 10$ and not root:** Stage summaries in memory; mark folder as `MARKED_FOR_MERGE`; do not write `docmap.md` to disk.
+     - **If Effective Entries $\ge 10$ or root:** Incorporate staged child summaries with relative link rewriting; write `docmap.md` using [agentskills/repo-nav/references/folderdocmap_tmpl.md](agentskills/repo-nav/references/folderdocmap_tmpl.md); mark folder as `COMPLETED`; update absorbed children to `MERGED_INTO_PARENT`.
+   - Commit updated state to `docmap_plan.md`.
 6. **Root & Cross-Cutting Assembly:** Generate specialized maps and root `DOCMAP.md` using [agentskills/repo-nav/references/rootdocmap_tmpl.md](agentskills/repo-nav/references/rootdocmap_tmpl.md).
 
 #### Interruption & Resumption (Scenario 1):
 If processing is stopped mid-way (user exit, token timeout, network interruption):
 1. **Reload Plan:** Read `/.agents/memory/docmap_plan.md`.
-2. **Locate Resume Point:** Find the deepest folder marked `IN_PROGRESS` or `PENDING`.
+2. **Locate Resume Point:** Find the deepest folder marked `IN_PROGRESS`, `MARKED_FOR_MERGE`, or `PENDING`.
 3. **Reconcile Active Folder:**
-   - If `IN_PROGRESS`, inspect its `filelist.md` to see which files are already summarized.
-   - Complete remaining files, emit `docmap.md` (or merge), and update status to `COMPLETED` / `MERGED_INTO_PARENT`.
-4. **Continue Queue:** Pick up subsequent `PENDING` folders. Never re-process folders marked `COMPLETED` or `MERGED_INTO_PARENT`.
+   - If `IN_PROGRESS`, inspect its `filelist.md` to resume incomplete file summaries.
+   - Calculate effective entries:
+     - If $< 10$ and not root: ensure staged memory is written, set status to `MARKED_FOR_MERGE`.
+     - If $\ge 10$ or root: emit `docmap.md`, set status to `COMPLETED`, update absorbed children to `MERGED_INTO_PARENT`.
+   - If `MARKED_FOR_MERGE`, verify staged memory exists, then proceed to the parent folder when reached in the queue.
+4. **Continue Queue:** Pick up subsequent `PENDING` folders in bottom-up order. Never re-process folders marked `COMPLETED` or `MERGED_INTO_PARENT`.
 
 ---
 
@@ -245,13 +266,14 @@ flowchart TD
     G --> I[Mark Subtrees Clean]
     
     H --> J[Propagate Dirty Status upward to Root]
-    J --> K[Generate Incremental Plan in docmap_plan.md]
+    J --> K[Check previously merged folders: Split required?]
+    K --> L[Generate Incremental Plan in docmap_plan.md]
     
-    K --> L[Process Dirty Folders Bottom-Up]
-    L --> M[Retain UNCHANGED File Summaries Verbatim]
-    M --> N[Re-summarize MODIFIED/ADDED files]
-    N --> O[Re-evaluate < 10 Merge Condition]
-    O --> P[Update Root DOCMAP.md & Specialized Maps]
+    L --> M[Process Dirty Folders Bottom-Up]
+    M --> N[Retain UNCHANGED File Summaries Verbatim]
+    N --> O[Re-summarize MODIFIED/ADDED files]
+    O --> P[Re-evaluate Small Folder Merge / Split Condition]
+    P --> Q[Update Root DOCMAP.md & Specialized Maps]
 ```
 
 #### Step-by-Step Execution:
@@ -266,13 +288,16 @@ flowchart TD
    - All parent/ancestor folders of a dirty folder are marked **Indirectly Dirty** (because their child summaries or counts change).
    - Any subtree without modifications is marked `SKIPPED_CLEAN`.
 4. **Dynamic Merge / Split Handling:**
-   - If added files push an absorbed folder to $\ge 10$ entries, it **splits out** into its own `docmap.md`.
-   - If deletions drop an independent folder below 10 entries, it **merges** into its parent.
+   - **Split Case (`SPLIT_REQUIRED`):** If added files push a previously absorbed folder to effective entries $\ge 10$, it splits out: generates a dedicated child `docmap.md` and replaces its inlined summaries in the parent docmap with a child docmap link.
+   - **Merge Case (`MARKED_FOR_MERGE`):** If deleted files drop an independent folder below 10 entries, it merges into its parent and its child `docmap.md` is removed.
 5. **Targeted Bottom-Up Execution:** Execute LLM summarization *only* for the dirty queue. Clean folders are touched zero times.
 6. **Update Root & Cross-Cutting Maps:** Update root `DOCMAP.md` and touch affected specialized maps (e.g., update `TESTING_MAP.md` if test files changed).
 
 #### Interruption & Resumption (Scenario 2):
 If incremental processing is interrupted:
+1. **Reload Incremental State:** Read `docmap_plan.md` (`mode: incremental`).
+2. **Resume at Dirty Boundary:** Locate the first `IN_PROGRESS`, `MARKED_FOR_MERGE`, or `PENDING` dirty folder in the post-order queue.
+3. **Preserve Integrity:** Existing unchanged file summaries remain intact; only pending dirty files in that folder are processed before moving up to ancestor folders.
 1. **Reload Incremental State:** Read `docmap_plan.md` (`mode: incremental`).
 2. **Resume at Dirty Boundary:** Locate the first `IN_PROGRESS` or `PENDING` dirty folder in the post-order queue.
 3. **Preserve Integrity:** Existing unchanged file summaries remain intact; only pending dirty files in that folder are processed before moving up to ancestor folders.
