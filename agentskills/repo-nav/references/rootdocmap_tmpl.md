@@ -81,6 +81,10 @@ Hierarchy:
 4. Use file summaries and semantic tags to identify candidate files.  
 5. Always read the actual source code before making changes.  
 
+### Additional Tips
+- To find files relevant to a topic (e.g., bootstrap, auth, htmx), check the semantic_tags and Tags: attributes in folder-level docmap.md files instead of scanning raw source code."
+- Try to use "Cross Navigation Maps" for relevant folder docmap files.  
+
 ## When to Use This Index/DOCMAP
 - Understand repository architecture
 - Understand major business capabilities
