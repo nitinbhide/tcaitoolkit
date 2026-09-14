@@ -35,6 +35,7 @@ DO NOT deviate from this SKILL instructions during the execution of the repo-nav
 
 ## Reference Workflow and Tools
 - Use PowerShell on Windows and Bash on Unix-like systems. 
+- `rg` (ripgrep) is a hard prerequisite for this skill. Do not begin repository discovery, inventory creation, or docmap generation until `rg` is confirmed available.
 - Use the reference files in this section as part of the workflow. 
   - First check whether `rg` is available, then follow [`references/ripgrepsearch.md`](references/ripgrepsearch.md) for repository discovery, retained inventories, content searches, and `rg`-based validation. 
   - When PowerShell is the selected shell, also follow [`references/powershell.md`](references/powershell.md) for path handling and shell-side validation operations. 
@@ -43,6 +44,7 @@ DO NOT deviate from this SKILL instructions during the execution of the repo-nav
 - The reference workflow is mandatory: 
   - Do not replace its authoritative inventory with an ad hoc recursive scan,  
   - Do not generate Python, Node.js, or other helper scripts for docmap discovery or validation. 
+- If `rg` is not available, stop immediately and instruct the user: install ripgrep from https://github.com/burntsushi/ripgrep, restart the editor, and then retry the repo-nav skill.
 
 ## Scope and boundaries
 
@@ -140,7 +142,9 @@ This file is the primary entry point for all AI agents.
 
 ## Search Strategy
 
-When searching the project folder structure/codebase, first detect whether `rg` (ripgrep) is installed and available on `PATH`.
+Before any repository discovery, folder scan, file inventory, or docmap generation, verify that `rg` (ripgrep) is installed and available on `PATH`.
+
+This is a required prerequisite for this skill. If `rg` is not available, stop immediately and do not proceed with repository analysis.
 
 **Ripgrep availability check**
 
@@ -149,12 +153,15 @@ When searching the project folder structure/codebase, first detect whether `rg` 
 
 If the check succeeds, load and follow the detailed ripgrep instructions in `./references/ripgrepsearch.md`. Use `rg --files` as the first and authoritative repository-discovery command, followed by targeted content or filename searches from that reference.
 
-If the check fails, do not attempt to use `rg`. Use the platform-native fallback commands below instead:
+If the check fails:
 
-- On Windows PowerShell, use `Get-ChildItem -Recurse -File` for file discovery and `Select-String -Path <path> -Pattern '<pattern>'` for content search. Filter with `-Include` or `Where-Object` when needed.
-- On Unix-like systems, use `find <path> -type f` for file discovery and `grep -RIn '<pattern>' <path>` for content search. Use `grep -E` for regular expressions and `grep -F` for literal text.
+1. Tell the user that ripgrep is required for the repo-nav skill.
+2. Instruct the user to install ripgrep from https://github.com/burntsushi/ripgrep.
+3. Ask the user to restart the editor or terminal session.
+4. Instruct the user to try the repo-nav skill again after the restart.
+5. Stop execution; do not continue with any docmap generation or fallback scanning.
 
-Keep searches scoped to the smallest relevant folder, honor repository ignore rules where the fallback command supports them, and minimize repeated recursive scans. Use PowerShell or shell commands for operations that the selected search tool cannot express.
+Keep searches scoped to the smallest relevant folder, honor repository ignore rules as configured by `rg`, and minimize repeated repository scans. Use PowerShell or shell commands for operations that the selected search tool cannot express.
 
 Use only shell scripts (powershell, bash, batch files) for automation and repository navigation tasks. Do not generate any other types of scripts or code for these purposes.
 
@@ -307,18 +314,27 @@ Authentication Change
   - ALWAYS Get the user's approval on plan BEFORE starting the plan execution. 
   - If the root `/.agents/memory/docmap_plan.md` exists, then update the file. 
 2. Scan repository recursively for folders only to build the folder tree. if available, prefer the use "ripgrep"/"rg" for searching the files and folders.
-3. For Each folder, do the following. Start from the deepest folder. And recursively go up. Check each folder with ignore list, then scan files for that folder.
-  1. identify the text files (documents and source code) for this folder.
+3. For each folder, determine the eligible files to include in the folder-level `docmap.md` by running the repo-nav inventory script:
+  - On Windows PowerShell: `./scripts/filelist.ps1 <folder-path> <output-file>`
+  - On Bash: `./scripts/filelist.sh <folder-path> <output-file>`
+  - Use the generated Markdown inventory as the authoritative file set for this folder, after applying repo-nav eligibility rules (text files, ignore rules, excluded folders, and `AGENTS.md` / `CLAUDE.md` exclusions).
+  - Keep the file list and its output in the folder-scoped memory state at `/.agents/memory/repo-nav/<folder-relative-path>/filelist.md`.
+4. For incremental change detection, run the same filelist script against the current repository state and compare it to the previously stored filelist output for the same folder. Compare file size values; files whose size changed are `MODIFIED`, files missing from the previous output are `DELETED`, and files newly added are `ADDED`.
+  - On Windows PowerShell: `./scripts/filelist.ps1 <folder-path> <current-output> -CompareToFile <previous-output>`
+  - On Bash: `./scripts/filelist.sh <folder-path> <current-output> <previous-output>`
+  - If any file is `MODIFIED` or `ADDED`, regenerate or update that folder’s `docmap.md`.
+5. For each folder, starting from the deepest folder and moving upward, do the following:
+  1. identify the eligible text files (documents and source code) for this folder.
   2. Use the folder-scoped `/.agents/memory/repo-nav/<folder-relative-path>/filelist.md` to list down the input files that will be used in index generation in each folder.
   3. Generate file summaries. Extract metadata (semantic tags, TODO/FIXME/NOTE) while generating the file summary. File summary must be generated using the LLM summarization.
   4. Generate folder summary.
   5. Use the template as per `./references/folderdocmap_tmpl.md` to generate this folder’s `docmap.md`.
   6. Perform incremental update of folder level `docmap.md`
   7. **Use the 'subagent' to generate and execute steps for individual folder.**
-4. Skip dependency graph generation for now.
-5. Generate the **Specialized Repository Navigation Maps**
-6. Use the template as per `./references/rootdocmap_tmpl.md` to generate (and/or update) the project root `DOCMAP.md`. Always update the root index as project root `/DOCMAP.md` if even you are updating some specific subfolder of the project.
-7. Review and validate the generated `DOCMAP.md` and folder-level `docmap.md` files to ensure accuracy and completeness.
+6. Skip dependency graph generation for now.
+7. Generate the **Specialized Repository Navigation Maps**
+8. Use the template as per `./references/rootdocmap_tmpl.md` to generate (and/or update) the project root `DOCMAP.md`. Always update the root index as project root `/DOCMAP.md` if even you are updating some specific subfolder of the project.
+9. Review and validate the generated `DOCMAP.md` and folder-level `docmap.md` files to ensure accuracy and completeness.
 
 # Confidence Rules
 
