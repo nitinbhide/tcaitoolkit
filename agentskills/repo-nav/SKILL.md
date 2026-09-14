@@ -250,9 +250,11 @@ The folder summary must consider
 
 In addition to folder indexes, generate the following cross-cutting indexes when possible.
 
+Use the generated authoritative `DOCMAP.md` and folder-level `docmap.md` files as the source of truth for all cross-cutting map generation. Do not re-scan the repository or source files for these maps; derive everything from the authoritative docmap hierarchy.
+
 ## FEATURE_MAP.md
 
-Contains information about the important features of the system.  
+Contains information about the important features of the system.
 
 Feature information containss
 - Requirements
