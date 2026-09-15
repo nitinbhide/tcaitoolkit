@@ -55,6 +55,8 @@ During every execution step, the operator must follow the active "repo-nav" skil
 - **Discovery Tool**: `<rg | powershell_fallback | bash_fallback>`
 - **Execution Strategy**: Bottom-up (deepest leaf folders to repository root)
 - **Small-Folder Merge Threshold**: `< 10 direct entries (direct files + immediate child docmap links + absorbed files)`
+- **Authoritative Full Inventory**: `scripts/filelist.ps1 . <output-file> -Recurse` (user-directed; no standalone `rg --files` inventory)
+- **Per-Folder Inventory**: `scripts/filelist.ps1`, retained under `.agents/memory/repo-nav/<folder-relative-path>/filelist.md`
 
 ## 2. Incremental Change Detection (Only for mode: incremental)
 <!-- If mode is full_baseline, mark this section as 'N/A - Full Baseline Scan' -->
