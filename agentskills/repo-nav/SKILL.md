@@ -46,6 +46,10 @@ DO NOT deviate from this SKILL instructions during the execution of the repo-nav
   - Do not generate Python, Node.js, or other helper scripts for docmap discovery or validation. 
 - If `rg` is not available, stop immediately and instruct the user: install ripgrep from https://github.com/burntsushi/ripgrep, restart the editor, and then retry the repo-nav skill.
 
+- Use following scripts for file listing/inventory purpose. It Generates a Markdown table listing repository files and their sizes.
+  - On Windows PowerShell: `./scripts/filelist.ps1 <folder-path> <output-file>`
+  - On Bash: `./scripts/filelist.sh <folder-path> <output-file>`
+
 ## Scope and boundaries
 
 This skill applies only to the explicitly invoked repo-nav workflow for generating or updating `DOCMAP.md` and `docmap.md` files. It is not a general project workflow, coding standard, or replacement for project-wide rules in `AGENTS.md`.
