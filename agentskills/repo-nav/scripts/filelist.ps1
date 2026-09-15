@@ -68,13 +68,13 @@ if (-not $files) {
     return
 }
 
-$rows = foreach ($file in $files) {
+$rows = @(foreach ($file in $files) {
     $item = Get-Item -LiteralPath $file
     [PSCustomObject]@{
         File = $item.FullName
         SizeBytes = $item.Length
     }
-} | Sort-Object { $_.File }
+}) | Sort-Object { $_.File }
 
 if ($CompareToFile) {
     $baseline = @{}
