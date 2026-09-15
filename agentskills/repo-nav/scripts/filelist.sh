@@ -67,21 +67,28 @@ if [[ "$recurse" != "true" ]]; then
   rg_args+=(--max-depth 1)
 fi
 if [[ -n "$glob" ]]; then
-  rg_args+=(-g "$glob")
+  rg_args+=(--glob "$glob")
 fi
+rg_args+=(
+  --glob '!.*'
+  --glob '!**/.*'
+  --glob '!**/.*/**'
+  --glob '!AGENTS.md'
+  --glob '!**/AGENTS.md'
+  --glob '!CLAUDE.md'
+  --glob '!**/CLAUDE.md'
+  --glob '!DOCMAP.md'
+  --glob '!**/DOCMAP.md'
+  --glob '!docmap.md'
+  --glob '!**/docmap.md'
+  --glob '!*_MAP.md'
+  --glob '!**/*_MAP.md'
+)
 rg_args+=("$resolved_path")
 
 mapfile -t files < <(rg "${rg_args[@]}")
 
-filtered=()
-for file in "${files[@]}"; do
-  base="${file##*[\\/]}"
-  if [[ "$base" != "AGENTS.md" && "$base" != "CLAUDE.md" ]]; then
-    filtered+=("$file")
-  fi
-done
-
-if ((${#filtered[@]} == 0)); then
+if ((${#files[@]} == 0)); then
   table='| File | Size (bytes) |
 | --- | ---: |'
   if [[ -n "$output_file" ]]; then
@@ -93,7 +100,7 @@ if ((${#filtered[@]} == 0)); then
 fi
 
 rows=()
-for file in "${filtered[@]}"; do
+for file in "${files[@]}"; do
   if [[ -f "$file" ]]; then
     size=$(wc -c < "$file" | tr -d '[:space:]')
     rows+=("${file}|${size}")

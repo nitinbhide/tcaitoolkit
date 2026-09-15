@@ -55,18 +55,28 @@ if (-not $Recurse) {
     $rgArgs += @("--max-depth", "1")
 }
 if ($Glob) {
-    $rgArgs += @("-g", $Glob)
+    $rgArgs += @("--glob", $Glob)
 }
+$rgArgs += @(
+    "--glob", "!.*",
+    "--glob", "!**/.*",
+    "--glob", "!**/.*/**",
+    "--glob", "!AGENTS.md",
+    "--glob", "!**/AGENTS.md",
+    "--glob", "!CLAUDE.md",
+    "--glob", "!**/CLAUDE.md",
+    "--glob", "!DOCMAP.md",
+    "--glob", "!**/DOCMAP.md",
+    "--glob", "!docmap.md",
+    "--glob", "!**/docmap.md",
+    "--glob", "!*_MAP.md",
+    "--glob", "!**/*_MAP.md"
+)
 $rgArgs += $resolvedPath
 
 $files = @(
     & rg @rgArgs
 )
-
-# Filter known agent metadata files after discovery.
-$files = $files | Where-Object {
-    $_ -notmatch '(^|[\\/])(AGENTS\.md|CLAUDE\.md)$'
-}
 
 if (-not $files) {
     $table = @"

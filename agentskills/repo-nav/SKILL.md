@@ -140,6 +140,7 @@ The repo-nav skill relies on the `filelist` scripts to generate an authoritative
   - any file mentioned in ".gitignore" and other ignore files
   - AGENTS.md 
   - CLAUDE.md 
+  - DOCMAP.md, docmap.md, *_MAP.md (e.g. FEATURE_MAP.md)
   - all hidden files
 - Vendor libraries
 - Generated code
