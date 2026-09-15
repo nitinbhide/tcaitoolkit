@@ -134,3 +134,8 @@ Effective Entries = Direct Files + Immediate Child Docmap Links + Absorbed Child
    - Never re-analyze folders marked `COMPLETED`, `MERGED_INTO_PARENT`, or `SKIPPED_CLEAN`.
    - Always update `DOCMAP.md` at root as the final folder step before or alongside specialized maps.
 ```
+
+
+## Executation Log
+
+- "<ISO-8601 Timestamp>" : <Steps executed>. 
