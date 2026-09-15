@@ -187,9 +187,10 @@ Use only shell scripts (powershell, bash, batch files) for automation and reposi
 ## Summary Generation Rules
 - Folder Summary: concise summary in one paragraph about 4–5 sentences
 - File Summary: concise summary in one paragraph about 4–5 sentences
+- File summaries must be generated from the actual file contents using LLM analysis. Do not generate or use helper scripts, lookup tables, hard-coded text, fixed templates, or extension-based rules to produce summaries for `.py`, `.md`, `.java`, test, config, script, or other file types. Do not use fixed templates.
+- Before summarizing a file, read enough of that file to identify evidence for its purpose, responsibilities, key concepts, and relationships. If the file content does not provide enough evidence, say so with `confidence: low` instead of inventing a summary.
 - Detect TODO / FIXME / NOTE. Detect TODO, FIXME, and NOTE case-insensitively in comments and documentation text. Record each occurrence with its line number and exact marker.
 - Generate lowercase, deduplicated, alphabetically sorted tags describing the file’s technologies, role, and major concepts.
-- Summaries must be evidence-based and generated from the file’s actual contents; Do not use fixed templates.
 - Child folders must be ordered lexicographically by relative path
 - Every child-folder entry must link to that folder's `docmap.md` using a relative path from the current index, whether the child index already exists or is pending generation. Use the form ``- `child/docmap.md` — <summary>``; do not list a child folder without its `docmap.md` link.
 - Files must be ordered lexicographically by filename within each folder
@@ -197,7 +198,8 @@ Use only shell scripts (powershell, bash, batch files) for automation and reposi
 
 - All summaries shall:
   - Be concise
-  - Be factual
+  - Be factual and evidence-based
+  - Be generated from the actual file contents
   - Avoid speculation
   - Avoid marketing language
   - Describe intent before implementation
