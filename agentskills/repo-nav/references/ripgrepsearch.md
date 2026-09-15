@@ -32,13 +32,18 @@ Use `rg --files` as the first and authoritative repository-discovery command. Do
 
 **Ignore and hidden files**
 
-`rg` automatically honors `.gitignore` and other ignore files. Keep the default behavior for repository analysis. Use `--hidden` to include hidden files, `--no-ignore` to bypass ignore rules, or `-uu` to include both hidden and ignored files only when the task explicitly requires them.
+`rg` automatically honors `.gitignore` and other ignore files. Keep the default behavior for repository analysis. 
 
 `rg` automatically ignores the binary files (e.g. .dll, .so, .exe, .zip etc). DO NOT add additional filters to ignore binrary files.
 
 Treat the repository’s ignore files as authoritative and avoid reproducing their patterns.
 
 Minimize repeated repository scans and prefer targeted, file-type- or glob-filtered `rg` queries. Use `rg --files` to establish the searchable file set before content searches when repository scope is unclear.
+
+Use the following flag only when task **EXPLICITLY** requires them
+- Use `--hidden` to include hidden files, 
+- `--no-ignore` to bypass ignore rules, 
+- `-uu` to include both hidden and ignored files 
 
 ## Repository Scan Contract
 
