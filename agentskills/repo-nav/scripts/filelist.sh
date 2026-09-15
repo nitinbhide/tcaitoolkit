@@ -2,7 +2,7 @@
 # Generates a Markdown table listing repository files and their sizes.
 #
 # Usage:
-#   ./filelist.sh [path] [output-file] [baseline-file]
+#   ./filelist.sh [path] [output-file] [-Glob glob] [-Recurse] [baseline-file]
 #
 # Workflow:
 #   1. Use rg --files as the authoritative repository inventory.
@@ -16,7 +16,36 @@ set -u
 
 path="${1:-.}"
 output_file="${2:-}"
-baseline_file="${3:-}"
+glob=""
+recurse="false"
+baseline_file=""
+
+shift $(( $# >= 2 ? 2 : $# ))
+while (($# > 0)); do
+  case "$1" in
+    -Glob|--glob)
+      if (($# < 2)); then
+        echo "Missing value for $1." >&2
+        exit 1
+      fi
+      glob="$2"
+      shift 2
+      ;;
+    -Recurse|--recurse)
+      recurse="true"
+      shift
+      ;;
+    *)
+      if [[ -z "$baseline_file" ]]; then
+        baseline_file="$1"
+        shift
+      else
+        echo "Unexpected argument: $1" >&2
+        exit 1
+      fi
+      ;;
+  esac
+done
 
 if ! command -v rg >/dev/null 2>&1; then
   echo "ripgrep ('rg') is required but was not found on PATH." >&2
@@ -33,11 +62,20 @@ resolved_path="$(pwd)"
 # Use rg --files as the authoritative repository inventory.
 # ripgrep already honors .gitignore and VCS metadata directories such as .git,
 # .hg, and .svn, so no extra ignore globs are needed for those folders.
-mapfile -t files < <(rg --files "$resolved_path")
+rg_args=(--files)
+if [[ "$recurse" != "true" ]]; then
+  rg_args+=(--max-depth 1)
+fi
+if [[ -n "$glob" ]]; then
+  rg_args+=(-g "$glob")
+fi
+rg_args+=("$resolved_path")
+
+mapfile -t files < <(rg "${rg_args[@]}")
 
 filtered=()
 for file in "${files[@]}"; do
-  base="${file##*/}"
+  base="${file##*[\\/]}"
   if [[ "$base" != "AGENTS.md" && "$base" != "CLAUDE.md" ]]; then
     filtered+=("$file")
   fi

@@ -113,6 +113,15 @@ This file is the primary entry point for all AI agents.
 
 ## File/Folder Inclusion/Exclusion Rules
 
+### Use of filelist scripts (`filelist.ps1` and `filelist.sh`)
+
+The repo-nav skill relies on the `filelist` scripts to generate an authoritative inventory of repository files. These scripts respect repository ignore rules and provide a consistent basis for subsequent indexing and analysis.
+
+- Use `-Glob "<pattern>"` to restrict inventory output to matching file types, for example `-Glob "*.{ps1,md}"`. 
+- By default, each script lists only files directly in the given folder. 
+- Add `-Recurse` to scan recursively from the given folder.
+- `-Recurse` and `-Glob` can be combined.
+
 ### Included File Types
 - Source code (any language)
 - Design documents
@@ -125,20 +134,23 @@ This file is the primary entry point for all AI agents.
 - Markdown (`.md`), text, Restructured Text (`.rst`)
 
 ### Excluded File Types
-- Binary files
+- Automatically Excluded by the filelist scripts (`filelist.ps1` and `filelist.sh`)
+  - Binary files 
+  - file names is starting with '.' ()
+  - any file mentioned in ".gitignore" and other ignore files
+  - AGENTS.md 
+  - CLAUDE.md 
+  - all hidden files
 - Vendor libraries
 - Generated code
-- file names is starting with '.'
-- any file mentioned in ".gitignore" and other ignore files
-- AGENTS.md 
-- CLAUDE.md 
 - Configuration and settings files (java property files, e.g., `.properties`, `.xml`, `.yaml`, `.yml`, `.ini`, `.settings`)
-- all hidden files
+- Use glob patterns with `-Glob "<pattern>"` to include/exclude additional file types while generating the inventory.
 
 ### Excluded Folders
-- folder name starting with '.' (".git", ".agents", ".github")
-- all hidden folders
-- any folder mentioned in ".gitignore" , ".hgignore" and other version control "ignore" files
+- Default Excluded by the filelist scripts (`filelist.ps1` and `filelist.sh`)
+  - folder name starting with '.' (".git", ".agents", ".github")
+  - all hidden folders
+  - any folder mentioned in ".gitignore" , ".hgignore" and other version control "ignore" files
 
 ### Ignore precedence:
 - Apply hard excludes first (binary, vendor, generated, hidden files/folders)

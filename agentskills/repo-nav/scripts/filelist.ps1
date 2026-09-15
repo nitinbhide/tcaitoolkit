@@ -20,11 +20,19 @@ index updates.
 ./filelist.ps1 . output.md
 
 .EXAMPLE
+./filelist.ps1 . output.md -Glob "*.{ps1,md}"
+
+.EXAMPLE
+./filelist.ps1 . output.md -Recurse
+
+.EXAMPLE
 ./filelist.ps1 . output.md -CompareToFile previous.md
 #>
 param(
     [string]$Path = ".",
     [string]$OutputFile = "",
+    [string]$Glob = "",
+    [switch]$Recurse,
     [string]$CompareToFile = "",
     [switch]$OnlyChanged
 )
@@ -42,9 +50,17 @@ $resolvedPath = (Resolve-Path -Path $Path).Path
 # so no additional glob-based ignore patterns are required for those directories.
 # The inventory remains separate from PowerShell file-size inspection, as required
 # by the repo-nav workflow.
+$rgArgs = @("--files")
+if (-not $Recurse) {
+    $rgArgs += @("--max-depth", "1")
+}
+if ($Glob) {
+    $rgArgs += @("-g", $Glob)
+}
+$rgArgs += $resolvedPath
+
 $files = @(
-    & rg --files `
-        "$resolvedPath"
+    & rg @rgArgs
 )
 
 # Filter known agent metadata files after discovery.
