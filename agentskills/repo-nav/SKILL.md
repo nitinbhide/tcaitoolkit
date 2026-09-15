@@ -129,9 +129,11 @@ This file is the primary entry point for all AI agents.
 - AGENTS.md 
 - CLAUDE.md 
 - Configuration and settings files (java property files, e.g., `.properties`, `.xml`, `.yaml`, `.yml`, `.ini`, `.settings`)
+- all hidden files
 
 ### Excluded Folders
 - folder name starting with '.' (".git", ".agents", ".github")
+- all hidden folders
 - any folder mentioned in ".gitignore" , ".hgignore" and other version control "ignore" files
 
 ### Ignore precedence:
