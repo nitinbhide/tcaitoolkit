@@ -88,7 +88,7 @@ The skill establishes one authoritative repository inventory, processes eligible
 - Semantic tags
 - TODO / FIXME / NOTE detections
 - Child folder references
-- Dependency graph generation is disabled for now
+- Dependency graph generation is reserved for a future requirement and is not calculated or inferred in the current version
 - Use the templates defined in this skills `references/` folder only
 
 ### Template Usage
@@ -242,8 +242,9 @@ The folder summary must consider
 - Do not merge the root `DOCMAP.md` into another file. If a merged parent also has fewer than 10 entries, continue applying this rule to that parent.
 
 ## Dependency Graph
-- Dependency extraction and dependency graph generation are disabled for now
-- Keep `dependencies` metadata as an empty list `[]`
+- Dependency extraction and dependency graph generation are reserved for a future requirement.
+- Do not calculate, infer, or validate dependency relationships in the current version.
+- Keep the `dependencies` metadata field as an empty list `[]` and mark the dependency graph section as not generated.
 
 ## Incremental Update Rules
 - Load existing index files if present

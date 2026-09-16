@@ -4,7 +4,7 @@ generated_on: "<timestamp>"
 num_files: <integer>
 semantic_tags: [<tags>]
 todos_present: <true/false>
-dependencies: [<moduleA>, <moduleB>, ...]
+dependencies: []
 ---
 
 # Repository Overview
@@ -33,7 +33,8 @@ High-level architecture overview.
 Major capabilities supported by the repository.
 
 # Module Dependency Graph
-<High-level folder/module dependency relationships inferred from imports/includes.>
+Dependency graph generation is reserved for a future requirement and is not included in this index.
+The `dependencies` metadata field remains an empty list until dependency extraction is implemented.
 
 # Repository Navigation
 
