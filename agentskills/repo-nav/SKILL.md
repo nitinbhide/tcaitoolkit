@@ -338,16 +338,16 @@ Authentication Change
   - Use the root `/.agents/memory/docmap_plan.md` to store the plan of the indexing operation at granular steps and to track progress of the index generation execution. 
   - ALWAYS Get the user's approval on plan BEFORE starting the plan execution. 
   - If the root `/.agents/memory/docmap_plan.md` exists, then update the file. 
-2. Scan repository recursively for folders only to build the folder tree. if available, prefer the use "ripgrep"/"rg" for searching the files and folders.
-3. For each folder, determine the eligible files to include in the folder-level `docmap.md` by running the repo-nav inventory script:
-  - On Windows PowerShell: `./scripts/filelist.ps1 <folder-path> <output-file>`
-  - On Bash: `./scripts/filelist.sh <folder-path> <output-file>`
-  - Use the generated Markdown inventory as the authoritative file set for this folder, after applying repo-nav eligibility rules (text files, ignore rules, excluded folders, and `AGENTS.md` / `CLAUDE.md` exclusions).
-  - Keep the file list and its output in the folder-scoped memory state at `/.agents/memory/repo-nav/<folder-relative-path>/filelist.md`.
-4. For incremental change detection, run the same filelist script against the current repository state and compare it to the previously stored filelist output for the same folder. Compare file size values; files whose size changed are `MODIFIED`, files missing from the previous output are `DELETED`, and files newly added are `ADDED`.
-  - On Windows PowerShell: `./scripts/filelist.ps1 <folder-path> <current-output> -CompareToFile <previous-output>`
-  - On Bash: `./scripts/filelist.sh <folder-path> <current-output> <previous-output>`
-  - If any file is `MODIFIED` or `ADDED`, regenerate or update that folder’s `docmap.md`.
+2. Run the repo-nav inventory script once at the repository root and retain its output as the authoritative inventory for this execution:
+  - On Windows PowerShell: `./scripts/filelist.ps1 <repository-root> <inventory-output>`
+  - On Bash: `./scripts/filelist.sh <repository-root> <inventory-output>`
+  - Apply repo-nav eligibility rules (text files, ignore rules, excluded folders, and `AGENTS.md` / `CLAUDE.md` exclusions) to this retained inventory.
+  - Build the folder tree and every folder-scoped file list by grouping and filtering the retained inventory. Do not run the inventory script again for individual folders.
+  - Store the retained inventory and each derived folder file list in `/.agents/memory/repo-nav/`.
+3. For incremental change detection, run the inventory script once at the repository root and compare the current root inventory to the previously stored root inventory. Compare file size values; files whose size changed are `MODIFIED`, files missing from the previous inventory are `DELETED`, and newly added files are `ADDED`.
+  - On Windows PowerShell: `./scripts/filelist.ps1 <repository-root> <current-inventory> -CompareToFile <previous-inventory>`
+  - On Bash: `./scripts/filelist.sh <repository-root> <current-inventory> <previous-inventory>`
+  - Attribute each change to its folder using the retained current inventory, then regenerate or update affected folder indexes and their required ancestors.
 5. For each folder, starting from the deepest folder and moving upward, do the following:
   1. identify the eligible text files (documents and source code) for this folder.
   2. Use the folder-scoped `/.agents/memory/repo-nav/<folder-relative-path>/filelist.md` to list down the input files that will be used in index generation in each folder.
