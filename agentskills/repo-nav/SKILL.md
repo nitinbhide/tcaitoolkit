@@ -275,6 +275,8 @@ In addition to folder indexes, generate the following cross-cutting indexes when
 
 Use the generated authoritative `DOCMAP.md` and folder-level `docmap.md` files as the source of truth for all cross-cutting map generation. Do not re-scan the repository or source files for these maps; derive everything from the authoritative docmap hierarchy.
 
+Cross-cutting maps may include only relationships and facts explicitly present in the authoritative docmap hierarchy. Do not perform separate issue, dependency, architecture, or change-impact analysis while generating these maps. If a requested category is not represented in the docmaps, mark it as `Not available in the generated docmaps` rather than inferring or fabricating content.
+
 ## FEATURE_MAP.md
 
 Contains information about the important features of the system.
@@ -284,7 +286,7 @@ Feature information containss
 - Design
 - Source
 - Tests
-- Issues
+- Documented issues or TODO/FIXME/NOTE markers
 
 ## ARCHITECTURE_MAP.md
 

@@ -80,6 +80,8 @@ Deep, sparse directory trees (e.g., `src/main/java/com/org/app/module/impl/`) cr
 
 While folder-level `docmap.md` files follow physical disk organization, real-world development tasks cut across directory structures. The skill defines five specialized cross-cutting maps located at the repository root.
 
+All cross-cutting maps are derived only from the authoritative `DOCMAP.md` and folder-level `docmap.md` hierarchy. They do not trigger a second repository scan or perform independent issue, dependency, architecture, or change-impact analysis. When the hierarchy does not contain evidence for a requested category, the map records that the information is unavailable rather than inferring it.
+
 ```
 Repository Root
 ├── DOCMAP.md               (Primary Hierarchical Entry Point)
@@ -98,7 +100,7 @@ Maps system business capabilities to their concrete artifacts across the codebas
   - Architecture & design documents (`docs/design/*.md`, ADRs).
   - Primary source files & service classes.
   - Verification & test suites.
-  - Known issues or TODO items.
+   - Issues explicitly documented in indexed files or TODO/FIXME/NOTE items recorded in the docmaps.
 
 ### 3.2 `ARCHITECTURE_MAP.md`
 Documents the structural blueprint and engineering conventions.
