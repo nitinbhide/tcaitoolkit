@@ -2,6 +2,17 @@
 
 Use this reference for PowerShell operations that supplement the authoritative `rg --files` inventory. PowerShell is for filesystem operations and comparisons that ripgrep cannot express, not for replacing repository discovery.
 
+## Content Search
+
+Use ripgrep (`rg`) to search file contents and regular expressions. Do not use PowerShell regex commands such as `Select-String` for repository content searches when `rg` is available. Quote patterns containing spaces or regular-expression characters:
+
+```powershell
+rg -n "TODO|FIXEME|NOTE" .
+rg -n "TODO|FIXEME|NOTE" docs -g "*.md"
+```
+
+Use `Select-String` only as a platform-native fallback when ripgrep is unavailable.
+
 ## Path Handling
 
 - Treat repository-relative paths as strings using `/` separators. Normalize a path with `.Replace([char]92, [char]47)` when needed; do not use `-replace '\\'` or other regex-based backslash replacement.

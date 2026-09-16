@@ -2,6 +2,17 @@
 
 Use this reference for Bash operations on Unix-like systems that supplement the authoritative `rg --files` inventory. Bash is for filesystem operations and comparisons that ripgrep cannot express, not for replacing repository discovery.
 
+## Content Search
+
+Use ripgrep (`rg`) to search file contents and regular expressions. Do not use Bash regex commands or `grep` for repository content searches when `rg` is available. Quote patterns containing spaces or regular-expression characters:
+
+```bash
+rg -n 'TODO|FIXEME|NOTE' .
+rg -n 'TODO|FIXEME|NOTE' docs -g '*.md'
+```
+
+Use `grep` only as a platform-native fallback when ripgrep is unavailable.
+
 ## Path Handling
 
 - Treat repository-relative paths as strings using `/` separators. Do not convert them to absolute paths until a filesystem operation requires it.

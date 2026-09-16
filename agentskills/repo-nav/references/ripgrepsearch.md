@@ -23,6 +23,12 @@ Use `rg --files` as the first and authoritative repository-discovery command. Do
 - Use `rg -C 3 "<pattern>" <path>` to show three lines of context around each match.
 - Use `rg -l "<pattern>" <path>` to return only matching file names.
 
+**Marker search examples**
+
+- Search one file for TODO, FIXEME, or NOTE markers: `rg -n "TODO|FIXEME|NOTE" README.md`
+- Search a folder recursively, ignoring case: `rg -n -i "TODO|FIXEME|NOTE" .`
+- Search only Markdown files under a folder named "docs" : `rg -n "TODO|FIXEME|NOTE" docs -g "*.md"`
+
 **Scope searches deliberately**
 
 - Use `-t <type>` for recognized file types, such as `rg -t py` or `rg -t md`.
