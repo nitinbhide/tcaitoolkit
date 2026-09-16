@@ -192,7 +192,7 @@ Use only shell scripts (powershell, bash, batch files) for automation and reposi
 - Detect TODO / FIXME / NOTE. Detect TODO, FIXME, and NOTE case-insensitively in comments and documentation text. Record each occurrence with its line number and exact marker.
 - Generate lowercase, deduplicated, alphabetically sorted tags describing the file’s technologies, role, and major concepts.
 - Child folders must be ordered lexicographically by relative path
-- Every child-folder entry must link to that folder's `docmap.md` using a relative path from the current index, whether the child index already exists or is pending generation. Use the form ``- `child/docmap.md` — <summary>``; do not list a child folder without its `docmap.md` link.
+- Every listed child-folder entry must link to a surviving standalone `docmap.md` using a relative path from the current index. Use the form ``- `child/docmap.md` — <summary>``. A folder absorbed by its parent must not be listed as a child link; its summary, file entries, tags, and TODO/FIXME/NOTE entries must be represented inline in the parent index instead.
 - Files must be ordered lexicographically by filename within each folder
 - TODO / FIXME / NOTE entries for each file must be sorted by line number
 
@@ -238,6 +238,7 @@ The folder summary must consider
 - Perform merges from the deepest folders upward so that a parent receives the final content of all eligible descendants.
 - Preserve the merged folder's summary, file summaries, child-folder summaries, tags, and TODO/FIXME/NOTE entries in the parent index.
 - Rewrite every merged file and folder link relative to the parent docmap's location. Do not leave links relative to the absorbed child folder, and preserve anchors or other link fragments when present.
+- Do not retain a child-folder link for an absorbed folder. Child-folder links in the parent may reference only standalone child indexes that survive the merge.
 - Update the parent folder summary and entry counts after each merge, then remove the absorbed child `docmap.md` only after its content and corrected paths have been incorporated successfully.
 - Do not merge the root `DOCMAP.md` into another file. If a merged parent also has fewer than 10 entries, continue applying this rule to that parent.
 

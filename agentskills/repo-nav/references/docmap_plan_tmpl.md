@@ -82,6 +82,7 @@ Status Lifecycle & Merge Protocol:
 - IN_PROGRESS: Subagent or worker currently analyzing files in folder and writing filelist.md.
 - MARKED_FOR_MERGE: Folder analyzed and effective entries < 10. Summary and file entries are staged in agent memory (/.agents/memory/repo-nav/<path>/) awaiting parent folder incorporation. Child docmap.md is NOT published.
 - MERGED_INTO_PARENT: Parent folder has processed and incorporated this child's staged summaries with rewritten relative links. Child docmap.md is confirmed deleted or absent from disk.
+- Child-folder links may reference only surviving standalone child indexes. Absorbed folders are represented inline in the parent and must not retain a child-folder link.
 - COMPLETED: Standalone docmap.md generated, validated, and effective entry count >= 10 (or root DOCMAP.md).
 - SPLIT_REQUIRED: (Incremental mode) Folder was previously merged in parent, but added files increased its count to >= 10; requires dedicated docmap.md generation and removal of inlined entries from parent docmap.
 - SKIPPED_CLEAN: (Incremental mode) Folder and all its descendant subtrees had zero changes.
