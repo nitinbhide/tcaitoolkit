@@ -23,13 +23,21 @@ dependencies: [<moduleA>, <moduleB>, ...]
 
 # Folder Navigation
 
+## Merged Folders
+`docmap.md` of following folders are merged in this file.
+
+- `<child1>` : <one short paragraph summary of contents of files in "child1" folder>
+- `<child2>` : <one short paragraph summary of contents of files in "child2" folder>
+
+(Repeat for all files)
+
 ## Files
-- `<filename1>` : <one short paragraph summary/description.>
+- `<filename1>` : <one short paragraph summary of content of "filename1">
     - Size : <file size in bytes>
     - Tags: [<tags>]
     - TODO/FIXME/NOTE: <only if there is a TODO/FIXME/NOTE>
 
-- `<filename2>` : <one short concise paragraph summary/description.>
+- `<filename2>` : <one short paragraph summary of content of "filename2">
     - Size : <file size in bytes>
     - Tags: [<tags>]
     - TODO/FIXME/NOTE: <only if there is a TODO/FIXME/NOTE>
@@ -38,7 +46,8 @@ dependencies: [<moduleA>, <moduleB>, ...]
 
 ---
 
-## Child Folders
+
+## Links Child Folder docmaps 
 - `<child1>/docmap.md` — <short concise summary of content of the folder "child1" >
 - `<child2>/docmap.md` — <short summary of content of the folder "child2">
 
