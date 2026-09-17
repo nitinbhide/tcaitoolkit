@@ -8,11 +8,6 @@ uses PowerShell to inspect file sizes. This matches the repo-nav workflow, where
 `rg` is used for file discovery and PowerShell is used only for validation or
 metadata operations that `rg` cannot express directly.
 
-When a baseline file is supplied, the script compares the current inventory against
-that baseline and reports files that were added, modified, or deleted based on
-file size changes. This is used by the repo-nav skill to decide which files need
-index updates.
-
 .EXAMPLE
 ./filelist.ps1 .
 
@@ -25,16 +20,13 @@ index updates.
 .EXAMPLE
 ./filelist.ps1 . output.md -Recurse
 
-.EXAMPLE
-./filelist.ps1 . output.md -CompareToFile previous.md
 #>
+[CmdletBinding()]
 param(
     [string]$Path = ".",
     [string]$OutputFile = "",
     [string]$Glob = "",
-    [switch]$Recurse,
-    [string]$CompareToFile = "",
-    [switch]$OnlyChanged
+    [switch]$Recurse
 )
 
 $ErrorActionPreference = "Stop"
@@ -102,55 +94,14 @@ $rows = @(foreach ($file in $files) {
     }
 }) | Sort-Object { $_.File }
 
-if ($CompareToFile) {
-    $baseline = @{}
-    if (Test-Path -LiteralPath $CompareToFile) {
-        $lines = Get-Content -LiteralPath $CompareToFile
-        foreach ($line in $lines) {
-            if ($line -match '^\|\s*(.+?)\s*\|\s*(\d+)\s*\|$') {
-                $baseline[$matches[1].Trim()] = [int]$matches[2]
-            }
-        }
-    }
+$markdown = @(
+    "| File | Size (bytes) |",
+    "| --- | ---: |"
+) + ($rows | ForEach-Object {
+    "| $($_.File.Replace('|', '\\|')) | $($_.SizeBytes) |"
+})
 
-    $changedRows = @()
-    foreach ($row in $rows) {
-        $currentSize = $row.SizeBytes
-        $previousSize = $baseline[$row.File]
-        if ($null -eq $previousSize) {
-            $changedRows += [PSCustomObject]@{ File = $row.File; SizeBytes = $currentSize; Change = 'ADDED' }
-        }
-        elseif ($previousSize -ne $currentSize) {
-            $changedRows += [PSCustomObject]@{ File = $row.File; SizeBytes = $currentSize; Change = 'MODIFIED' }
-        }
-    }
-
-    foreach ($key in $baseline.Keys) {
-        $exists = $rows | Where-Object { $_.File -eq $key }
-        if (-not $exists) {
-            $changedRows += [PSCustomObject]@{ File = $key; SizeBytes = $baseline[$key]; Change = 'DELETED' }
-        }
-    }
-
-    $markdown = @(
-        "| File | Size (bytes) | Change |",
-        "| --- | ---: | --- |"
-    ) + ($changedRows | Sort-Object { $_.File } | ForEach-Object {
-        "| $($_.File.Replace('|', '\\|')) | $($_.SizeBytes) | $($_.Change) |"
-    })
-
-    $markdownText = $markdown -join [Environment]::NewLine
-}
-else {
-    $markdown = @(
-        "| File | Size (bytes) |",
-        "| --- | ---: |"
-    ) + ($rows | ForEach-Object {
-        "| $($_.File.Replace('|', '\\|')) | $($_.SizeBytes) |"
-    })
-
-    $markdownText = $markdown -join [Environment]::NewLine
-}
+$markdownText = $markdown -join [Environment]::NewLine
 
 if ($OutputFile) {
     $markdownText | Set-Content -Path $OutputFile -Encoding UTF8

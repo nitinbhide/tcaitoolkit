@@ -346,10 +346,6 @@ Authentication Change
   - Apply repo-nav eligibility rules (text files, ignore rules, excluded folders, and `AGENTS.md` / `CLAUDE.md` exclusions) to this retained inventory.
   - Build the folder tree and every folder-scoped file list by grouping and filtering the retained inventory. Do not run the inventory script again for individual folders.
   - Store the retained inventory and each derived folder file list in `/.agents/memory/repo-nav/`.
-3. For incremental change detection, run the inventory script once at the repository root and compare the current root inventory to the previously stored root inventory. Compare file size values; files whose size changed are `MODIFIED`, files missing from the previous inventory are `DELETED`, and newly added files are `ADDED`.
-  - On Windows PowerShell: `./scripts/filelist.ps1 <repository-root> <current-inventory> -CompareToFile <previous-inventory>`
-  - On Bash: `./scripts/filelist.sh <repository-root> <current-inventory> <previous-inventory>`
-  - Attribute each change to its folder using the retained current inventory, then regenerate or update affected folder indexes and their required ancestors.
 5. For each folder, starting from the deepest folder and moving upward, do the following:
   1. identify the eligible text files (documents and source code) for this folder.
   2. Use the folder-scoped `/.agents/memory/repo-nav/<folder-relative-path>/filelist.md` to list down the input files that will be used in index generation in each folder.

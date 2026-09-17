@@ -9,16 +9,12 @@
 #   2. Let ripgrep honor repository ignore rules automatically.
 #   3. Use shell/file metadata commands to measure file sizes.
 #   4. Emit the results as a Markdown table.
-#   5. If a baseline file is supplied, detect added/modified/deleted files
-#      using size deltas for repo-nav incremental update checks.
-
 set -u
 
 path="${1:-.}"
 output_file="${2:-}"
 glob=""
 recurse="false"
-baseline_file=""
 
 shift $(( $# >= 2 ? 2 : $# ))
 while (($# > 0)); do
@@ -36,13 +32,8 @@ while (($# > 0)); do
       shift
       ;;
     *)
-      if [[ -z "$baseline_file" ]]; then
-        baseline_file="$1"
-        shift
-      else
-        echo "Unexpected argument: $1" >&2
-        exit 1
-      fi
+      echo "Unexpected argument: $1" >&2
+      exit 1
       ;;
   esac
 done
@@ -107,69 +98,12 @@ for file in "${files[@]}"; do
   fi
 done
 
-if [[ -n "$baseline_file" && -f "$baseline_file" ]]; then
-  declare -A baseline_map=()
-  while IFS='|' read -r file_name size_value; do
-    if [[ "$file_name" =~ ^[[:space:]]*\| ]]; then
-      continue
-    fi
-    if [[ "$line" =~ ^\|[[:space:]]* ]]; then
-      continue
-    fi
-  done < <(grep -E '^\| ' "$baseline_file" || true)
 
-  while IFS= read -r line; do
-    if [[ "$line" =~ '^\| ' ]]; then
-      continue
-    fi
-    if [[ "$line" =~ ^\|[[:space:]]*[^|]+[[:space:]]*\|[[:space:]]*[0-9]+[[:space:]]*\|$ ]]; then
-      line="${line#|}"
-      line="${line%|}"
-      IFS='|' read -r file_name size_value <<< "$line"
-      file_name="${file_name//[[:space:]]/}"
-      baseline_map["$file_name"]="${size_value//[[:space:]]/}"
-    fi
-  done < "$baseline_file"
 
-  declare -A current_map=()
-  for row in "${rows[@]}"; do
-    IFS='|' read -r file_name size_value <<< "$row"
-    current_map["$file_name"]="$size_value"
-  done
 
-  changed_rows=()
-  for row in "${rows[@]}"; do
-    IFS='|' read -r file_name size_value <<< "$row"
-    if [[ -z "${baseline_map[$file_name]+x}" ]]; then
-      changed_rows+=("| ${file_name//|/\\|} | ${size_value} | ADDED |")
-    elif [[ "${baseline_map[$file_name]}" != "$size_value" ]]; then
-      changed_rows+=("| ${file_name//|/\\|} | ${size_value} | MODIFIED |")
-    fi
-  done
 
-  for file_name in "${!baseline_map[@]}"; do
-    if [[ -z "${current_map[$file_name]+x}" ]]; then
-      changed_rows+=("| ${file_name//|/\\|} | ${baseline_map[$file_name]} | DELETED |")
-    fi
-  done
 
-  if ((${#changed_rows[@]} == 0)); then
-    table='| File | Size (bytes) | Change |
-| --- | ---: | --- |'
-  else
-    sorted_changed=$(printf '%s\n' "${changed_rows[@]}" | LC_ALL=C sort)
-    table="| File | Size (bytes) | Change |
-| --- | ---: | --- |
-$sorted_changed"
-  fi
 
-  if [[ -n "$output_file" ]]; then
-    printf '%s\n' "$table" > "$output_file"
-  else
-    printf '%s\n' "$table"
-  fi
-  exit 0
-fi
 
 if ((${#rows[@]} == 0)); then
   table='| File | Size (bytes) |
