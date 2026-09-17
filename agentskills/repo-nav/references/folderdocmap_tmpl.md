@@ -32,13 +32,11 @@ dependencies: [<moduleA>, <moduleB>, ...]
 (Repeat for all files)
 
 ## Files
-- `<filename1>` : <one short paragraph summary of content of "filename1">
-    - Size : <file size in bytes>
+- `<filename1>` (Size : <file size in bytes>): <one short paragraph summary of content of "filename1">
     - Tags: [<tags>]
     - TODO/FIXME/NOTE: <only if there is a TODO/FIXME/NOTE>
 
-- `<filename2>` : <one short paragraph summary of content of "filename2">
-    - Size : <file size in bytes>
+- `<filename2>` (Size : <file size in bytes>) : <one short paragraph summary of content of "filename2">
     - Tags: [<tags>]
     - TODO/FIXME/NOTE: <only if there is a TODO/FIXME/NOTE>
 
