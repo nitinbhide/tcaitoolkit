@@ -53,17 +53,23 @@ During every execution step, the operator must follow the active "repo-nav" skil
 ## 1. Inventory & Execution Summary
 - **Repository Root**: `<absolute or root-relative path>`
 - **Discovery Tool**: `rg`
-- **Authoritative Inventory**: `<repository-root inventory path>`
 - **Execution Strategy**: Bottom-up (deepest leaf folders to repository root)
-- **Inventory Strategy**: One repository-root inventory; folder file lists are derived by grouping/filtering it
+- **Change Detection Strategy**: Use `detectchanges.ps1` / `detectchanges.sh` only when a folder already has a `docmap.md`; otherwise use `filelist.ps1` / `filelist.sh` to build a current inventory for the folder.
 - **Small-Folder Merge Threshold**: `< 10 direct entries (direct files + immediate child docmap links + absorbed files)`
-- **Authoritative Full Inventory**: `scripts/filelist.ps1 . <output-file> -Recurse` (user-directed; no standalone `rg --files` inventory)
-- **Per-Folder Inventory**: `scripts/filelist.ps1`, retained under `.agents/memory/repo-nav/<folder-relative-path>/filelist.md`
+- **Fallback Inventory Command**: `scripts/filelist.ps1 <folder-path> <output-file> [-Recurse]` or `scripts/filelist.sh <folder-path> <output-file> [-Recurse]`
+- **Docmap Change Detection Command**: `scripts/detectchanges.ps1 <folder-or-docmap-path>/docmap.md` or `scripts/detectchanges.sh <folder-or-docmap-path>/docmap.md`
 
 If `rg` is unavailable, stop the run. Do not select a fallback discovery tool or create an inventory with recursive filesystem scanning.
 
 ## 2. Incremental Change Detection (Only for mode: incremental)
 <!-- If mode is full_baseline, mark this section as 'N/A - Full Baseline Scan' -->
+
+- If the target folder already contains a `docmap.md`, use the `detectchanges` script for that docmap to compare recorded sizes against the current file system.
+- If the folder has no `docmap.md`, use `filelist` to generate the current folder inventory and treat that as the initial listing for index generation or update planning.
+- Comparison rules:
+  - `MODIFIED`: recorded docmap size differs from current file size
+  - `ADDED`: file exists on disk but is not listed in the docmap
+  - `DELETED`: file is listed in the docmap but is missing from disk
 
 ### Changed / Added / Deleted Files
 - `MODIFIED`: `<path/to/file1>` (Old Size: <bytes> bytes -> New Size: <bytes> bytes)
@@ -83,7 +89,7 @@ Folders MUST be ordered by Depth descending (deepest first), then lexicographica
 
 Status Lifecycle & Merge Protocol:
 - PENDING: Queued for execution.
-- IN_PROGRESS: Subagent or worker currently analyzing files in folder and writing filelist.md.
+- IN_PROGRESS: Subagent or worker currently analyzing files in folder and generating or validating the folder `docmap.md`.
 - MARKED_FOR_MERGE: Folder analyzed and effective entries < 10. Summary and file entries are staged in agent memory (/.agents/memory/repo-nav/<path>/) awaiting parent folder incorporation. Child docmap.md is NOT published.
 - MERGED_INTO_PARENT: Parent folder has processed and incorporated this child's staged summaries with rewritten relative links. Child docmap.md is confirmed deleted or absent from disk.
 - Child-folder links may reference only surviving standalone child indexes. Absorbed folders are represented inline in the parent and must not retain a child-folder link.
@@ -127,7 +133,7 @@ Effective Entries = Direct Files + Immediate Child Docmap Links + Absorbed Child
    - Read `/.agents/memory/docmap_plan.md`.
    - Locate the highest-depth (deepest) folder with status `IN_PROGRESS`, `MARKED_FOR_MERGE`, or `PENDING`.
    - If an `IN_PROGRESS` folder exists:
-     - Check `/.agents/memory/repo-nav/<folder-relative-path>/filelist.md` to resume incomplete file summaries.
+     - Re-open the folder's current `docmap.md` or use the filelist fallback inventory if the folder has no docmap yet.
      - Count effective entries:
        - If effective entries $< 10$ and not root: stage content in `/.agents/memory/repo-nav/<folder-path>/` and mark status `MARKED_FOR_MERGE`. Ensure no child `docmap.md` is left on disk.
        - If effective entries $\ge 10$ or root: write `docmap.md`, validate, and mark status `COMPLETED`.

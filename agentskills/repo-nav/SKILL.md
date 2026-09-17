@@ -46,9 +46,15 @@ DO NOT deviate from this SKILL instructions during the execution of the repo-nav
   - Do not generate Python, Node.js, or other helper scripts for docmap discovery or validation. 
 - If `rg` is not available, stop immediately and instruct the user: install ripgrep from https://github.com/burntsushi/ripgrep, restart the editor, and then retry the repo-nav skill.
 
-- Use following scripts for file listing/inventory purpose. It Generates a Markdown table listing repository files and their sizes.
+- Use the inventory scripts only for general repository file listing when needed. They generate a Markdown table listing repository files and sizes.
   - On Windows PowerShell: `./scripts/filelist.ps1 <folder-path> <output-file>`
   - On Bash: `./scripts/filelist.sh <folder-path> <output-file>`
+- For change detection and incremental docmap updates, use the dedicated `detectchanges` scripts only when a `docmap.md` already exists for the relevant folder:
+  - On Windows PowerShell: `./scripts/detectchanges.ps1 <folder-or-docmap-path>/docmap.md`
+  - On Bash: `./scripts/detectchanges.sh <folder-or-docmap-path>/docmap.md`
+  - These scripts read the file entries and sizes recorded in a `docmap.md`, resolve each filename relative to the docmap's parent folder, and compare them with the current filesystem state.
+  - If no `docmap.md` exists for that folder, fall back to the filelist scripts to build an inventory and use that as the basis for initial index generation or update planning.
+  - For repository root the docmap file name is `DOCMAP.md`
 
 ## Scope and boundaries
 
@@ -113,9 +119,9 @@ This file is the primary entry point for all AI agents.
 
 ## File/Folder Inclusion/Exclusion Rules
 
-### Use of filelist scripts (`filelist.ps1` and `filelist.sh`)
+### Use of inventory scripts (`filelist.ps1` and `filelist.sh`)
 
-The repo-nav skill relies on the `filelist` scripts to generate an authoritative inventory of repository files. These scripts respect repository ignore rules and provide a consistent basis for subsequent indexing and analysis.
+The `filelist` scripts are optional helper tools for ad-hoc repository file listing. They respect repository ignore rules and may be used to inspect files in a folder, but change detection and incremental docmap updates use the dedicated `detectchanges` scripts instead of any retained inventory workflow.
 
 - Use `-Glob "<pattern>"` to restrict inventory output to matching file types, for example `-Glob "*.{ps1,md}"`. 
 - By default, each script lists only files directly in the given folder. 
@@ -340,19 +346,20 @@ Authentication Change
   - Use the root `/.agents/memory/docmap_plan.md` to store the plan of the indexing operation at granular steps and to track progress of the index generation execution. 
   - ALWAYS Get the user's approval on plan BEFORE starting the plan execution. 
   - If the root `/.agents/memory/docmap_plan.md` exists, then update the file. 
-2. Run the repo-nav inventory script once at the repository root and retain its output as the authoritative inventory for this execution:
-  - On Windows PowerShell: `./scripts/filelist.ps1 <repository-root> <inventory-output>`
-  - On Bash: `./scripts/filelist.sh <repository-root> <inventory-output>`
-  - Apply repo-nav eligibility rules (text files, ignore rules, excluded folders, and `AGENTS.md` / `CLAUDE.md` exclusions) to this retained inventory.
-  - Build the folder tree and every folder-scoped file list by grouping and filtering the retained inventory. Do not run the inventory script again for individual folders.
-  - Store the retained inventory and each derived folder file list in `/.agents/memory/repo-nav/`.
-3. For incremental change detection, run the inventory script once at the repository root and compare the current root inventory to the previously stored root inventory. Compare file size values; files whose size changed are `MODIFIED`, files missing from the previous inventory are `DELETED`, and newly added files are `ADDED`.
-  - On Windows PowerShell: `./scripts/filelist.ps1 <repository-root> <current-inventory> -CompareToFile <previous-inventory>`
-  - On Bash: `./scripts/filelist.sh <repository-root> <current-inventory> <previous-inventory>`
-  - Attribute each change to its folder using the retained current inventory, then regenerate or update affected folder indexes and their required ancestors.
+2. Before updating indexes, check whether the relevant folder already has a `docmap.md`.
+  - If a `docmap.md` exists, run the docmap-based change detection script against it:
+    - On Windows PowerShell: `./scripts/detectchanges.ps1 <folder-or-docmap-path>/docmap.md`
+    - On Bash: `./scripts/detectchanges.sh <folder-or-docmap-path>/docmap.md`
+    - The script reads the file entries and sizes recorded in the folder-level `docmap.md`, resolves each filename relative to the parent directory of that `docmap.md`, and compares them against the files currently present on disk.
+    - Files whose recorded size no longer matches current file size are reported as `MODIFIED`; files present in the docmap but missing from disk are `DELETED`; files present on disk but not listed in the docmap are `ADDED`.
+    - Use this output to decide if the folder’s `docmap.md` needs regeneration or a targeted incremental update.
+  - If no `docmap.md` exists for the folder, use the filelist scripts instead to build the current file inventory and use it as the basis for initial index generation or update planning.
+3. For incremental update of docmaps, apply the detectchanges workflow only for folders that already have a `docmap.md`.
+  - For folders without an existing `docmap.md`, generate the index from the filelist inventory instead of trying to compare against a missing docmap.
+  - After identifying affected files, regenerate or update that folder’s `docmap.md` and then propagate the update to any ancestor indexes that reference it.
 5. For each folder, starting from the deepest folder and moving upward, do the following:
   1. identify the eligible text files (documents and source code) for this folder.
-  2. Use the folder-scoped `/.agents/memory/repo-nav/<folder-relative-path>/filelist.md` to list down the input files that will be used in index generation in each folder.
+  2. Use the current folder contents and the relevant `docmap.md` as the input set for index generation in each folder.
   3. Generate file summaries. Extract metadata (semantic tags, TODO/FIXME/NOTE) while generating the file summary. File summary must be generated using the LLM summarization.
   4. Generate folder summary.
   5. Use the template as per `./references/folderdocmap_tmpl.md` to generate this folder’s `docmap.md`.
