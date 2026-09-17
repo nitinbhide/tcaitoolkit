@@ -4,14 +4,12 @@ Use this reference for PowerShell operations that supplement the authoritative `
 
 ## Content Search
 
-Use ripgrep (`rg`) to search file contents and regular expressions. Do not use PowerShell regex commands such as `Select-String` for repository content searches when `rg` is available. Quote patterns containing spaces or regular-expression characters:
+Use ripgrep (`rg`) to search file contents using regular expressions. Do not use PowerShell regex commands such as `Select-String` for file content searches when `rg` is available. Quote patterns containing spaces or regular-expression characters:
 
 ```powershell
 rg -n "TODO|FIXEME|NOTE" .
 rg -n "TODO|FIXEME|NOTE" docs -g "*.md"
 ```
-
-Use `Select-String` only as a platform-native fallback when ripgrep is unavailable.
 
 ## Path Handling
 
@@ -32,7 +30,9 @@ Use PowerShell for:
 - immediate-directory checks with `Get-ChildItem` after the inventory has been established;
 - merge bookkeeping and relative-path rewriting that `rg` cannot express.
 
-Do not use PowerShell recursive enumeration as the initial repository scan. Do not create Python, Node.js, or other helper scripts for discovery or validation.
+Do not use PowerShell recursive enumeration as the initial repository scan. 
+Do not create Python, Node.js, or other helper scripts for discovery or validation.
+Do not user Powershell for searching contents based on regex. Use `rg` for searching the content using regex
 
 ## Validation Recovery
 
