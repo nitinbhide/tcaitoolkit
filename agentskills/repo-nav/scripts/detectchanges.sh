@@ -70,9 +70,9 @@ done < <(rg --pcre2 -N -o -P '^\s*-\s*`[^`]+`|^\s*-\s*Size\s*:\s*\d+\s+bytes' "$
 declare -A live_files=()
 mapfile -t inventory_files < <(
   rg --files \
-    --glob '!.*' \
-    --glob '!**/.*' \
-    --glob '!**/.*/**' \
+    --glob '!\.*' \
+    --glob '!**/\.*' \
+    --glob '!**/\.*/*' \
     --glob '!AGENTS.md' \
     --glob '!**/AGENTS.md' \
     --glob '!CLAUDE.md' \

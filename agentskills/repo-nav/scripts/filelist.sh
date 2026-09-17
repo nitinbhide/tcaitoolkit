@@ -62,9 +62,9 @@ if [[ -n "$glob" ]]; then
   rg_args+=(--glob "$glob")
 fi
 rg_args+=(
-  --glob '!.*'
-  --glob '!**/.*'
-  --glob '!**/.*/**'
+  --glob '!\.*'
+  --glob '!**/\.*'
+  --glob '!**/\.*/*'
   --glob '!AGENTS.md'
   --glob '!**/AGENTS.md'
   --glob '!CLAUDE.md'

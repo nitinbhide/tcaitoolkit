@@ -86,9 +86,9 @@ Get-ChildItem -Path $folderRoot -Recurse -File | Where-Object {
 # detection follows the exact repo-nav inclusion/exclusion rules.
 $rgArgs = @("--files")
 $rgArgs += @(
-    "--glob", "!.*",
-    "--glob", "!**/.*",
-    "--glob", "!**/.*/**",
+    "--glob", "!\.*",
+    "--glob", "!**/\.*",
+    "--glob", "!**/\.*/**",
     "--glob", "!AGENTS.md",
     "--glob", "!**/AGENTS.md",
     "--glob", "!CLAUDE.md",

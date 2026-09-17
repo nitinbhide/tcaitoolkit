@@ -51,9 +51,9 @@ if ($Glob) {
     $rgArgs += @("--glob", $Glob)
 }
 $rgArgs += @(
-    "--glob", "!.*",
-    "--glob", "!**/.*",
-    "--glob", "!**/.*/**",
+    "--glob", "!\.*",
+    "--glob", "!**/\.*",
+    "--glob", "!**/\.*/**",
     "--glob", "!AGENTS.md",
     "--glob", "!**/AGENTS.md",
     "--glob", "!CLAUDE.md",
