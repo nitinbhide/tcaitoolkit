@@ -77,11 +77,6 @@ foreach ($matchText in $rawMatches) {
 $changes = @()
 $liveFiles = @{}
 
-Get-ChildItem -Path $folderRoot -Recurse -File | Where-Object {
-    $_.FullName -ne $resolvedDocMapPath
-} | ForEach-Object {
-    $baseFullPath = [System.IO.Path]::GetFullPath($folderRoot).TrimEnd([char]92, [char]47)
-    $fullFilePath = [System.IO.Path]::GetFullPath($_.FullName)
 # Use the same rg-based file filtering logic as filelist.ps1 so the docmap change
 # detection follows the exact repo-nav inclusion/exclusion rules.
 $rgArgs = @("--files")
@@ -106,7 +101,7 @@ $inventoryFiles = @( & rg @rgArgs )
 
 foreach ($file in $inventoryFiles) {
     $fullFilePath = (Resolve-Path -LiteralPath $file -ErrorAction Stop).Path
-    $baseFullPath = [System.IO.Path]::GetFullPath($folderRoot).TrimEnd('\\', '/')
+    $baseFullPath = [System.IO.Path]::GetFullPath($folderRoot).TrimEnd([char]92, [char]47)
     $relative = if ($fullFilePath.StartsWith($baseFullPath, [System.StringComparison]::OrdinalIgnoreCase)) {
         $tmp = $fullFilePath.Substring($baseFullPath.Length)
         $tmp.TrimStart([char]92, [char]47)
