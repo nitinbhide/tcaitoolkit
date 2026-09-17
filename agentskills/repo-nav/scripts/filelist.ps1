@@ -8,6 +8,8 @@ uses PowerShell to inspect file sizes. This matches the repo-nav workflow, where
 `rg` is used for file discovery and PowerShell is used only for validation or
 metadata operations that `rg` cannot express directly.
 
+The script emits a current repository inventory for the repo-nav workflow.
+
 .EXAMPLE
 ./filelist.ps1 .
 
@@ -21,7 +23,6 @@ metadata operations that `rg` cannot express directly.
 ./filelist.ps1 . output.md -Recurse
 
 #>
-[CmdletBinding()]
 param(
     [string]$Path = ".",
     [string]$OutputFile = "",

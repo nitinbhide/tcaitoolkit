@@ -2,13 +2,14 @@
 # Generates a Markdown table listing repository files and their sizes.
 #
 # Usage:
-#   ./filelist.sh [path] [output-file] [-Glob glob] [-Recurse] [baseline-file]
+#   ./filelist.sh [path] [output-file] [-Glob glob] [-Recurse]
 #
 # Workflow:
 #   1. Use rg --files as the authoritative repository inventory.
 #   2. Let ripgrep honor repository ignore rules automatically.
 #   3. Use shell/file metadata commands to measure file sizes.
 #   4. Emit the results as a Markdown table.
+
 set -u
 
 path="${1:-.}"
@@ -97,13 +98,6 @@ for file in "${files[@]}"; do
     rows+=("${file}|${size}")
   fi
 done
-
-
-
-
-
-
-
 
 if ((${#rows[@]} == 0)); then
   table='| File | Size (bytes) |
