@@ -80,11 +80,11 @@ $liveFiles = @{}
 Get-ChildItem -Path $folderRoot -Recurse -File | Where-Object {
     $_.FullName -ne $resolvedDocMapPath
 } | ForEach-Object {
-    $baseFullPath = [System.IO.Path]::GetFullPath($folderRoot).TrimEnd('\\', '/')
+    $baseFullPath = [System.IO.Path]::GetFullPath($folderRoot).TrimEnd([char]92, [char]47)
     $fullFilePath = [System.IO.Path]::GetFullPath($_.FullName)
     $relative = if ($fullFilePath.StartsWith($baseFullPath, [System.StringComparison]::OrdinalIgnoreCase)) {
         $tmp = $fullFilePath.Substring($baseFullPath.Length)
-        $tmp.TrimStart('\\', '/')
+        $tmp.TrimStart([char]92, [char]47)
     } else {
         $_.Name
     }
