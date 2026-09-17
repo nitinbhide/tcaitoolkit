@@ -82,15 +82,40 @@ Get-ChildItem -Path $folderRoot -Recurse -File | Where-Object {
 } | ForEach-Object {
     $baseFullPath = [System.IO.Path]::GetFullPath($folderRoot).TrimEnd([char]92, [char]47)
     $fullFilePath = [System.IO.Path]::GetFullPath($_.FullName)
+# Use the same rg-based file filtering logic as filelist.ps1 so the docmap change
+# detection follows the exact repo-nav inclusion/exclusion rules.
+$rgArgs = @("--files")
+$rgArgs += @(
+    "--glob", "!.*",
+    "--glob", "!**/.*",
+    "--glob", "!**/.*/**",
+    "--glob", "!AGENTS.md",
+    "--glob", "!**/AGENTS.md",
+    "--glob", "!CLAUDE.md",
+    "--glob", "!**/CLAUDE.md",
+    "--glob", "!DOCMAP.md",
+    "--glob", "!**/DOCMAP.md",
+    "--glob", "!docmap.md",
+    "--glob", "!**/docmap.md",
+    "--glob", "!*_MAP.md",
+    "--glob", "!**/*_MAP.md"
+)
+$rgArgs += $folderRoot
+
+$inventoryFiles = @( & rg @rgArgs )
+
+foreach ($file in $inventoryFiles) {
+    $fullFilePath = (Resolve-Path -LiteralPath $file -ErrorAction Stop).Path
+    $baseFullPath = [System.IO.Path]::GetFullPath($folderRoot).TrimEnd('\\', '/')
     $relative = if ($fullFilePath.StartsWith($baseFullPath, [System.StringComparison]::OrdinalIgnoreCase)) {
         $tmp = $fullFilePath.Substring($baseFullPath.Length)
         $tmp.TrimStart([char]92, [char]47)
     } else {
-        $_.Name
+        [System.IO.Path]::GetFileName($fullFilePath)
     }
     $relative = $relative.Replace('\\', '/').Replace('\', '/')
-    if ($relative -ne 'docmap.md') {
-        $liveFiles[$relative] = $_.Length
+    if (-not [string]::IsNullOrWhiteSpace($relative) -and $relative -ne 'docmap.md') {
+        $liveFiles[$relative] = (Get-Item -LiteralPath $fullFilePath).Length
     }
 }
 

@@ -7,7 +7,6 @@ usage() {
 }
 
 debug=false
-
 docmap_path="docmap.md"
 
 if [[ $# -gt 2 ]]; then
@@ -38,65 +37,76 @@ if [[ ! -f "$docmap_path" ]]; then
   exit 1
 fi
 
-resolved_docmap_path="$(realpath "$docmap_path")"
-folder_root="$(dirname "$resolved_docmap_path")"
-
 if ! command -v rg >/dev/null 2>&1; then
   echo "ripgrep ('rg') is required but was not found on PATH." >&2
   exit 1
 fi
 
-# Parse the docmap with rg in a single pass: capture file entry + size entry blocks.
-# The file names in the docmap are resolved relative to the directory containing docmap.md.
-mapfile -t raw_matches < <(
-  rg --pcre2 -U -N -o -P '^\s*-\s*`[^`]+`.*?^\s*-\s*Size\s*:\s*\d+\s+bytes' "$resolved_docmap_path" || true
-)
+resolved_docmap_path="$(realpath "$docmap_path")"
+folder_root="$(dirname "$resolved_docmap_path")"
 
+# Parse the docmap using rg. File names inside the docmap are relative to the
+# directory containing docmap.md, so the comparison is made against that folder.
 declare -A recorded_files=()
 declare -a docmap_entries=()
 
-for match in "${raw_matches[@]}"; do
-  file_name=""
-  size=""
+while IFS= read -r line; do
+  [[ -z "$line" ]] && continue
 
-  if [[ "$match" =~ ^[[:space:]]*-[[:space:]]*\`([^\`]+)\` ]]; then
+  if [[ "$line" =~ ^[[:space:]]*-[[:space:]]*\`([^\`]+)\` ]]; then
     file_name="${BASH_REMATCH[1]}"
-  fi
-
-  if [[ "$match" =~ [[:space:]]*-[[:space:]]*Size[[:space:]]*:[[:space:]]*([0-9]+)[[:space:]]+bytes ]]; then
-    size="${BASH_REMATCH[1]}"
-  fi
-
-  if [[ -n "$file_name" && -n "$size" ]]; then
     normalized="${file_name//\\//}"
-    recorded_files["$normalized"]="$size"
-    docmap_entries+=("$normalized:$size")
+
+    if IFS= read -r next_line; then
+      if [[ "$next_line" =~ ^[[:space:]]*-[[:space:]]*Size[[:space:]]*:[[:space:]]*([0-9]+)[[:space:]]+bytes ]]; then
+        size="${BASH_REMATCH[1]}"
+        recorded_files["$normalized"]="$size"
+        docmap_entries+=("$normalized:$size")
+      fi
+    fi
   fi
-done
+done < <(rg --pcre2 -N -o -P '^\s*-\s*`[^`]+`|^\s*-\s*Size\s*:\s*\d+\s+bytes' "$resolved_docmap_path")
 
 declare -A live_files=()
-while IFS= read -r -d '' file; do
+mapfile -t inventory_files < <(
+  rg --files \
+    --glob '!.*' \
+    --glob '!**/.*' \
+    --glob '!**/.*/**' \
+    --glob '!AGENTS.md' \
+    --glob '!**/AGENTS.md' \
+    --glob '!CLAUDE.md' \
+    --glob '!**/CLAUDE.md' \
+    --glob '!DOCMAP.md' \
+    --glob '!**/DOCMAP.md' \
+    --glob '!docmap.md' \
+    --glob '!**/docmap.md' \
+    --glob '!*_MAP.md' \
+    --glob '!**/*_MAP.md' \
+    "$folder_root"
+)
+
+for file in "${inventory_files[@]}"; do
   rel_path="${file#$folder_root/}"
   rel_path="${rel_path//\\//}"
 
-  if [[ "$rel_path" != "docmap.md" ]]; then
-    live_files["$rel_path"]="$(stat -c %s -- "$file")"
+  if [[ -n "$rel_path" && "$rel_path" != "docmap.md" && -f "$file" ]]; then
+    live_files["$rel_path"]="$(wc -c < "$file" | tr -d '[:space:]')"
   fi
-done < <(find "$folder_root" -type f -not -path "$resolved_docmap_path" -print0)
+done
 
 declare -a changes=()
 
 for file in "${!recorded_files[@]}"; do
   expected_size="${recorded_files[$file]}"
   full_path="$folder_root/$file"
-  full_path="${full_path//\//\/}"
 
   if [[ ! -f "$full_path" ]]; then
     changes+=("$file|$expected_size|0|DELETED")
     continue
   fi
 
-  actual_size="${live_files[$file]:-$(stat -c %s -- "$full_path")}" 
+  actual_size="${live_files[$file]:-$(wc -c < "$full_path" | tr -d '[:space:]')}"
   if [[ "$actual_size" != "$expected_size" ]]; then
     changes+=("$file|$expected_size|$actual_size|MODIFIED")
   fi
