@@ -36,7 +36,7 @@ $folderRoot = Split-Path -Parent $resolvedDocMapPath
 # this pattern in references/folderdocmap_tmpl.md and evals/docmap.md. File paths in
 # the docmap are relative to the folder containing docmap.md, so $folderRoot is the
 # parent directory of the provided docmap.
-$docMapFilePattern = '^\s*-\s*`(?<file>[^`]+)`'
+$docMapFilePattern = '^\s*-\s*`(?<file>(?![^`]+/docmap\.md`)(?![^`/]+_MAP\.md`)[^`]+)`'
 $docMapSizePattern = '^\s*-\s*Size\s*:\s*(?<size>\d+)\s+bytes'
 
 $fileNameMatches = @(

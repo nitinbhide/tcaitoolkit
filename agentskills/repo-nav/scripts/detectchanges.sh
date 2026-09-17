@@ -65,7 +65,7 @@ while IFS= read -r line; do
       fi
     fi
   fi
-done < <(rg --pcre2 -N -o -P '^\s*-\s*`[^`]+`|^\s*-\s*Size\s*:\s*\d+\s+bytes' "$resolved_docmap_path")
+done < <(rg --pcre2 -N -o -P '^\s*-\s*`(?!(?:[^`]+/docmap\.md|[^`/]+_MAP\.md)`)[^`]+`|^\s*-\s*Size\s*:\s*\d+\s+bytes' "$resolved_docmap_path")
 
 declare -A live_files=()
 mapfile -t inventory_files < <(
