@@ -31,37 +31,26 @@ if (-not $DocMapPath) {
 $resolvedDocMapPath = (Resolve-Path -LiteralPath $DocMapPath -ErrorAction Stop).Path
 $folderRoot = Split-Path -Parent $resolvedDocMapPath
 
-# Parse file-name and size lines in one pass, preserving their document order so
-# each size is associated with the file entry immediately before it.
-$docMapPattern = '^\s*-\s*(?:`(?<file>(?![^`]+/docmap\.md`)(?![^`/]+_MAP\.md`)[^`]+)`|Size\s*:\s*(?<size>\d+)\s+bytes)'
+# Parse each file entry and its following size as one multiline rg match. The
+# boundary prevents the match from crossing into another backtick file entry.
+$docMapPattern = '(?ms)^\s*-\s*`(?<file>(?![^`]+/docmap\.md`)(?![^`/]+_MAP\.md`)[^`]+)`(?:(?!^\s*-\s*`).)*?^\s*-\s*Size\s*:\s*(?<size>\d+)\s+bytes'
+$docMapReplacement = '${file}' + [char]9 + '${size}'
 
 $docMapMatches = @(
-    & rg --pcre2 -N -o $docMapPattern $resolvedDocMapPath
+    & rg --pcre2 -U -N -o --replace $docMapReplacement $docMapPattern $resolvedDocMapPath
 )
 
 $recordedFiles = @{}
 $docMapEntries = @()
-
-$pendingFile = $null
 foreach ($matchText in $docMapMatches) {
-    $parsedMatch = [regex]::Match($matchText, $docMapPattern)
-
-    if ($parsedMatch.Groups['file'].Success) {
-        $fileName = $parsedMatch.Groups['file'].Value.Trim()
-        if (-not [string]::IsNullOrWhiteSpace($fileName)) {
-            $pendingFile = $fileName.Replace('\\', '/').Replace('\', '/')
-        }
-        continue
-    }
-
-    if ($parsedMatch.Groups['size'].Success -and $null -ne $pendingFile) {
-        $size = [int]$parsedMatch.Groups['size'].Value
-        $recordedFiles[$pendingFile] = $size
-        $docMapEntries += [PSCustomObject]@{
-            File = $pendingFile
-            Size = $size
-        }
-        $pendingFile = $null
+    $separatorIndex = $matchText.IndexOf("`t")
+    $fileName = $matchText.Substring(0, $separatorIndex).Trim()
+    $size = [int]$matchText.Substring($separatorIndex + 1)
+    $normalized = $fileName.Replace('\\', '/').Replace('\', '/')
+    $recordedFiles[$normalized] = $size
+    $docMapEntries += [PSCustomObject]@{
+        File = $normalized
+        Size = $size
     }
 }
 
