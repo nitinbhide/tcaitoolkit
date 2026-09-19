@@ -12,6 +12,10 @@ The output is in markdown format
 "| Filename | Size in DocMap | Actual Size | Status |"
 "| --- | ---: | ---: | --- |"
 ```
+
+Status must of the `DELETED`, `MODIFIED`, `ADDED`. 
+Unmodified files are not reported.
+
 If the Debug flag is True, then the script also outputs debug information on files
 
 ## Detecting filenames and sizes
@@ -47,4 +51,5 @@ There are two ways file name and sizes are recorded in the docmaps.
 - Keep the filtering logic same as in "filelist.ps1"
 - Always implement new changes in the `detectchanges.ps1`
 - Make sure to keep the `detectchanges.sh` in sync with `detectchanges.ps1`
+- To check if the file is modified, file sizes are to be compared. Assume that file is modified it the size is changed. If the file size in bytes in same, then treat the file is "unmodified"
 
