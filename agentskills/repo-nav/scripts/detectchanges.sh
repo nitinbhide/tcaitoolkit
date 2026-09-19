@@ -45,27 +45,28 @@ fi
 resolved_docmap_path="$(realpath "$docmap_path")"
 folder_root="$(dirname "$resolved_docmap_path")"
 
-# Parse the docmap using rg. File names inside the docmap are relative to the
-# directory containing docmap.md, so the comparison is made against that folder.
+# Parse file-name and size lines in one pass, preserving their document order so
+# each size is associated with the file entry immediately before it. File names
+# inside the docmap are relative to the directory containing docmap.md.
 declare -A recorded_files=()
 declare -a docmap_entries=()
+pending_file=""
 
-while IFS= read -r line; do
-  [[ -z "$line" ]] && continue
+docmap_pattern='^\s*-\s*(?:`(?<file>(?![^`]+/docmap\.md`)(?![^`/]+_MAP\.md`)[^`]+)`|Size\s*:\s*(?<size>[0-9]+)\s+bytes)'
 
-  if [[ "$line" =~ ^[[:space:]]*-[[:space:]]*\`([^\`]+)\` ]]; then
+while IFS= read -r match; do
+  [[ -z "$match" ]] && continue
+
+  if [[ "$match" =~ ^[[:space:]]*-[[:space:]]*\`([^\`]+)\` ]]; then
     file_name="${BASH_REMATCH[1]}"
-    normalized="${file_name//\\//}"
-
-    if IFS= read -r next_line; then
-      if [[ "$next_line" =~ ^[[:space:]]*-[[:space:]]*Size[[:space:]]*:[[:space:]]*([0-9]+)[[:space:]]+bytes ]]; then
-        size="${BASH_REMATCH[1]}"
-        recorded_files["$normalized"]="$size"
-        docmap_entries+=("$normalized:$size")
-      fi
-    fi
+    pending_file="${file_name//\\//}"
+  elif [[ "$match" =~ ^[[:space:]]*-[[:space:]]*Size[[:space:]]*:[[:space:]]*([0-9]+)[[:space:]]+bytes ]] && [[ -n "$pending_file" ]]; then
+    size="${BASH_REMATCH[1]}"
+    recorded_files["$pending_file"]="$size"
+    docmap_entries+=("$pending_file:$size")
+    pending_file=""
   fi
-done < <(rg --pcre2 -N -o -P '^\s*-\s*`(?!(?:[^`]+/docmap\.md|[^`/]+_MAP\.md)`)[^`]+`|^\s*-\s*Size\s*:\s*\d+\s+bytes' "$resolved_docmap_path")
+done < <(rg --pcre2 -N -o "$docmap_pattern" "$resolved_docmap_path")
 
 declare -A live_files=()
 mapfile -t inventory_files < <(

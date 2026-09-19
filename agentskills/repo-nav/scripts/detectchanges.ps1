@@ -31,46 +31,37 @@ if (-not $DocMapPath) {
 $resolvedDocMapPath = (Resolve-Path -LiteralPath $DocMapPath -ErrorAction Stop).Path
 $folderRoot = Split-Path -Parent $resolvedDocMapPath
 
-# Parse the docmap using rg in two passes: first collect file-name lines, then
-# collect the corresponding "- Size : <n> bytes" lines. The repo-nav template uses
-# this pattern in references/folderdocmap_tmpl.md and evals/docmap.md. File paths in
-# the docmap are relative to the folder containing docmap.md, so $folderRoot is the
-# parent directory of the provided docmap.
-$docMapFilePattern = '^\s*-\s*`(?<file>(?![^`]+/docmap\.md`)(?![^`/]+_MAP\.md`)[^`]+)`'
-$docMapSizePattern = '^\s*-\s*Size\s*:\s*(?<size>\d+)\s+bytes'
+# Parse file-name and size lines in one pass, preserving their document order so
+# each size is associated with the file entry immediately before it.
+$docMapPattern = '^\s*-\s*(?:`(?<file>(?![^`]+/docmap\.md`)(?![^`/]+_MAP\.md`)[^`]+)`|Size\s*:\s*(?<size>\d+)\s+bytes)'
 
-$fileNameMatches = @(
-    & rg --pcre2 -N -o $docMapFilePattern $resolvedDocMapPath
+$docMapMatches = @(
+    & rg --pcre2 -N -o $docMapPattern $resolvedDocMapPath
 )
-$sizeMatches = @(
-    & rg --pcre2 -N -o $docMapSizePattern $resolvedDocMapPath
-)
-
-$rawMatches = @()
-$maxCount = [Math]::Min($fileNameMatches.Count, $sizeMatches.Count)
-for ($i = 0; $i -lt $maxCount; $i++) {
-    $rawMatches += "$($fileNameMatches[$i])`n$($sizeMatches[$i])"
-}
 
 $recordedFiles = @{}
 $docMapEntries = @()
-foreach ($matchText in $rawMatches) {
-    if ($matchText) {
-        $fileMatch = [regex]::Match($matchText, '^\s*-\s*`(?<file>[^`]+)`', [System.Text.RegularExpressions.RegexOptions]::Multiline)
-        $sizeMatch = [regex]::Match($matchText, '^\s*-\s*Size\s*:\s*(?<size>\d+)\s+bytes', [System.Text.RegularExpressions.RegexOptions]::Multiline)
 
-        if ($fileMatch.Success -and $sizeMatch.Success) {
-            $fileName = $fileMatch.Groups['file'].Value.Trim()
-            $size = [int]$sizeMatch.Groups['size'].Value
-            if (-not [string]::IsNullOrWhiteSpace($fileName)) {
-                $normalized = $fileName.Replace('\\', '/').Replace('\', '/')
-                $recordedFiles[$normalized] = $size
-                $docMapEntries += [PSCustomObject]@{
-                    File = $normalized
-                    Size = $size
-                }
-            }
+$pendingFile = $null
+foreach ($matchText in $docMapMatches) {
+    $parsedMatch = [regex]::Match($matchText, $docMapPattern)
+
+    if ($parsedMatch.Groups['file'].Success) {
+        $fileName = $parsedMatch.Groups['file'].Value.Trim()
+        if (-not [string]::IsNullOrWhiteSpace($fileName)) {
+            $pendingFile = $fileName.Replace('\\', '/').Replace('\', '/')
         }
+        continue
+    }
+
+    if ($parsedMatch.Groups['size'].Success -and $null -ne $pendingFile) {
+        $size = [int]$parsedMatch.Groups['size'].Value
+        $recordedFiles[$pendingFile] = $size
+        $docMapEntries += [PSCustomObject]@{
+            File = $pendingFile
+            Size = $size
+        }
+        $pendingFile = $null
     }
 }
 
