@@ -43,6 +43,14 @@ List of specialized navigation maps generated. Use the format
 
 - `<navigation map file name>` : one line purpose of the map.
 
+## Merged Child Folders
+`docmap.md` of following child folders are merged in this file.
+
+- `<child1>` : <one short paragraph summary of contents of files in "child1" folder>
+- `<child2>` : <one short paragraph summary of contents of files in "child2" folder>
+
+(Repeat for all merged folders)
+
 ## Folders
 - `<folder1>/docmap.md` — <short summary of content of the folder/description>
 - `<folder2>/docmap.md` — <short summary of content of the folder/description>short summary of content of the folder/description

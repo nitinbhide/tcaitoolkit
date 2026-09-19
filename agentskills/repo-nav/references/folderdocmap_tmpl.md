@@ -23,13 +23,13 @@ dependencies: [<moduleA>, <moduleB>, ...]
 
 # Folder Navigation
 
-## List Merged Child Folders
+## Merged Child Folders
 `docmap.md` of following child folders are merged in this file.
 
 - `<child1>` : <one short paragraph summary of contents of files in "child1" folder>
 - `<child2>` : <one short paragraph summary of contents of files in "child2" folder>
 
-(Repeat for all files)
+(Repeat for all merged folders)
 
 ## Files
 - `<filename1>` (Size : <file size in bytes>): <one short paragraph summary of content of "filename1">
