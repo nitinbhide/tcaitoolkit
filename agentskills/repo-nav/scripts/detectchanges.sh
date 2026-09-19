@@ -45,47 +45,54 @@ fi
 resolved_docmap_path="$(realpath "$docmap_path")"
 folder_root="$(dirname "$resolved_docmap_path")"
 
-# Parse file-name and size lines in one pass, preserving their document order so
-# each size is associated with the file entry immediately before it. File names
-# inside the docmap are relative to the directory containing docmap.md.
+# Parse each file entry and its size as one multiline rg match. The two size
+# locations cover both documented forms; the boundary prevents crossing into
+# another backtick file entry.
 declare -A recorded_files=()
 declare -a docmap_entries=()
-pending_file=""
+docmap_pattern='(?ms)^\s*-\s*`(?<file>(?![^`]+/docmap\.md`)(?![^`/]+_MAP\.md`)[^`]+)`(?:(?:[^\r\n]*?\(\s*Size\s*:\s*)|(?:(?!^\s*-\s*`).)*?^\s*-\s*Size\s*:\s*)(?<size>[0-9]+)\s+bytes'
+docmap_replacement='${file}'$'\t''${size}'
 
-docmap_pattern='^\s*-\s*(?:`(?<file>(?![^`]+/docmap\.md`)(?![^`/]+_MAP\.md`)[^`]+)`|Size\s*:\s*(?<size>[0-9]+)\s+bytes)'
-
-while IFS= read -r match; do
-  [[ -z "$match" ]] && continue
-
-  if [[ "$match" =~ ^[[:space:]]*-[[:space:]]*\`([^\`]+)\` ]]; then
-    file_name="${BASH_REMATCH[1]}"
-    pending_file="${file_name//\\//}"
-  elif [[ "$match" =~ ^[[:space:]]*-[[:space:]]*Size[[:space:]]*:[[:space:]]*([0-9]+)[[:space:]]+bytes ]] && [[ -n "$pending_file" ]]; then
-    size="${BASH_REMATCH[1]}"
-    recorded_files["$pending_file"]="$size"
-    docmap_entries+=("$pending_file:$size")
-    pending_file=""
-  fi
-done < <(rg --pcre2 -N -o "$docmap_pattern" "$resolved_docmap_path")
+while IFS=$'\t' read -r normalized size; do
+  [[ -z "$normalized" ]] && continue
+  normalized="${normalized//\\//}"
+  recorded_files["$normalized"]="$size"
+  docmap_entries+=("$normalized:$size")
+done < <(rg --pcre2 -U -N -o --replace "$docmap_replacement" "$docmap_pattern" "$resolved_docmap_path")
 
 declare -A live_files=()
-mapfile -t inventory_files < <(
-  rg --files \
-    --glob '!\.*' \
-    --glob '!**/\.*' \
-    --glob '!**/\.*/*' \
-    --glob '!AGENTS.md' \
-    --glob '!**/AGENTS.md' \
-    --glob '!CLAUDE.md' \
-    --glob '!**/CLAUDE.md' \
-    --glob '!DOCMAP.md' \
-    --glob '!**/DOCMAP.md' \
-    --glob '!docmap.md' \
-    --glob '!**/docmap.md' \
-    --glob '!*_MAP.md' \
-    --glob '!**/*_MAP.md' \
-    "$folder_root"
+rg_filters=(
+  --glob '!\.*'
+  --glob '!**/\.\*'
+  --glob '!**/\.\*/*'
+  --glob '!AGENTS.md'
+  --glob '!**/AGENTS.md'
+  --glob '!CLAUDE.md'
+  --glob '!**/CLAUDE.md'
+  --glob '!DOCMAP.md'
+  --glob '!**/DOCMAP.md'
+  --glob '!docmap.md'
+  --glob '!**/docmap.md'
+  --glob '!*_MAP.md'
+  --glob '!**/*_MAP.md'
 )
+
+declare -a inventory_files=()
+mapfile -t inventory_files < <(rg --files --max-depth 1 "${rg_filters[@]}" "$folder_root")
+
+declare -A merged_folders=()
+for file in "${!recorded_files[@]}"; do
+  if [[ "$file" == */* ]]; then
+    merged_folders["${file%/*}"]=1
+  fi
+done
+
+for merged_folder in "${!merged_folders[@]}"; do
+  merged_folder_path="$folder_root/${merged_folder//\//\/}"
+  while IFS= read -r file; do
+    [[ -n "$file" ]] && inventory_files+=("$file")
+  done < <(rg --files "${rg_filters[@]}" "$merged_folder_path")
+done
 
 for file in "${inventory_files[@]}"; do
   rel_path="${file#$folder_root/}"

@@ -31,9 +31,10 @@ if (-not $DocMapPath) {
 $resolvedDocMapPath = (Resolve-Path -LiteralPath $DocMapPath -ErrorAction Stop).Path
 $folderRoot = Split-Path -Parent $resolvedDocMapPath
 
-# Parse each file entry and its following size as one multiline rg match. The
-# boundary prevents the match from crossing into another backtick file entry.
-$docMapPattern = '(?ms)^\s*-\s*`(?<file>(?![^`]+/docmap\.md`)(?![^`/]+_MAP\.md`)[^`]+)`(?:(?!^\s*-\s*`).)*?^\s*-\s*Size\s*:\s*(?<size>\d+)\s+bytes'
+# Parse each file entry and its size as one multiline rg match. The two size
+# locations cover both documented forms; the boundary prevents crossing into
+# another backtick file entry.
+$docMapPattern = '(?ms)^\s*-\s*`(?<file>(?![^`]+/docmap\.md`)(?![^`/]+_MAP\.md`)[^`]+)`(?:(?:[^\r\n]*?\(\s*Size\s*:\s*)|(?:(?!^\s*-\s*`).)*?^\s*-\s*Size\s*:\s*)(?<size>\d+)\s+bytes'
 $docMapReplacement = '${file}' + [char]9 + '${size}'
 
 $docMapMatches = @(
@@ -58,9 +59,10 @@ $changes = @()
 $liveFiles = @{}
 
 # Use the same rg-based file filtering logic as filelist.ps1 so the docmap change
-# detection follows the exact repo-nav inclusion/exclusion rules.
-$rgArgs = @("--files")
-$rgArgs += @(
+# detection follows the exact repo-nav inclusion/exclusion rules. Inventory only
+# the docmap folder itself and folders represented by recorded file entries;
+# unrelated recursive child folders belong to their own docmaps.
+$rgArgs = @(
     "--glob", "!\.*",
     "--glob", "!**/\.*",
     "--glob", "!**/\.*/**",
@@ -75,9 +77,22 @@ $rgArgs += @(
     "--glob", "!*_MAP.md",
     "--glob", "!**/*_MAP.md"
 )
-$rgArgs += $folderRoot
+$rootRgArgs = @("--files", "--max-depth", "1") + $rgArgs + @($folderRoot)
+$inventoryFiles = @(& rg @rootRgArgs)
 
-$inventoryFiles = @( & rg @rgArgs )
+$mergedFolders = @{}
+foreach ($entry in $recordedFiles.Keys) {
+    $separatorIndex = $entry.LastIndexOf('/')
+    if ($separatorIndex -gt 0) {
+        $mergedFolders[$entry.Substring(0, $separatorIndex)] = $true
+    }
+}
+
+foreach ($mergedFolder in $mergedFolders.Keys) {
+    $mergedFolderPath = Join-Path $folderRoot $mergedFolder.Replace('/', [System.IO.Path]::DirectorySeparatorChar)
+    $mergedRgArgs = @("--files") + $rgArgs + @($mergedFolderPath)
+    $inventoryFiles += @( & rg @mergedRgArgs )
+}
 
 foreach ($file in $inventoryFiles) {
     $fullFilePath = (Resolve-Path -LiteralPath $file -ErrorAction Stop).Path
