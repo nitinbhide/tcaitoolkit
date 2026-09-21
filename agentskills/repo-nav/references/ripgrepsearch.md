@@ -60,6 +60,9 @@ Use the following flag only when task **EXPLICITLY** requires them
 - Keep discovery, folder selection, metadata extraction, index generation, and validation as separate phases. A validation command must consume the selected folder or retained inventory; it must not silently perform a new full-repository scan.
 - If `rg` is unavailable, use the platform-native fallback only: `Get-ChildItem -Recurse -File` and `Select-String` on Windows, or `find` and `grep` on Unix-like systems. Keep fallback searches scoped and honor ignore rules where supported.
 
+### Listing existing docmap files
+- Use `rg --files -g "{docmap,DOCMAP}.md" to list all the existing docmap files in the repository.
+
 ## Ripgrep Validation Contract
 
 - Use `rg -n` for marker discovery and `rg --only-matching` for child-link extraction. Do not parse child links with `[regex]::Matches`.
