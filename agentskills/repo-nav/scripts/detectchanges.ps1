@@ -61,7 +61,9 @@ $liveFiles = @{}
 # Use the same rg-based file filtering logic as filelist.ps1 so the docmap change
 # detection follows the exact repo-nav inclusion/exclusion rules. Inventory only
 # the docmap folder itself and folders represented by recorded file entries;
-# unrelated recursive child folders belong to their own docmaps.
+# unrelated recursive child folders belong to their own docmaps. Remember to check 
+# only the immediate folder. Child folder not mentioned in the docmap are 
+# not be considered.
 $rgArgs = @(
     "--glob", "!\.*",
     "--glob", "!**/\.*",
@@ -90,7 +92,7 @@ foreach ($entry in $recordedFiles.Keys) {
 
 foreach ($mergedFolder in $mergedFolders.Keys) {
     $mergedFolderPath = Join-Path $folderRoot $mergedFolder.Replace('/', [System.IO.Path]::DirectorySeparatorChar)
-    $mergedRgArgs = @("--files") + $rgArgs + @($mergedFolderPath)
+    $mergedRgArgs = @("--files", "--max-depth", "1") + $rgArgs + @($mergedFolderPath)
     $inventoryFiles += @( & rg @mergedRgArgs )
 }
 

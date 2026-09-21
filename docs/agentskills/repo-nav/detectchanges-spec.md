@@ -61,3 +61,4 @@ There are two ways file name and sizes are recorded in the docmaps.
     - This will require some pre-processing to understand which child docmaps are merged with parent docmaps. 
     - The files in those merged folders are to be analyzed for modification detection. Remaining folders must be ignored. - Use the "filename and size regex pattern" to detect the "merged folder names" whose child docmaps are merged with this docmap file. 
     - Then modify the "filename and size regex pattern" and include the only files with no parent folder mentioned or the folders mentioned the ""merged folder names".
+    - Remember to analyze only the immediate children of "merged folders" are to be analyzed and not all the recursive childerens.

@@ -91,7 +91,7 @@ for merged_folder in "${!merged_folders[@]}"; do
   merged_folder_path="$folder_root/${merged_folder//\//\/}"
   while IFS= read -r file; do
     [[ -n "$file" ]] && inventory_files+=("$file")
-  done < <(rg --files "${rg_filters[@]}" "$merged_folder_path")
+  done < <(rg --files --max-depth 1 "${rg_filters[@]}" "$merged_folder_path")
 done
 
 for file in "${inventory_files[@]}"; do
