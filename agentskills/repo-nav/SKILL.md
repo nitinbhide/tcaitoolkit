@@ -320,9 +320,10 @@ Contains:
 Contains:
 
 - Test strategy
-- Test suites
 - Coverage areas
 - Feature to test mapping
+- References to Test suites
+- References to Test plan documents
 
 ## CHANGE_IMPACT_MAP.md
 
@@ -343,7 +344,7 @@ Authentication Change
 ## Steps
 1. ALWAYS Prepare the **indexing operation plan** using the following steps. **Instructions for indexing operation plan creation**
 
-  - Use the template as per `./references/docmap_plan_tmpl.md` to create and update `/.agents/memory/docmap_plan.md`.
+  - Use the plan template as per `./references/docmap_plan_tmpl.md` to create and update `/.agents/memory/docmap_plan.md`.
   - Use the root `/.agents/memory/docmap_plan.md` to store the plan of the indexing operation at granular steps and to track progress of the index generation execution. 
   - ALWAYS Get the user's approval on plan BEFORE starting the plan execution. 
   - If the root `/.agents/memory/docmap_plan.md` exists, then update the file. 
@@ -403,7 +404,7 @@ The generated indexes/docmaps are successful when a coding agent can:
 5. Assess change impact
 6. Discover related tests and requirements
 7. Determine likely modification locations
-8. Use progressive disclosure to avoid unnecessary file reads
+8. Coding Agents will use progressive disclosure to avoid unnecessary file reads
 
 
 
