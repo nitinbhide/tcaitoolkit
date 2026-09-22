@@ -73,6 +73,22 @@ List of specialized navigation maps generated. Use the format
 
 # Instructions for AI Coding Agents
 
+## When to Use This Index/DOCMAP
+- Agents should use docmaps to identify candidate files before searching. 
+- Source searches must be narrowly scoped to the relevant package or feature directory; generated build artifacts are not source-of-truth files.
+- Use this index/DOCMAP to 
+    - Understand repository architecture
+    - Understand major business capabilities
+    - Locate implementation areas
+    - Understand technology stacks
+    - Understand dependencies
+    - Locate related tests
+    - Locate related specifications
+    - Evaluate change impact
+    - Determine which files to read
+    - Determine which files to modify
+- Avoid unnecessary repository exploration using 'find', 'grep' kind of searches.
+
 ## How This Index Is Organized
 This repository uses a progressive disclosure index hierarchy.  
 Each folder contains an `docmap.md` summarizing its contents.  
@@ -84,28 +100,16 @@ Hierarchy:
 - File entries → purpose + responsibilities + semantic tags + TODO/FIXME/NOTE  
 
 ## How to Use This Index/DOCMAP
-1. Start at this root `DOCMAP.md` to understand the repository structure.  
-2. Navigate into relevant folders using the links above.  
-3. Use folder-level summaries to narrow down your search.  
-4. Use file summaries and semantic tags to identify candidate files.  
-5. Always read the actual source code before making changes.  
+1. Start at this root `DOCMAP.md` to understand the repository shape.
+2. Navigate into the relevant package or sample app using the links above.
+3. Follow the folder level/child docmaps to the implementation area that matches the task.
+4. Read the specific source files only after narrowing the folder or feature.
+5. Use folder summaries and semantic tags to avoid broad repository exploration.
+6. Always read the actual source code before making changes.  
 
 ### Additional Tips
-- To find files relevant to a topic (e.g., bootstrap, auth, htmx), check the semantic_tags and Tags: attributes in folder-level docmap.md files instead of scanning raw source code."
+- To find files relevant to a topic check the semantic_tags and Tags: attributes in folder-level docmap.md files instead of scanning raw source code."
 - Try to use "Cross Navigation Maps" for relevant folder docmap files.  
-
-## When to Use This Index/DOCMAP
-- Understand repository architecture
-- Understand major business capabilities
-- Locate implementation areas
-- Understand technology stacks
-- Understand dependencies
-- Locate related tests
-- Locate related specifications
-- Evaluate change impact
-- Determine which files to read
-- Determine which files to modify
-- Avoid unnecessary repository exploration
 
 ## Notes
 - Summaries are intentionally short (4–5 sentences, one paragraph).  
