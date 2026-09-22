@@ -227,7 +227,8 @@ The file summary must consider
 - What are the responsibilities, roles, and semantic themes?
 
 **Good Example of Summary**
-Implements authentication using the Passkey, JWT and OAuth2. Considers security considers like 2FA and progressive delays for authentication failures. Uses Factory and Observer patterns. SHA1024 hash algorithm is used.
+Implements authentication using the Passkey, JWT and OAuth2. Considers security considers like 2FA and progressive delays for authentication failures. Uses Factory and Observer patterns. SHA1024 hash algorithm is used. 
+Implements class `AuthManager` that coordinates authentication using the various authentication methods.
 Limitation- Automatic logout after some time is not implemented yet.
 
 **Bad Example of Summary**
