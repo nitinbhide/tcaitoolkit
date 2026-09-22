@@ -12,10 +12,11 @@ This skill is about using Version Control like git from your coding agents. This
 3. [Skill To Evaluate Skills](./agentskills/skill-eval-skill/)
 This is Skill to evaluate other skill using your Coding Agent framework (e.g. Github Copilot or Claude Code). 
 4. [Grill me](./agentskills/grill-me/)
-This a skill based on mattpocock 'grill me' skill. It is about grilling you (user) about the a given document (especially source code document or design document)
+This a skill based on [mattpocock 'grill me' skill](https://github.com/mattpocock/skills/tree/main/skills/productivity/grill-me). It is about grilling you (user) about the a given document (especially source code document or design document)
 5. [repo-nav](./agentskills/repo-nav/)
 This skill generates docmap markdown files for improving the repository navigation for your coding agents. Especially useful when you have existing software development project and you want to use AI Coding Agents in this project.
 
+### Installing Skills
 Use the [`instskill.bat`](./agentskills/instskill.bat) or [`instskill.sh`](./agentskills/instskill.sh) scripts in [agentskills](./agentskills) folder to install the skill in your coding repository. The install script will detect which Coding Agent you are using and install the SKILL files in appropriate folder.
 
 _NOTE_ : _All the above skills are undergoing changes and not fully stabilized yet. Feel free to use and share your feedback._
