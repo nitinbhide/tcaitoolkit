@@ -370,7 +370,8 @@ Authentication Change
 7. Generate the **Specialized Repository Navigation Maps**
 8. Use the template as per `./references/rootdocmap_tmpl.md` to generate (and/or update) the project root `DOCMAP.md`. Always update the root index as project root `/DOCMAP.md` if even you are updating some specific subfolder of the project.
 9. Review and validate the generated `DOCMAP.md` and folder-level `docmap.md` files to ensure accuracy and completeness.
-10. Update the "**Executation Log**" section of `docmap_plan.md` after each incremental update. 
+10. AGENTS.md must contain instructions about how to use the docmaps effectively. Check if the AGENTS.md file exists. If it exists, review and update it as neccessary. If it does not exist, then create it. Use the `references\agents_tmpl.md` template for guidance for updating the AGENTS.md file.
+11. Update the "**Executation Log**" section of `docmap_plan.md` after each incremental update. 
 
 # Confidence Rules
 
