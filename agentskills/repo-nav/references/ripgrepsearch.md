@@ -61,7 +61,7 @@ Use the following flag only when task **EXPLICITLY** requires them
 - If `rg` is unavailable, use the platform-native fallback only: `Get-ChildItem -Recurse -File` and `Select-String` on Windows, or `find` and `grep` on Unix-like systems. Keep fallback searches scoped and honor ignore rules where supported.
 
 ### Listing existing docmap files
-- Use `rg --files -g "{docmap,DOCMAP}.md" to list all the existing docmap files in the repository.
+- Use `rg --files -g "{docmap,DOCMAP}.md"` to list all the existing docmap files in the repository.
 
 ## Ripgrep Validation Contract
 
