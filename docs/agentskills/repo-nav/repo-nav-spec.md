@@ -31,6 +31,9 @@ The index hierarchy is a navigation aid for AI coding agents, not a replacement 
 Agents should use index files to identify relevant folders and files before reading implementation artifacts. The objective is to minimize repository exploration while preserving sufficient architectural understanding to make correct implementation decisions.
 What will be your strategy guideline for cross cutting indexes ? 
 
+## Multi-Project Repositories
+The original assumption was that the root index file and the cross-cutting maps always live at the physical top of the repository. A single repository can host multiple independent projects, so it must be possible to designate any folder as a root folder and generate that project's root `DOCMAP.md` and cross-cutting maps there instead of, or in addition to, the physical repository top. See [repo-nav-design.md](./repo-nav-design.md) (Designated Root Folder) for the current design.
+
 **CAUTION**
 This document describes the initial thoughts of repo-nav SKILL. It was originally called the repoindexer SKILL. The implementation and design is incrementally improved. And the current implementation has many more features and ideas compared to this spec document
 
