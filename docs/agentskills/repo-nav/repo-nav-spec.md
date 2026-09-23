@@ -7,28 +7,23 @@ Following prompts were used in creating this skill.
 
 ## Prompts
 
-- Help in me in writing a new agent skill. The purpose of the skill is to analyze existing code base, (source code, design documents, speficiation documents, plans, bugs/issues, test cases and test plans). Objective to create hierarchical index files. The index files should follow "progressive disclosure" principle. Each index file will contain filenames/paths and sumary of content of that file. The AI coding agents will use these index files to understand the code structure, design and take decisions about implementation. especially which files to read and modify.
+- Help in me in writing a new agent skill. The purpose of the skill is to analyze existing code base, (source code, design documents, speficiation documents, plans, bugs/issues, test cases and test plans). Objective to create hierarchical index files. The index files should follow "progressive disclosure" principle. Each index file will contain filenames/paths and sumary of content of that file. The AI coding agents will use these index files to understand the code structure, design and take decisions about implementation. especially which files to read and modify. The index files are named `docmap.md`
 - Ask me questions first. Then generate skeleton of skill file
-
 - The expected output format is markdown 
-
 - Initially analyze only content of repository. Do not go outside the repository 
-
 - Summary should be 4-5 lines maximum. It is document purpose of the file and any other important meta data 
-
 - Each folder will have a index file. Parent folder will have reference to child folders index files. I want to generate 'folder level' summary of contents of the folder. Parent folder will have reference to child folder index file name and the summary 
-
 - the root level index file must have instructions on how the index is orgnalized and how AI coding agent should use the index. 
 
 - Avoid hierarchy definitions like 
-    |-- Index.md
+    |-- docmap.md
     |--src/
-    |      |--Index.md
+    |      |--docmap.md
 
 
 - Prefer simpler format like
-    - `Index.md` : <purpose of file>
-    - `src/index.md` : purpose file 
+    - `docmap.md` : <purpose of file>
+    - `src/docmap.md` : purpose file 
 
 ## Guiding Principle
 The index hierarchy is a navigation aid for AI coding agents, not a replacement for source code or documentation.
