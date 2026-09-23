@@ -53,7 +53,17 @@ DO NOT deviate from this SKILL instructions during the execution of the repo-nav
   - On Bash: `./scripts/detectchanges.sh <folder-or-docmap-path>/docmap.md`
   - These scripts read the file entries and sizes recorded in a `docmap.md`, resolve each filename relative to the docmap's parent folder, and compare them with the current filesystem state.
   - If no `docmap.md` exists for that folder, fall back to the filelist scripts to build an inventory and use that as the basis for initial index generation or update planning.
-  - For repository root the docmap file name is `DOCMAP.md`
+  - At the Designated Root Folder (see below) the docmap file name is `DOCMAP.md`; at every other folder it is `docmap.md`.
+
+## Designated Root Folder (DRF)
+A repository may contain multiple independent projects (a monorepo). The **Designated Root Folder (DRF)** is the folder treated as the logical root for one indexing run: it is where that run's root `DOCMAP.md` and Specialized Repository Navigation Maps are written.
+
+- **Default:** If the user does not specify one, the DRF is the physical top-level folder of the repository.
+- **Explicit designation:** The user may designate any folder (typically a subproject's top-level folder) as a DRF instead.
+- **Multiple DRFs:** A repository may have more than one DRF. Treat each DRF as an independent indexing run, scoped strictly to its own subtree, with its own `docmap_plan.md`, its own root `DOCMAP.md`, and its own Specialized Repository Navigation Maps. Never read or write into a sibling DRF's subtree while processing another DRF.
+- **Confirm before starting:** Always confirm the DRF(s) for the current run with the user before generating the indexing operation plan. If unspecified, state that the physical repository top will be used as the default DRF.
+- **Root Protection:** A DRF's own `DOCMAP.md` is never merged into a parent folder's docmap, even below the small-folder merge threshold, and even when the DRF is not the physical repository top.
+- **Folders outside any DRF:** Folders outside every designated DRF's subtree are out of scope for the current run and must be left untouched.
 
 ## Scope and boundaries
 
@@ -79,10 +89,11 @@ The generated indexes/docmap shall help agents:
 ---
 ## Inputs
 - Root directory path of the local repository.
+- Optional: one or more Designated Root Folder (DRF) paths within the repository. Defaults to the repository's top-level folder when not specified.
 
 ## Outputs
 - Markdown index files written directly into each folder of the repository.
-- The root index file must be generated using the template `rootdocmap_tmpl.md`.
+- The root index file must be generated at each Designated Root Folder using the template `rootdocmap_tmpl.md`.
 - All folder-level index files must be generated using the template `folderdocmap_tmpl.md`.
 
 ## Behavior
@@ -109,12 +120,12 @@ The skill establishes one authoritative repository inventory, processes eligible
 The skill must fill these templates with actual repository data.
 
 ### Root Index Requirements
-The root `DOCMAP.md` **must include a section** explaining:
+The root `DOCMAP.md` at each Designated Root Folder **must include a section** explaining:
 - how the index hierarchy is organized  
 - how AI coding agents should use the index  
 
 (The actual instruction text is defined inside the template `rootdocmap_tmpl.md`.)
-This file is the primary entry point for all AI agents.
+This file is the primary entry point for all AI agents working on that DRF's project.
 
 ## File/Folder Inclusion/Exclusion Rules
 
@@ -246,7 +257,7 @@ The folder summary must consider
 - Rewrite every merged file and folder link relative to the parent docmap's location. Do not leave links relative to the absorbed child folder, and preserve anchors or other link fragments when present.
 - Do not retain a child-folder link for an absorbed folder. Child-folder links in the parent may reference only standalone child indexes that survive the merge.
 - Update the parent folder summary and entry counts after each merge, then remove the absorbed child `docmap.md` only after its content and corrected paths have been incorporated successfully.
-- Do not merge the root `DOCMAP.md` into another file. If a merged parent also has fewer than 10 entries, continue applying this rule to that parent.
+- Do not merge a Designated Root Folder's `DOCMAP.md` into another file, regardless of entry count. If a merged parent also has fewer than 10 entries, continue applying this rule to that parent, unless that parent is itself a DRF.
 
 ## Dependency Graph
 - Dependency extraction and dependency graph generation are reserved for a future requirement.
@@ -282,6 +293,8 @@ In addition to folder indexes, generate the following cross-cutting indexes when
 Use the generated authoritative `DOCMAP.md` and folder-level `docmap.md` files as the source of truth for all cross-cutting map generation. Do not re-scan the repository or source files for these maps; derive everything from the authoritative docmap hierarchy.
 
 Cross-cutting maps may include only relationships and facts explicitly present in the authoritative docmap hierarchy. Do not perform separate issue, dependency, architecture, or change-impact analysis while generating these maps. If a requested category is not represented in the docmaps, mark it as `Not available in the generated docmaps` rather than inferring or fabricating content.
+
+Generate these maps at each Designated Root Folder (DRF, see "Designated Root Folder (DRF)" above), scoped only to that DRF's own subtree. In a multi-project repository, each DRF gets its own independent set of these files; do not merge or cross-reference maps across sibling DRFs.
 
 ## FEATURE_MAP.md
 
@@ -343,10 +356,11 @@ Authentication Change
 ## Steps
 1. ALWAYS Prepare the **indexing operation plan** using the following steps. **Instructions for indexing operation plan creation**
 
-  - Use the plan template as per `./references/docmap_plan_tmpl.md` to create and update `/.agents/memory/docmap_plan.md`.
-  - Use the root `/.agents/memory/docmap_plan.md` to store the plan of the indexing operation at granular steps and to track progress of the index generation execution. 
+  - Confirm the Designated Root Folder(s) (DRF) for this run with the user; default to the physical repository top when none is specified.
+  - Use the plan template as per `./references/docmap_plan_tmpl.md` to create and update `<DRF>/.agents/memory/docmap_plan.md`, scoped to each DRF's subtree.
+  - Use each DRF's `docmap_plan.md` to store the plan of the indexing operation at granular steps and to track progress of the index generation execution for that DRF. 
   - ALWAYS Get the user's approval on plan BEFORE starting the plan execution. 
-  - If the root `/.agents/memory/docmap_plan.md` exists, then update the file. 
+  - If a DRF's `docmap_plan.md` exists, then update the file. 
 2. Before updating indexes, check whether the relevant folder already has a `docmap.md`.
   - If a `docmap.md` exists, run the docmap-based change detection script against it:
     - On Windows PowerShell: `./scripts/detectchanges.ps1 <folder-or-docmap-path>/docmap.md`
@@ -357,8 +371,8 @@ Authentication Change
   - If no `docmap.md` exists for the folder, use the filelist scripts instead to build the current file inventory and use it as the basis for initial index generation or update planning.
 3. For incremental update of docmaps, apply the detectchanges workflow only for folders that already have a `docmap.md`.
   - For folders without an existing `docmap.md`, generate the index from the filelist inventory instead of trying to compare against a missing docmap.
-  - After identifying affected files, regenerate or update that folder’s `docmap.md` and then propagate the update to any ancestor indexes that reference it.
-5. For each folder, starting from the deepest folder and moving upward, do the following:
+  - After identifying affected files, regenerate or update that folder’s `docmap.md` and then propagate the update to any ancestor indexes that reference it, up to and including that DRF's root `DOCMAP.md`.
+5. For each folder within the current DRF's subtree, starting from the deepest folder and moving upward, do the following:
   1. identify the eligible text files (documents and source code) for this folder.
   2. Use the current folder contents and the relevant `docmap.md` as the input set for index generation in each folder.
   3. Generate file summaries. Extract metadata (semantic tags, TODO/FIXME/NOTE) while generating the file summary. File summary must be generated using the LLM summarization.
@@ -367,11 +381,12 @@ Authentication Change
   6. Perform incremental update of folder level `docmap.md`
   7. **Use the 'subagent' to generate and execute steps for individual folder.**
 6. Skip dependency graph generation for now.
-7. Generate the **Specialized Repository Navigation Maps**
-8. Use the template as per `./references/rootdocmap_tmpl.md` to generate (and/or update) the project root `DOCMAP.md`. Always update the root index as project root `/DOCMAP.md` if even you are updating some specific subfolder of the project.
+7. Generate the **Specialized Repository Navigation Maps** at the current DRF.
+8. Use the template as per `./references/rootdocmap_tmpl.md` to generate (and/or update) the current DRF's root `DOCMAP.md`. Always update that DRF's root index even if you are only updating some specific subfolder of the project.
 9. Review and validate the generated `DOCMAP.md` and folder-level `docmap.md` files to ensure accuracy and completeness.
 10. AGENTS.md must contain instructions about how to use the docmaps effectively. Check if the AGENTS.md file exists. If it exists, review and update it as neccessary. If it does not exist, then create it. Use the `references\agents_tmpl.md` template for guidance for updating the AGENTS.md file.
 11. Update the "**Executation Log**" section of `docmap_plan.md` after each incremental update. 
+12. If multiple DRFs were confirmed in Step 1, repeat Steps 2–11 for each remaining DRF.
 
 # Confidence Rules
 
@@ -397,7 +412,7 @@ Never fabricate architecture, requirements, dependencies, or business purpose.
 
 The generated indexes/docmaps are successful when a coding agent can:
 
-1. Understand repository purpose from `DOCMAP.md`
+1. Understand a project's purpose from its Designated Root Folder's `DOCMAP.md`
 2. Navigate to relevant modules without scanning the entire repository
 3. Locate implementation files faster
 4. Understand feature ownership
@@ -405,6 +420,7 @@ The generated indexes/docmaps are successful when a coding agent can:
 6. Discover related tests and requirements
 7. Determine likely modification locations
 8. Coding Agents will use progressive disclosure to avoid unnecessary file reads
+9. In a multi-project repository, identify the correct Designated Root Folder for a task without reading unrelated sibling projects' docmaps
 
 
 
