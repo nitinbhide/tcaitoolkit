@@ -46,8 +46,12 @@ DO NOT deviate from this SKILL instructions during the execution of the repo-nav
 - If `rg` is not available, stop immediately and instruct the user: install ripgrep from https://github.com/burntsushi/ripgrep, restart the editor, and then retry the repo-nav skill.
 
 - Use the inventory scripts only for general repository file listing when needed. They generate a Markdown table listing repository files and sizes.
-  - On Windows PowerShell: `./scripts/filelist.ps1 <folder-path> <output-file>`
-  - On Bash: `./scripts/filelist.sh <folder-path> <output-file>`
+  
+  - For single folder, no recursion, On Windows PowerShell: `./scripts/filelist.ps1 <folder-path> <output-file>`
+  - For single folder, no recursion,  On Bash: `./scripts/filelist.sh <folder-path> <output-file>`
+  - Entire hierarchy of given folder,  on Windows PowerShell`./scripts/filelist.ps1 <folder-path> <output-file> -Recurse`
+  - Entire hierarchy of given folder,  on Bash: `./scripts/filelist.sh <folder-path> <output-file> -Recurse`
+
 - For change detection and incremental docmap updates, use the dedicated `detectchanges` scripts only when a `docmap.md` already exists for the relevant folder:
   - On Windows PowerShell: `./scripts/detectchanges.ps1 <folder-or-docmap-path>/docmap.md`
   - On Bash: `./scripts/detectchanges.sh <folder-or-docmap-path>/docmap.md`
