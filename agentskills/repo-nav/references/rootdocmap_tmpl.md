@@ -1,5 +1,5 @@
 ---
-folder: "/"
+folder: "<designated root folder. Default '/'>"
 generated_on: "<timestamp>"
 num_files: <integer>
 semantic_tags: [<tags>]
