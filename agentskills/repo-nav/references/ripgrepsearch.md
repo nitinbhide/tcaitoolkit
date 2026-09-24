@@ -7,9 +7,10 @@ Use `rg -h` (or `rg --help`) to view the help and available options for ripgrep.
 
 Use this priority order:
 
-1. `rg --files` (file discovery)
-2. `rg <pattern>` (content search)
-3. `rg --files | rg <pattern>` (filename search)
+1. ripgrep/rg based scripts from scripts folder (e.g. `filelist` or `detectchanges`).  If the scripts are not sufficient for the task then only add custom ad-hoc `rg` commands
+2. `rg --files` (file discovery)
+3. `rg <pattern>` (content search)
+4. `rg --files | rg <pattern>` (filename search)
 
 Use `rg --files` as the first and authoritative repository-discovery command. Do not use `Get-ChildItem`, `find`, or equivalent recursive file discovery unless you first verify that `rg` is unavailable. You may use PowerShell only after discovery for file sizes, directory existence, or operations that `rg` cannot express.
 
@@ -54,7 +55,8 @@ Use the following flag only when task **EXPLICITLY** requires them
 ## Repository Scan Contract
 
 - Check availability first: use `Get-Command rg -ErrorAction SilentlyContinue` on Windows PowerShell or `command -v rg` on Unix-like shells.
-- When available, establish one authoritative inventory with `rg --files` and retain it for grouping, candidate selection, metadata extraction, and final checks. Do not rescan the repository for each phase.
+- Do not use this section to build the first-time eligible-file count or folder/file inventory for a folder. That inventory must come from `../scripts/filelist.ps1` / `../scripts/filelist.sh` (see the skill's "Reference Workflow and Tools" and "Use of inventory scripts" sections). Do not hand-write an `rg --files` pipeline (with custom `-g` globs, folder-splitting, or counting logic) to reproduce what those scripts already do.
+- When available, use `rg --files` only for targeted, already-scoped content or filename searches after a `filelist`-based or `docmap.md`-based inventory exists; retain results for grouping, candidate selection, metadata extraction, and final checks instead of rescanning the repository for each phase.
 - `rg --files` already honors `.gitignore`, `.ignore`, and `.git/info/exclude`. Do not copy repository ignore patterns into additional globs. The only normal workflow-specific exclusion is `--glob '!**/docmap.md'` when generated indexes must be omitted from the input inventory.
 - Apply file-type, hidden-name, configuration, binary, `AGENTS.md`, and `CLAUDE.md` eligibility filtering after discovery. Do not replace the authoritative inventory with recursive PowerShell enumeration.
 - Keep discovery, folder selection, metadata extraction, index generation, and validation as separate phases. A validation command must consume the selected folder or retained inventory; it must not silently perform a new full-repository scan.
