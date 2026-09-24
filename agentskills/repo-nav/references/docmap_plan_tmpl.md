@@ -12,6 +12,7 @@ The plan tracks repository inventory, execution order, folder merge decisions, i
 ```markdown
 ---
 plan_version: "1.1.0"
+designated_root_folder: "<designated root folder. Default is repository root>"
 mode: "<full_baseline | incremental>"
 status: "<PENDING_APPROVAL | IN_PROGRESS | COMPLETED | FAILED>"
 created_at: "<ISO-8601 Timestamp>"
