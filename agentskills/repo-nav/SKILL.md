@@ -43,9 +43,10 @@ DO NOT deviate from this SKILL instructions during the execution of the repo-nav
 - The reference workflow is mandatory: 
   - Do not replace its authoritative inventory with an ad hoc recursive scan,  
   - Do not generate Python, Node.js, or other helper scripts for docmap discovery or validation. 
+  - Do not construct ad hoc `rg --files` pipelines (e.g. inline PowerShell/Bash one-liners combining `rg --files` with custom globs, `ForEach-Object`/`awk`/`sed` folder-splitting, or manual counting) as a substitute for the `filelist` scripts. Any request for an eligible file count or a folder/file inventory must be satisfied by invoking `filelist.ps1`/`filelist.sh`, not by hand-rolling an equivalent `rg` command.
 - If `rg` is not available, stop immediately and instruct the user: install ripgrep from https://github.com/burntsushi/ripgrep, restart the editor, and then retry the repo-nav skill.
 
-- Use the inventory scripts only for general repository file listing when needed. They generate a Markdown table listing repository files and sizes.
+- Use the inventory scripts (`filelist.ps1` / `filelist.sh`) as the **required** mechanism for producing the eligible-file count and file/folder inventory the first time a folder is indexed (i.e. whenever no `docmap.md` exists yet for that folder). They generate a Markdown table listing repository files and sizes, and already apply the skill's inclusion/exclusion globs (`AGENTS.md`, `CLAUDE.md`, `docmap.md`/`DOCMAP.md`, `*_MAP.md`, hidden files, etc.). Raw `rg --files` invocations from `references/ripgrepsearch.md` are reserved for targeted content/filename searches if `filelist` and `detectchanges` scripts are not sufficient for the task.
   
   - For single folder, no recursion, On Windows PowerShell: `./scripts/filelist.ps1 <folder-path> <output-file>`
   - For single folder, no recursion,  On Bash: `./scripts/filelist.sh <folder-path> <output-file>`
@@ -374,7 +375,7 @@ Authentication Change
     - Use this output to decide if the folder’s `docmap.md` needs regeneration or a targeted incremental update.
   - If no `docmap.md` exists for the folder, use the filelist scripts instead to build the current file inventory and use it as the basis for initial index generation or update planning.
 3. For incremental update of docmaps, apply the detectchanges workflow only for folders that already have a `docmap.md`.
-  - For folders without an existing `docmap.md`, generate the index from the filelist inventory instead of trying to compare against a missing docmap.
+  - For folders without an existing `docmap.md`, generate the index from the `filelist.ps1`/`filelist.sh` inventory instead of trying to compare against a missing docmap. Do not construct a custom `rg --files` pipeline to compute the eligible file count or folder list for this case.
   - After identifying affected files, regenerate or update that folder’s `docmap.md` and then propagate the update to any ancestor indexes that reference it, up to and including that DRF's root `DOCMAP.md`.
 5. For each folder within the current DRF's subtree, starting from the deepest folder and moving upward, do the following:
   1. identify the eligible text files (documents and source code) for this folder.
