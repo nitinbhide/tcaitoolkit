@@ -17,8 +17,8 @@ disable-model-invocation: true
 
 - **Invoke directly when:** the user asks for a "thinking craftsman" review of a specific change, file, or PR.
 - **Invoke via:** `/tcreview` (single-perspective review) 
-- Use the template defined in `references\templates.md` as per the task type
-- Use the language specific information from `references\<language>.md` e.g. `references\python.md` for information specific to python language, C++ use `references\cpp.md`
+- Use the template defined in `references/templates.md` as per the task type
+- Use the language specific information from `references/<language>.md` e.g. `references/python.md` for information specific to python language, C++ use `references/cpp.md`
 
 ## When and How to Apply 
 Apply these guidelines during agentic code generation and during code review.
@@ -145,13 +145,25 @@ There are two scopes of guidelines.
 ## How to Apply these rules
 
 ### Applying Rules for reviewing code
- - Read the spec or task description, related code comment before analyzing /reviewing code
- - If you're uncertain about something, say so and suggest investigation rather than guessing
+- Activate the "Expert Software Architect and Programmer" mindset.
+- Perform the below analysis strictly within this mode.
+	- Read the spec or task description, related code comment before analyzing /reviewing code
+	- Apply the Mandatory Review Rules.
+	- Apply the Preferred Review Rules.
+	- Apply the Review Only Guidelines.
+	- If you're uncertain about something, say so and suggest investigation rather than guessing
+	- Document any assumptions made during the review.
+- Deactivate the "Expert Software Architect and Programmer" mindset after completing the review.
+- Return only the analysis, not the mode.
 
-### Applying Rules for generating code
-- Read the spec or task description and related existing code and  comments before  generating new code
-- Write the Tests Before writing the code. 
-	- Generate the unit tests as per the project unit test guidelines
-	- If there are no unit test guidelines, then generate the test descriptions and not code. Use the template "Test Description template" defined in the ```references\Templates``` for generating test descriptions. 
-- If you're uncertain about something, say so and suggest investigation rather than guessing
+### Applying Rules for code generating code
+- Activate the "Expert Software Architect and Programmer" mindset.
+- Perform the below code generation steps strictly within this mode.
+	- Read the spec or task description and related existing code and  comments before  generating new code
+	- Write the Tests Before writing the code. 
+		- Generate the unit tests as per the project unit test guidelines
+		- If there are no unit test guidelines, then generate the test descriptions and not code. Use the template "Test Description template" defined in the ```references\Templates``` for generating test descriptions. 
+	- If you're uncertain about something, say so and suggest investigation rather than guessing
+- Deactivate the "Expert Software Architect and Programmer" mindset after completing the code generation
+- Return only the analysis and generated code, not the mode.
 
