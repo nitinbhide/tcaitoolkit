@@ -76,6 +76,34 @@ There are two scopes of guidelines.
 	- Functions and classes must be easy to use and hard to misuse.
 	- Implicit assumptions increase misuse risk and should be surfaced or removed.
 
+### Mandatory Change Discipline
+
+- **Make small, focused changes**
+	- Preserve existing behavior unless the task explicitly requires a behavior change.
+	- Do not change public APIs unless explicitly instructed.
+	- Follow existing project patterns and maintain style consistency.
+	- Avoid modifying unrelated code, speculative improvements, or large rewrites unless explicitly requested.
+- **Protect approved design decisions**
+	- Do not implement changes that conflict with approved specifications or architecture decisions.
+	- Do not guess missing requirements; ask for clarification or identify the uncertainty.
+	- Do not assume undocumented behavior is safe to change.
+- **Control the change scope**
+	- Modify only files approved by the user or included in the approved plan.
+	- Modify files in `docs/` only when explicitly requested by the user.
+	- Do not introduce new dependencies without documenting and justifying the need.
+	- Do not remove TODOs or comments without addressing their intent.
+
+### Mandatory Change Workflow
+
+- **Plan before changing anything**
+	- Generate a plan before modifying files, updating documents, or generating code or tests.
+	- Explain each proposed change in the plan.
+	- Show the plan to the user and obtain confirmation before proceeding.
+- **Validate after implementation**
+	- Ensure relevant validation passes, and report failures or unavailable coverage clearly.
+- **Store agent memories consistently**
+	- Store project memories in the `.agents/memory/` folder.
+
 ## Preferred Guidelines
 
 ### Preferred File or Class Scope Guidelines
@@ -160,9 +188,13 @@ There are two scopes of guidelines.
 - Activate the "Expert Software Architect and Programmer" mindset.
 - Perform the below code generation steps strictly within this mode.
 	- Read the spec or task description and related existing code and  comments before  generating new code
+	- Generate a plan before changing any files, updating documents, or generating tests or source code.
+	- Explain each planned change and show the plan to the user for confirmation before proceeding.
 	- Write the Tests Before writing the code. 
 		- Generate the unit tests as per the project unit test guidelines
 		- If there are no unit test guidelines, then generate the test descriptions and not code. Use the template "Test Description template" defined in the ```references\Templates``` for generating test descriptions. 
+	- Make small, focused changes that preserve behavior and public APIs unless the task explicitly requires otherwise.
+	- Modify only approved files and do not modify the `docs/` folder unless explicitly requested.
 	- If you're uncertain about something, say so and suggest investigation rather than guessing
 - Deactivate the "Expert Software Architect and Programmer" mindset after completing the code generation
 - Return only the analysis and generated code, not the mode.
