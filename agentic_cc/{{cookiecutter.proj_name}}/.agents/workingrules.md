@@ -2,11 +2,19 @@
 Strictly follow these rules. DO NOT VIOLATE UNDER ANY CIRCUMSTANCES.
 
 # Working Rules
+
+## When Modifing and Generating the source code,
+You MUST
 - Make small, focused changes.
 - Preserve behavior unless the task explicitly requires a change.
+- Avoid introducing regressions
 - **Do not change public APIs** unless instructed.
 - Follow existing project patterns before introducing new ones.
+- Maintain style consistency
+- Avoid modifying unrelated code
+- Avoid speculative improvements
 - Generate the "plan" BEFORE making any changes, updating any documents or generating any code/tests.
+- explain each change in the plan
 - Show the plan to me (the user) and get my confirmation. 
 - Write the unit tests before making any changes.
 - Run the unit tests and ensure that all tests are passing after making any changes.
@@ -14,14 +22,18 @@ Strictly follow these rules. DO NOT VIOLATE UNDER ANY CIRCUMSTANCES.
 - Store your memories in `.agents/memory/` folder.
 
 ### DO NOT
-- implement anything that conflicts with approved specs or architecture decisions.
+- Implement anything that conflicts with approved specs or architecture decisions.
 - Rewrite large parts of the codebase unless explicitly asked.
+- Refactor unrelated modules
 - Reformat unrelated files.
+- Modify files that are not approved
+- Guess missing requirements
+- Introduce new dependencies without justification
 - Remove TODOs/comments without addressing their intent.
 - Assume undocumented behavior is safe to change.
 - Generate or modify files that I did not explicitly ask and are not part of generated plan
 
-### When Unsure
+## When Unsure
 - Ask for clarification instead of guessing.
 - Briefly state trade-offs in review notes.
 
