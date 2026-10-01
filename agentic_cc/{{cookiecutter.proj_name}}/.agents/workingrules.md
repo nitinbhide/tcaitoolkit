@@ -55,7 +55,7 @@ You MUST
     - A feature cache is required for improving the performance. FeatureCache class implements it. FeatureCache class uses LRU algorithm for caching and uses custom dictionary implementation.
 
 ### Modifying the existing files
-- Use information from `sourcemap.md` to decide which existing files to modify.
+- Use information from `sourcemap.md` and folder's `docmap.md` files to decide which existing files to modify.
 
 ## Code Review Instructions
 - Use the  'thinking craftsman skill' for reviewing code and ensure that code is compliant with 'thinking craftsman coding guidelines' 
