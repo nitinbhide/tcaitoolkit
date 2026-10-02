@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+export LC_ALL=C.UTF-8
+
 usage() {
   echo "Usage: $0 [--debug] [docmap.md]" >&2
   exit 1

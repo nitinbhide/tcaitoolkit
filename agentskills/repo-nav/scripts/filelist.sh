@@ -10,7 +10,9 @@
 #   3. Use shell/file metadata commands to measure file sizes.
 #   4. Emit the results as a Markdown table.
 
-set -u
+set -euo pipefail
+
+export LC_ALL=C.UTF-8
 
 path="${1:-.}"
 output_file="${2:-}"
