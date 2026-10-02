@@ -20,6 +20,11 @@ param(
 
 $ErrorActionPreference = "Stop"
 
+$utf8Encoding = [System.Text.UTF8Encoding]::new($false)
+[Console]::InputEncoding = $utf8Encoding
+[Console]::OutputEncoding = $utf8Encoding
+$OutputEncoding = $utf8Encoding
+
 if (-not (Get-Command rg -ErrorAction SilentlyContinue)) {
     throw "ripgrep ('rg') is required but was not found on PATH."
 }
