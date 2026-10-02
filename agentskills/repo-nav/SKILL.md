@@ -45,7 +45,7 @@ DO NOT deviate from this SKILL instructions during the execution of the repo-nav
   - Do not generate Python, Node.js, or other helper scripts for docmap discovery or validation. 
 - If `rg` is not available, stop immediately and instruct the user: install ripgrep from https://github.com/burntsushi/ripgrep, restart the editor, and then retry the repo-nav skill.
 
-- Use the inventory scripts only for general repository file listing when needed. They generate a Markdown table listing repository files and sizes.
+- Use the inventory scripts only for general repository file listing when needed. Inventory scripts internally use the `rg` command. They generate a Markdown table listing repository files and sizes.
   
   - For single folder, no recursion, On Windows PowerShell: `./scripts/filelist.ps1 <folder-path> <output-file>`
   - For single folder, no recursion,  On Bash: `./scripts/filelist.sh <folder-path> <output-file>`
@@ -254,7 +254,9 @@ The folder summary must consider
 - Folder summaries of child folders
 
 ### Small-Folder Docmap Merge
-- After generating or updating a folder's `docmap.md`, count the folder's immediate file entries plus immediate child-folder entries represented in that docmap.
+- Every folder's `docmap.md` must first be generated and written to disk in its actual source folder, exactly where that folder lives in the repository. Never withhold a write, or write a folder's docmap to a temporary, staged, cached, or any other non-source location in anticipation of a merge — the merge decision below is a separate, later pass, not a reason to skip or redirect the initial write.
+- Merging is a distinct post-processing pass performed only after every folder in the current DRF's subtree already has its own `docmap.md` written to its real source folder. Do not evaluate or apply the merge decision while a folder's docmap is first being generated.
+- During the post-processing merge pass, count each folder's immediate file entries plus immediate child-folder entries represented in that written docmap.
 - If the total count is less than 10, merge that folder's docmap content into its parent folder's `docmap.md` rather than keeping a separate child index.
 - Perform merges from the deepest folders upward so that a parent receives the final content of all eligible descendants.
 - Preserve the merged folder's summary, file summaries, child-folder summaries, tags, and TODO/FIXME/NOTE entries in the parent index.
@@ -275,7 +277,7 @@ The folder summary must consider
 - Remove deleted files
 - Preserve unchanged summaries
 - Update folder summaries when needed
-- Apply the Small-Folder Docmap Merge rule after each folder index is generated or incrementally updated
+- Always write or update each folder's `docmap.md` in its real source folder first; apply the Small-Folder Docmap Merge rule only afterward, as a separate post-processing pass across all folders in the DRF's subtree, never as part of generating or incrementally updating an individual folder index
 - Rename detection not required
 - Do not run a full sweep automatically
 - Full sweep is only when explicitly requested by the developer
@@ -381,16 +383,16 @@ Authentication Change
   2. Use the current folder contents and the relevant `docmap.md` as the input set for index generation in each folder.
   3. Generate file summaries. Extract metadata (semantic tags, TODO/FIXME/NOTE) while generating the file summary. File summary must be generated using the LLM summarization.
   4. Generate folder summary.
-  5. Use the template as per `./references/folderdocmap_tmpl.md` to generate this folder’s `docmap.md`.
-  6. Perform incremental update of folder level `docmap.md`
-  7. **Use the 'subagent' to generate and execute steps for individual folder.**
-6. Skip dependency graph generation for now.
-7. Generate the **Specialized Repository Navigation Maps** at the current DRF.
-8. Use the template as per `./references/rootdocmap_tmpl.md` to generate (and/or update) the current DRF's root `DOCMAP.md`. Always update that DRF's root index even if you are only updating some specific subfolder of the project.
-9. Review and validate the generated `DOCMAP.md` and folder-level `docmap.md` files to ensure accuracy and completeness.
-10. AGENTS.md must contain instructions about how to use the docmaps effectively. Check if the AGENTS.md file exists. If it exists, review and update it as neccessary. If it does not exist, then create it. Use the `references\agents_tmpl.md` template for guidance for updating the AGENTS.md file.
-11. Update the "**Executation Log**" section of `docmap_plan.md` after each incremental update. 
-12. If multiple DRFs were confirmed in Step 1, repeat Steps 2–11 for each remaining DRF.
+  5. Use the template as per `./references/folderdocmap_tmpl.md` to generate this folder’s `docmap.md`, and write it immediately to that folder's own location on disk. Do not defer this write and do not redirect it to a staged or cached location — every folder gets its own written `docmap.md` regardless of how small it is; the Small-Folder Docmap Merge rule is applied later, in step 6, not here.
+  6. **Use the 'subagent' to generate and execute steps for individual folder.**
+6. Only after every folder in the current DRF's subtree has a `docmap.md` written to its real source folder, perform the Small-Folder Docmap Merge rule as a single post-processing pass: evaluate entry counts deepest-folder-first and merge eligible folders into their parents as described in "Small-Folder Docmap Merge" and "Incremental Update Rules".
+7. Skip dependency graph generation for now.
+8. Generate the **Specialized Repository Navigation Maps** at the current DRF.
+9. Use the template as per `./references/rootdocmap_tmpl.md` to generate (and/or update) the current DRF's root `DOCMAP.md`. Always update that DRF's root index even if you are only updating some specific subfolder of the project.
+10. Review and validate the generated `DOCMAP.md` and folder-level `docmap.md` files to ensure accuracy and completeness.
+11. AGENTS.md must contain instructions about how to use the docmaps effectively. Check if the AGENTS.md file exists. If it exists, review and update it as neccessary. If it does not exist, then create it. Use the `references\agents_tmpl.md` template for guidance for updating the AGENTS.md file.
+12. Update the "**Executation Log**" section of `docmap_plan.md` after each incremental update. 
+13. If multiple DRFs were confirmed in Step 1, repeat Steps 2–12 for each remaining DRF.
 
 # Confidence Rules
 
