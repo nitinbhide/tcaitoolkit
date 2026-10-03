@@ -236,6 +236,7 @@ The file summary must consider
 ### Source code (e.g. *.cpp, *.java, *.py ) File Summary Considerations
 The file summary must consider 
 - What is feature/functionality implemented in this file ?
+- What classes are implemented in this file? and What are their responsibilities/purposes? Don't just list them; explain their roles and how they interact with each other.
 - what are the design patterns, architecture patterns, unique data structures and algorithms used in this file ?
 - what are the key concepts in this file ?
 - How does this file interact with other files in the project?
