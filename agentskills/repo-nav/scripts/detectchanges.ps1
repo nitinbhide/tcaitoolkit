@@ -31,8 +31,16 @@ if (-not $DocMapPath) {
     throw "DocMapPath is required."
 }
 
-$resolvedDocMapPath = (Resolve-Path -LiteralPath (ConvertTo-NativePath -Path $DocMapPath) -ErrorAction Stop).Path
-$folderRoot = Split-Path -Parent $resolvedDocMapPath
+$nativeDocMapPath = ConvertTo-NativePath -Path $DocMapPath
+# Docmap generation may have been interrupted; a missing docmap is not an error.
+$docMapMissing = -not (Test-Path -LiteralPath $nativeDocMapPath -PathType Leaf)
+if ($docMapMissing) {
+    $resolvedDocMapPath = [System.IO.Path]::GetFullPath($nativeDocMapPath)
+    $folderRoot = (Resolve-Path -LiteralPath (Split-Path -Parent $resolvedDocMapPath) -ErrorAction Stop).Path
+} else {
+    $resolvedDocMapPath = (Resolve-Path -LiteralPath $nativeDocMapPath -ErrorAction Stop).Path
+    $folderRoot = Split-Path -Parent $resolvedDocMapPath
+}
 
 # Parse each file entry and its size as one multiline rg match. The two size
 # locations cover both documented forms; the boundary prevents crossing into
@@ -40,9 +48,9 @@ $folderRoot = Split-Path -Parent $resolvedDocMapPath
 $docMapPattern = '(?ms)^\s*-\s*`(?<file>(?![^`]+/docmap\.md`)(?![^`/]+_MAP\.md`)[^`]+)`(?:(?:[^\r\n]*?\(\s*Size\s*:\s*)|(?:(?!^\s*-\s*`).)*?^\s*-\s*Size\s*:\s*)(?<size>[\d,]+)\s+bytes'
 $docMapReplacement = '${file}' + [char]9 + '${size}'
 
-$docMapMatches = @(
-    & rg --pcre2 -U -N -o --replace $docMapReplacement $docMapPattern $resolvedDocMapPath
-)
+$docMapMatches = if ($docMapMissing) { @() } else {
+    @(& rg --pcre2 -U -N -o --replace $docMapReplacement $docMapPattern $resolvedDocMapPath)
+}
 
 $recordedFiles = @{}
 $docMapEntries = @()
@@ -65,7 +73,12 @@ $liveFiles = @{}
 # including unrelated folders, which have their own docmaps.
 # NOTE: All file filtering logic must live in Get-RepoNavFileInventory
 # (fileinventory.ps1). Do not add filters (size, name, type) in this script.
-$inventoryFiles = @(Get-RepoNavFileInventory -Path $folderRoot)
+if ($docMapMissing) {
+    # Case 1: no docmap here, so every file in the tree is ADDED.
+    $inventoryFiles = @(Get-RepoNavFileInventory -Path $folderRoot -Recurse)
+} else {
+    $inventoryFiles = @(Get-RepoNavFileInventory -Path $folderRoot)
+}
 
 $mergedFolders = @{}
 foreach ($entry in $recordedFiles.Keys) {
@@ -78,6 +91,32 @@ foreach ($entry in $recordedFiles.Keys) {
 foreach ($mergedFolder in $mergedFolders.Keys) {
     $mergedFolderPath = Join-Path $folderRoot $mergedFolder.Replace('/', [System.IO.Path]::DirectorySeparatorChar)
     $inventoryFiles += @(Get-RepoNavFileInventory -Path $mergedFolderPath)
+}
+
+# Case 2: immediate child folders that are not covered by this docmap and have
+# no docmap of their own are new folders; report the folder and all its files.
+if (-not $docMapMissing) {
+    foreach ($dir in (Get-ChildItem -LiteralPath $folderRoot -Directory)) {
+        $dirName = $dir.Name
+        if ($dirName.StartsWith('.')) { continue }
+        $covered = $false
+        foreach ($mergedFolder in $mergedFolders.Keys) {
+            if ($mergedFolder -eq $dirName -or $mergedFolder.StartsWith("$dirName/")) { $covered = $true; break }
+        }
+        if ($covered) { continue }
+        if ((Test-Path -LiteralPath (Join-Path $dir.FullName 'docmap.md')) -or
+            (Test-Path -LiteralPath (Join-Path $dir.FullName 'DOCMAP.md'))) { continue }
+
+        $newFolderFiles = @(Get-RepoNavFileInventory -Path $dir.FullName -Recurse)
+        if ($newFolderFiles.Count -eq 0) { continue }
+        $inventoryFiles += $newFolderFiles
+        $changes += [PSCustomObject]@{
+            File = "$dirName/"
+            DocMapSize = ''
+            ActualSize = ''
+            Status = 'ADDED'
+        }
+    }
 }
 
 foreach ($file in $inventoryFiles) {
