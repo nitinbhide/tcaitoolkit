@@ -31,7 +31,7 @@ if (-not $DocMapPath) {
     throw "DocMapPath is required."
 }
 
-$resolvedDocMapPath = (Resolve-Path -LiteralPath $DocMapPath -ErrorAction Stop).Path
+$resolvedDocMapPath = (Resolve-Path -LiteralPath (ConvertTo-NativePath -Path $DocMapPath) -ErrorAction Stop).Path
 $folderRoot = Split-Path -Parent $resolvedDocMapPath
 
 # Parse each file entry and its size as one multiline rg match. The two size

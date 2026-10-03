@@ -33,6 +33,34 @@ function Assert-RipgrepAvailable {
     }
 }
 
+<#
+.SYNOPSIS
+Normalizes an input path to the native Windows form. No-op on other systems.
+
+.DESCRIPTION
+Agents may pass POSIX-style paths (`/c/repo`, `/mnt/c/repo`, `C:/repo`) while
+running on Windows. These are converted to `C:\repo` style paths. Relative
+paths only get their separators converted.
+#>
+function ConvertTo-NativePath {
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory)]
+        [string]$Path
+    )
+
+    $isWindowsHost = if (Test-Path variable:IsWindows) { $IsWindows } else { $true }
+    if (-not $isWindowsHost) {
+        return $Path
+    }
+
+    $normalized = $Path.Trim()
+    if ($normalized -match '^/(?:mnt/)?([a-zA-Z])(?:/(.*))?$') {
+        $normalized = "$($Matches[1].ToUpper()):/$($Matches[2])"
+    }
+    $normalized.Replace('/', '\')
+}
+
 function Get-RepoNavFileInventory {
     [CmdletBinding()]
     param(
@@ -44,7 +72,7 @@ function Get-RepoNavFileInventory {
 
     Assert-RipgrepAvailable
 
-    $resolvedPath = (Resolve-Path -Path $Path).Path
+    $resolvedPath = (Resolve-Path -LiteralPath (ConvertTo-NativePath -Path $Path)).Path
     $rgArgs = @("--files")
     if (-not $Recurse) {
         $rgArgs += @("--max-depth", "1")

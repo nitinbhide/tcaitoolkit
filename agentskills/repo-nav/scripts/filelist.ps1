@@ -39,7 +39,10 @@ $utf8Encoding = [System.Text.UTF8Encoding]::new($false)
 [Console]::OutputEncoding = $utf8Encoding
 $OutputEncoding = $utf8Encoding
 
-$resolvedPath = (Resolve-Path -Path $Path).Path
+$resolvedPath = (Resolve-Path -LiteralPath (ConvertTo-NativePath -Path $Path)).Path
+if ($OutputFile) {
+    $OutputFile = ConvertTo-NativePath -Path $OutputFile
+}
 
 # NOTE: All file filtering logic must live in Get-RepoNavFileInventory
 # (fileinventory.ps1). Do not add filters (size, name, type) in this script.
