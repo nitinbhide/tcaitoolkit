@@ -63,6 +63,8 @@ $liveFiles = @{}
 
 # Inventory the docmap folder and represented child folders without recursively
 # including unrelated folders, which have their own docmaps.
+# NOTE: All file filtering logic must live in Get-RepoNavFileInventory
+# (fileinventory.ps1). Do not add filters (size, name, type) in this script.
 $inventoryFiles = @(Get-RepoNavFileInventory -Path $folderRoot)
 
 $mergedFolders = @{}

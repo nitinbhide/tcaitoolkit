@@ -53,6 +53,8 @@ fi
 
 resolved_path="$(pwd)"
 
+# NOTE: All file filtering logic must live in get_repo_nav_file_inventory
+# (fileinventory.sh). Do not add filters (size, name, type) in this script.
 mapfile -t files < <(get_repo_nav_file_inventory "$resolved_path" "$glob" "$recurse")
 
 if ((${#files[@]} == 0)); then

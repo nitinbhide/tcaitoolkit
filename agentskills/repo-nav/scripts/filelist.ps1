@@ -41,6 +41,8 @@ $OutputEncoding = $utf8Encoding
 
 $resolvedPath = (Resolve-Path -Path $Path).Path
 
+# NOTE: All file filtering logic must live in Get-RepoNavFileInventory
+# (fileinventory.ps1). Do not add filters (size, name, type) in this script.
 $files = @(Get-RepoNavFileInventory -Path $resolvedPath -Glob $Glob -Recurse:$Recurse)
 
 if (-not $files) {

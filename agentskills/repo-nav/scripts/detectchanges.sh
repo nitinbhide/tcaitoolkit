@@ -65,6 +65,8 @@ done < <(rg --pcre2 -U -N -o --replace "$docmap_replacement" "$docmap_pattern" "
 
 declare -A live_files=()
 
+# NOTE: All file filtering logic must live in get_repo_nav_file_inventory
+# (fileinventory.sh). Do not add filters (size, name, type) in this script.
 declare -a inventory_files=()
 mapfile -t inventory_files < <(get_repo_nav_file_inventory "$folder_root")
 
