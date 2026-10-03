@@ -52,11 +52,13 @@ DO NOT deviate from this SKILL instructions during the execution of the repo-nav
   - Entire hierarchy of given folder,  on Windows PowerShell`./scripts/filelist.ps1 <folder-path> <output-file> -Recurse`
   - Entire hierarchy of given folder,  on Bash: `./scripts/filelist.sh <folder-path> <output-file> -Recurse`
 
-- For change detection and incremental docmap updates, use the dedicated `detectchanges` scripts only when a `docmap.md` already exists for the relevant folder:
+- For change detection, incremental docmap updates, and resuming an interrupted first-time generation, use the dedicated `detectchanges` scripts. They work whether or not the `docmap.md` exists:
   - On Windows PowerShell: `./scripts/detectchanges.ps1 <folder-or-docmap-path>/docmap.md`
   - On Bash: `./scripts/detectchanges.sh <folder-or-docmap-path>/docmap.md`
   - These scripts read the file entries and sizes recorded in a `docmap.md`, resolve each filename relative to the docmap's parent folder, and compare them with the current filesystem state.
-  - If no `docmap.md` exists for that folder, fall back to the filelist scripts to build an inventory and use that as the basis for initial index generation or update planning.
+  - If the `docmap.md` does not exist (e.g. generation was interrupted), every file in that folder tree is reported as `ADDED`.
+  - If a folder under an existing docmap is not covered by it and has no docmap of its own, the folder is reported as an `ADDED` row (name ending in `/`) followed by all its files as `ADDED`.
+  - The script output is the authoritative list of files that still need to be processed. Do not build this list with ad-hoc scripts or the filelist scripts.
   - At the Designated Root Folder (see below) the docmap file name is `DOCMAP.md`; at every other folder it is `docmap.md`.
 
 ## Designated Root Folder (DRF)
@@ -135,7 +137,7 @@ This file is the primary entry point for all AI agents working on that DRF's pro
 
 ### Use of inventory scripts (`filelist.ps1` and `filelist.sh`)
 
-The `filelist` scripts are optional helper tools for ad-hoc repository file listing. They respect repository ignore rules and may be used to inspect files in a folder, but change detection and incremental docmap updates use the dedicated `detectchanges` scripts instead of any retained inventory workflow.
+The `filelist` scripts are optional helper tools for ad-hoc repository file listing. They respect repository ignore rules and may be used to inspect files in a folder, but change detection, incremental docmap updates, and resuming interrupted generation use the dedicated `detectchanges` scripts instead of any retained inventory workflow.
 
 - Use `-Glob "<pattern>"` to restrict inventory output to matching file types, for example `-Glob "*.{ps1,md}"`. 
 - By default, each script lists only files directly in the given folder. 
@@ -367,16 +369,16 @@ Authentication Change
   - Use each DRF's `docmap_plan.md` to store the plan of the indexing operation at granular steps and to track progress of the index generation execution for that DRF. 
   - ALWAYS Get the user's approval on plan BEFORE starting the plan execution. 
   - If a DRF's `docmap_plan.md` exists, then update the file. 
-2. Before updating indexes, check whether the relevant folder already has a `docmap.md`.
-  - If a `docmap.md` exists, run the docmap-based change detection script against it:
+2. Before generating or updating indexes for a folder, ALWAYS run the change detection script, even if the folder's `docmap.md` does not exist yet (first-time generation may have been interrupted):
     - On Windows PowerShell: `./scripts/detectchanges.ps1 <folder-or-docmap-path>/docmap.md`
     - On Bash: `./scripts/detectchanges.sh <folder-or-docmap-path>/docmap.md`
+    - Treat the reported list as the authoritative set of files (and new folders) that still need to be considered for docmap generation. Do not derive it with ad-hoc scripts.
+    - If the `docmap.md` is missing, all files in that folder tree are reported as `ADDED`. When resuming at a DRF, run the script on the deepest folders first so folders that already have a `docmap.md` are compared against it instead of being regenerated.
     - The script reads the file entries and sizes recorded in the folder-level `docmap.md`, resolves each filename relative to the parent directory of that `docmap.md`, and compares them against the files currently present on disk.
-    - Files whose recorded size no longer matches current file size are reported as `MODIFIED`; files present in the docmap but missing from disk are `DELETED`; files present on disk but not listed in the docmap are `ADDED`.
+    - Files whose recorded size no longer matches current file size are reported as `MODIFIED`; files present in the docmap but missing from disk are `DELETED`; files present on disk but not listed in the docmap are `ADDED`; newly found folders are reported as `ADDED` with a trailing `/`.
     - Use this output to decide if the folder’s `docmap.md` needs regeneration or a targeted incremental update.
-  - If no `docmap.md` exists for the folder, use the filelist scripts instead to build the current file inventory and use it as the basis for initial index generation or update planning.
-3. For incremental update of docmaps, apply the detectchanges workflow only for folders that already have a `docmap.md`.
-  - For folders without an existing `docmap.md`, generate the index from the filelist inventory instead of trying to compare against a missing docmap.
+3. Apply the detectchanges workflow to all folders, including those without an existing `docmap.md`.
+  - For folders without a `docmap.md`, generate the index for the files reported as `ADDED`; the filelist scripts are not needed for this.
   - After identifying affected files, regenerate or update that folder’s `docmap.md` and then propagate the update to any ancestor indexes that reference it, up to and including that DRF's root `DOCMAP.md`.
 5. For each folder within the current DRF's subtree, starting from the deepest folder and moving upward, do the following:
   1. identify the eligible text files (documents and source code) for this folder.
