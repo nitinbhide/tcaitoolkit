@@ -31,7 +31,7 @@ You must determine file relevance exclusively from DOCMAPS during the primary se
 - You must not infer file relevance from filenames, directory structure, or keyword similarity during primary selection.
 
 ## Heuristic Scanning Allowed Only as Secondary Fallback
-Heuristic scanning (grep, find, ripgrep, keyword search, symbol search, directory traversal) is prohibited during primary file selection.
+Heuristic scanning (grep, find, ripgrep, keyword search, symbol search, regex search or complete directory traversal) is prohibited during primary file selection.
 
 Heuristic scanning is allowed only if:
 - DOCMAPS-based selection produces zero candidate files, AND
