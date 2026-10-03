@@ -64,7 +64,7 @@ $rows = @(foreach ($file in $files) {
     if ($item.Length -gt 0) {
         [PSCustomObject]@{
             File = $item.FullName
-            SizeBytes = $item.Length
+            SizeBytes = $item.Length.ToString('D', [System.Globalization.CultureInfo]::InvariantCulture)
         }
     }
 }) | Sort-Object { $_.File }
