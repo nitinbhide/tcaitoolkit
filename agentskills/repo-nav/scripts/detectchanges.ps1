@@ -19,15 +19,13 @@ param(
 # directory of the provided docmap.md, so there is no separate RootPath parameter.
 
 $ErrorActionPreference = "Stop"
+. (Join-Path $PSScriptRoot "fileinventory.ps1")
+Assert-RipgrepAvailable
 
 $utf8Encoding = [System.Text.UTF8Encoding]::new($false)
 [Console]::InputEncoding = $utf8Encoding
 [Console]::OutputEncoding = $utf8Encoding
 $OutputEncoding = $utf8Encoding
-
-if (-not (Get-Command rg -ErrorAction SilentlyContinue)) {
-    throw "ripgrep ('rg') is required but was not found on PATH."
-}
 
 if (-not $DocMapPath) {
     throw "DocMapPath is required."
@@ -63,29 +61,9 @@ foreach ($matchText in $docMapMatches) {
 $changes = @()
 $liveFiles = @{}
 
-# Use the same rg-based file filtering logic as filelist.ps1 so the docmap change
-# detection follows the exact repo-nav inclusion/exclusion rules. Inventory only
-# the docmap folder itself and folders represented by recorded file entries;
-# unrelated recursive child folders belong to their own docmaps. Remember to check 
-# only the immediate folder. Child folder not mentioned in the docmap are 
-# not be considered.
-$rgArgs = @(
-    "--glob", "!\.*",
-    "--glob", "!**/\.*",
-    "--glob", "!**/\.*/**",
-    "--glob", "!AGENTS.md",
-    "--glob", "!**/AGENTS.md",
-    "--glob", "!CLAUDE.md",
-    "--glob", "!**/CLAUDE.md",
-    "--glob", "!DOCMAP.md",
-    "--glob", "!**/DOCMAP.md",
-    "--glob", "!docmap.md",
-    "--glob", "!**/docmap.md",
-    "--glob", "!*_MAP.md",
-    "--glob", "!**/*_MAP.md"
-)
-$rootRgArgs = @("--files", "--max-depth", "1") + $rgArgs + @($folderRoot)
-$inventoryFiles = @(& rg @rootRgArgs)
+# Inventory the docmap folder and represented child folders without recursively
+# including unrelated folders, which have their own docmaps.
+$inventoryFiles = @(Get-RepoNavFileInventory -Path $folderRoot)
 
 $mergedFolders = @{}
 foreach ($entry in $recordedFiles.Keys) {
@@ -97,8 +75,7 @@ foreach ($entry in $recordedFiles.Keys) {
 
 foreach ($mergedFolder in $mergedFolders.Keys) {
     $mergedFolderPath = Join-Path $folderRoot $mergedFolder.Replace('/', [System.IO.Path]::DirectorySeparatorChar)
-    $mergedRgArgs = @("--files", "--max-depth", "1") + $rgArgs + @($mergedFolderPath)
-    $inventoryFiles += @( & rg @mergedRgArgs )
+    $inventoryFiles += @(Get-RepoNavFileInventory -Path $mergedFolderPath)
 }
 
 foreach ($file in $inventoryFiles) {
