@@ -97,7 +97,9 @@ rows=()
 for file in "${files[@]}"; do
   if [[ -f "$file" ]]; then
     size=$(wc -c < "$file" | tr -d '[:space:]')
-    rows+=("${file}|${size}")
+    if ((size > 0)); then
+      rows+=("${file}|${size}")
+    fi
   fi
 done
 

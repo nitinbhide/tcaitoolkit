@@ -94,9 +94,11 @@ if (-not $files) {
 
 $rows = @(foreach ($file in $files) {
     $item = Get-Item -LiteralPath $file
-    [PSCustomObject]@{
-        File = $item.FullName
-        SizeBytes = $item.Length
+    if ($item.Length -gt 0) {
+        [PSCustomObject]@{
+            File = $item.FullName
+            SizeBytes = $item.Length
+        }
     }
 }) | Sort-Object { $_.File }
 
