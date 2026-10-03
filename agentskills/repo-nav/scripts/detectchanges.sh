@@ -52,12 +52,13 @@ folder_root="$(dirname "$resolved_docmap_path")"
 # another backtick file entry.
 declare -A recorded_files=()
 declare -a docmap_entries=()
-docmap_pattern='(?ms)^\s*-\s*`(?<file>(?![^`]+/docmap\.md`)(?![^`/]+_MAP\.md`)[^`]+)`(?:(?:[^\r\n]*?\(\s*Size\s*:\s*)|(?:(?!^\s*-\s*`).)*?^\s*-\s*Size\s*:\s*)(?<size>[0-9]+)\s+bytes'
+docmap_pattern='(?ms)^\s*-\s*`(?<file>(?![^`]+/docmap\.md`)(?![^`/]+_MAP\.md`)[^`]+)`(?:(?:[^\r\n]*?\(\s*Size\s*:\s*)|(?:(?!^\s*-\s*`).)*?^\s*-\s*Size\s*:\s*)(?<size>[0-9][0-9,]*)\s+bytes'
 docmap_replacement='${file}'$'\t''${size}'
 
 while IFS=$'\t' read -r normalized size; do
   [[ -z "$normalized" ]] && continue
   normalized="${normalized//\\//}"
+  size="${size//,/}"
   recorded_files["$normalized"]="$size"
   docmap_entries+=("$normalized:$size")
 done < <(rg --pcre2 -U -N -o --replace "$docmap_replacement" "$docmap_pattern" "$resolved_docmap_path")
