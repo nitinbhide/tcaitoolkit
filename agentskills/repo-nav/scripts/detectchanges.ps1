@@ -88,7 +88,7 @@ foreach ($file in $inventoryFiles) {
         [System.IO.Path]::GetFileName($fullFilePath)
     }
     $relative = $relative.Replace('\\', '/').Replace('\', '/')
-    if (-not [string]::IsNullOrWhiteSpace($relative) -and $relative -ne 'docmap.md') {
+    if (-not [string]::IsNullOrWhiteSpace($relative)) {
         $liveFiles[$relative] = (Get-Item -LiteralPath $fullFilePath).Length
     }
 }

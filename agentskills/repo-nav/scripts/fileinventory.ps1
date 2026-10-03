@@ -5,7 +5,7 @@ Returns the repo-nav file inventory for a directory.
 .DESCRIPTION
 Uses ripgrep (`rg --files`) as the authoritative source for file discovery so
 repository ignore rules are honored consistently. The shared inventory excludes
-hidden paths and repo-nav documentation or agent-instruction files. Callers can
+hidden paths, zero-size files, and repo-nav documentation or agent-instruction files. Callers can
 use the returned paths for metadata operations such as measuring file sizes.
 
 By default, only files directly inside the specified directory are returned.
@@ -69,5 +69,5 @@ function Get-RepoNavFileInventory {
     )
     $rgArgs += $resolvedPath
 
-    @(& rg @rgArgs)
+    @(& rg @rgArgs | Where-Object { (Get-Item -LiteralPath $_ -Force).Length -gt 0 })
 }

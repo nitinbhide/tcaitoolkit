@@ -14,7 +14,7 @@ assert_ripgrep_available() {
 
 # Print the repo-nav file inventory for a directory using `rg --files`.
 # Ripgrep supplies repository-aware discovery and honors ignore rules. The
-# shared exclusions omit hidden paths, agent instruction files, docmaps, and
+# shared exclusions omit hidden paths, zero-size files, agent instruction files, docmaps, and
 # generated map documents so callers get the same inventory consistently.
 #
 # Parameters (positional):
@@ -54,5 +54,12 @@ get_repo_nav_file_inventory() {
   )
   rg_args+=("$path")
 
-  rg "${rg_args[@]}"
+  local files rc=0 file
+  files="$(rg "${rg_args[@]}")" || rc=$?
+  while IFS= read -r file; do
+    if [[ -n "$file" && -s "$file" ]]; then
+      printf '%s\n' "$file"
+    fi
+  done <<< "$files"
+  return "$rc"
 }

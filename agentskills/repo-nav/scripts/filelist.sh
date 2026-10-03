@@ -68,12 +68,8 @@ fi
 
 rows=()
 for file in "${files[@]}"; do
-  if [[ -f "$file" ]]; then
-    size=$(wc -c < "$file" | tr -d '[:space:]')
-    if ((size > 0)); then
-      rows+=("${file}|${size}")
-    fi
-  fi
+  size=$(wc -c < "$file" | tr -d '[:space:]')
+  rows+=("${file}|${size}")
 done
 
 if ((${#rows[@]} == 0)); then

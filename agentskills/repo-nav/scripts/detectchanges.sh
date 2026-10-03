@@ -86,7 +86,7 @@ for file in "${inventory_files[@]}"; do
   rel_path="${file#$folder_root/}"
   rel_path="${rel_path//\\//}"
 
-  if [[ -n "$rel_path" && "$rel_path" != "docmap.md" && -f "$file" ]]; then
+  if [[ -n "$rel_path" ]]; then
     live_files["$rel_path"]="$(wc -c < "$file" | tr -d '[:space:]')"
   fi
 done
