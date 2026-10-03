@@ -3,6 +3,9 @@ set -euo pipefail
 
 export LC_ALL=C.UTF-8
 
+script_dir="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
+source "$script_dir/fileinventory.sh"
+
 usage() {
   echo "Usage: $0 [--debug] [docmap.md]" >&2
   exit 1
@@ -39,10 +42,7 @@ if [[ ! -f "$docmap_path" ]]; then
   exit 1
 fi
 
-if ! command -v rg >/dev/null 2>&1; then
-  echo "ripgrep ('rg') is required but was not found on PATH." >&2
-  exit 1
-fi
+assert_ripgrep_available
 
 resolved_docmap_path="$(realpath "$docmap_path")"
 folder_root="$(dirname "$resolved_docmap_path")"
@@ -63,24 +63,9 @@ while IFS=$'\t' read -r normalized size; do
 done < <(rg --pcre2 -U -N -o --replace "$docmap_replacement" "$docmap_pattern" "$resolved_docmap_path")
 
 declare -A live_files=()
-rg_filters=(
-  --glob '!\.*'
-  --glob '!**/\.\*'
-  --glob '!**/\.\*/*'
-  --glob '!AGENTS.md'
-  --glob '!**/AGENTS.md'
-  --glob '!CLAUDE.md'
-  --glob '!**/CLAUDE.md'
-  --glob '!DOCMAP.md'
-  --glob '!**/DOCMAP.md'
-  --glob '!docmap.md'
-  --glob '!**/docmap.md'
-  --glob '!*_MAP.md'
-  --glob '!**/*_MAP.md'
-)
 
 declare -a inventory_files=()
-mapfile -t inventory_files < <(rg --files --max-depth 1 "${rg_filters[@]}" "$folder_root")
+mapfile -t inventory_files < <(get_repo_nav_file_inventory "$folder_root")
 
 declare -A merged_folders=()
 for file in "${!recorded_files[@]}"; do
@@ -93,7 +78,7 @@ for merged_folder in "${!merged_folders[@]}"; do
   merged_folder_path="$folder_root/${merged_folder//\//\/}"
   while IFS= read -r file; do
     [[ -n "$file" ]] && inventory_files+=("$file")
-  done < <(rg --files --max-depth 1 "${rg_filters[@]}" "$merged_folder_path")
+  done < <(get_repo_nav_file_inventory "$merged_folder_path")
 done
 
 for file in "${inventory_files[@]}"; do
