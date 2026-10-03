@@ -37,7 +37,7 @@ $folderRoot = Split-Path -Parent $resolvedDocMapPath
 # Parse each file entry and its size as one multiline rg match. The two size
 # locations cover both documented forms; the boundary prevents crossing into
 # another backtick file entry.
-$docMapPattern = '(?ms)^\s*-\s*`(?<file>(?![^`]+/docmap\.md`)(?![^`/]+_MAP\.md`)[^`]+)`(?:(?:[^\r\n]*?\(\s*Size\s*:\s*)|(?:(?!^\s*-\s*`).)*?^\s*-\s*Size\s*:\s*)(?<size>\d+)\s+bytes'
+$docMapPattern = '(?ms)^\s*-\s*`(?<file>(?![^`]+/docmap\.md`)(?![^`/]+_MAP\.md`)[^`]+)`(?:(?:[^\r\n]*?\(\s*Size\s*:\s*)|(?:(?!^\s*-\s*`).)*?^\s*-\s*Size\s*:\s*)(?<size>[\d,]+)\s+bytes'
 $docMapReplacement = '${file}' + [char]9 + '${size}'
 
 $docMapMatches = @(
@@ -49,7 +49,7 @@ $docMapEntries = @()
 foreach ($matchText in $docMapMatches) {
     $separatorIndex = $matchText.IndexOf("`t")
     $fileName = $matchText.Substring(0, $separatorIndex).Trim()
-    $size = [int]$matchText.Substring($separatorIndex + 1)
+    $size = [int]($matchText.Substring($separatorIndex + 1).Replace(',', ''))
     $normalized = $fileName.Replace('\\', '/').Replace('\', '/')
     $recordedFiles[$normalized] = $size
     $docMapEntries += [PSCustomObject]@{
