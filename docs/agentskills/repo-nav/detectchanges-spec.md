@@ -40,6 +40,18 @@ There are two ways file name and sizes are recorded in the docmaps.
 - Use combined regex pattern to detect filename and size ("filename and size regex pattern") with `rg`. 
 - Do not use powershell or bash regex patterns for this check.
 
+## Interrupted docmap generation
+Navigation documentation generation may be interrupted, so docmaps may not exist yet for some folders. "detectchanges" must handle this.
+
+### Case 1: No docmap or root docmap in the folder hierarchy
+If there is no `docmap.md`/`DOCMAP.md` in a folder, or no root docmap at all, and no ancestor docmap covers that folder (i.e. it is not a "merged folder" of any docmap), then every file in that folder tree (after the standard filtering) is reported with status `ADDED`. "Size in DocMap" is empty for these files.
+
+### Case 2: New folder added in an existing folder tree
+If a folder exists on disk under a folder covered by a docmap, but is neither mentioned in that docmap nor a "merged folder" and has no docmap of its own (e.g. a new folder, or a child whose docmap was not generated), treat it as a newly added folder:
+- Report the folder itself as a row with status `ADDED`, filename ending with `/` (e.g. `newfolder/`), and empty sizes.
+- Then report every file in that folder tree (after the standard filtering) as `ADDED`, with paths relative to the docmap's parent folder.
+- Case 1 is the special case where the whole hierarchy (including the root) lacks docmaps.
+
 # Implementation
 
 ## Implementation Guidance

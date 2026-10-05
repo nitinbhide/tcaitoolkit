@@ -46,18 +46,20 @@ DO NOT deviate from this SKILL instructions during the execution of the repo-nav
   - Do not construct ad hoc `rg --files` pipelines (e.g. inline PowerShell/Bash one-liners combining `rg --files` with custom globs, `ForEach-Object`/`awk`/`sed` folder-splitting, or manual counting) as a substitute for the `filelist` scripts. Any request for an eligible file count or a folder/file inventory must be satisfied by invoking `filelist.ps1`/`filelist.sh`, not by hand-rolling an equivalent `rg` command.
 - If `rg` is not available, stop immediately and instruct the user: install ripgrep from https://github.com/burntsushi/ripgrep, restart the editor, and then retry the repo-nav skill.
 
-- Use the inventory scripts (`filelist.ps1` / `filelist.sh`) as the **required** mechanism for producing the eligible-file count and file/folder inventory the first time a folder is indexed (i.e. whenever no `docmap.md` exists yet for that folder). They generate a Markdown table listing repository files and sizes, and already apply the skill's inclusion/exclusion globs (`AGENTS.md`, `CLAUDE.md`, `docmap.md`/`DOCMAP.md`, `*_MAP.md`, hidden files, etc.). Raw `rg --files` invocations from `references/ripgrepsearch.md` are reserved for targeted content/filename searches if `filelist` and `detectchanges` scripts are not sufficient for the task.
+- Use the inventory scripts (`filelist.ps1` / `filelist.sh`) as the **required** mechanism for producing the eligible-file count and file/folder inventory. Inventory scripts internally use the `rg` command. They generate a Markdown table listing repository files and sizes.
   
   - For single folder, no recursion, On Windows PowerShell: `./scripts/filelist.ps1 <folder-path> <output-file>`
   - For single folder, no recursion,  On Bash: `./scripts/filelist.sh <folder-path> <output-file>`
   - Entire hierarchy of given folder,  on Windows PowerShell`./scripts/filelist.ps1 <folder-path> <output-file> -Recurse`
   - Entire hierarchy of given folder,  on Bash: `./scripts/filelist.sh <folder-path> <output-file> -Recurse`
 
-- For change detection and incremental docmap updates, use the dedicated `detectchanges` scripts only when a `docmap.md` already exists for the relevant folder:
+- For change detection, incremental docmap updates, and resuming an interrupted first-time generation, use the dedicated `detectchanges` scripts. They work whether or not the `docmap.md` exists:
   - On Windows PowerShell: `./scripts/detectchanges.ps1 <folder-or-docmap-path>/docmap.md`
   - On Bash: `./scripts/detectchanges.sh <folder-or-docmap-path>/docmap.md`
   - These scripts read the file entries and sizes recorded in a `docmap.md`, resolve each filename relative to the docmap's parent folder, and compare them with the current filesystem state.
-  - If no `docmap.md` exists for that folder, fall back to the filelist scripts to build an inventory and use that as the basis for initial index generation or update planning.
+  - If the `docmap.md` does not exist (e.g. generation was interrupted), every file in that folder tree is reported as `ADDED`.
+  - If a folder under an existing docmap is not covered by it and has no docmap of its own, the folder is reported as an `ADDED` row (name ending in `/`) followed by all its files as `ADDED`.
+  - The script output is the authoritative list of files that still need to be processed. Do not build this list with ad-hoc scripts or the filelist scripts.
   - At the Designated Root Folder (see below) the docmap file name is `DOCMAP.md`; at every other folder it is `docmap.md`.
 
 ## Designated Root Folder (DRF)
@@ -136,7 +138,7 @@ This file is the primary entry point for all AI agents working on that DRF's pro
 
 ### Use of inventory scripts (`filelist.ps1` and `filelist.sh`)
 
-The `filelist` scripts are optional helper tools for ad-hoc repository file listing. They respect repository ignore rules and may be used to inspect files in a folder, but change detection and incremental docmap updates use the dedicated `detectchanges` scripts instead of any retained inventory workflow.
+The `filelist` scripts are optional helper tools for ad-hoc repository file listing. They respect repository ignore rules and may be used to inspect files in a folder, but change detection, incremental docmap updates, and resuming interrupted generation use the dedicated `detectchanges` scripts instead of any retained inventory workflow.
 
 - Use `-Glob "<pattern>"` to restrict inventory output to matching file types, for example `-Glob "*.{ps1,md}"`. 
 - By default, each script lists only files directly in the given folder. 
@@ -235,6 +237,7 @@ The file summary must consider
 ### Source code (e.g. *.cpp, *.java, *.py ) File Summary Considerations
 The file summary must consider 
 - What is feature/functionality implemented in this file ?
+- What classes/structs/interfaces are defined/implemented in this file? and What are their responsibilities/purposes? _(NOTE : Don't just list them; explain their roles and how they interact with each other.)_
 - what are the design patterns, architecture patterns, unique data structures and algorithms used in this file ?
 - what are the key concepts in this file ?
 - How does this file interact with other files in the project?
@@ -255,7 +258,9 @@ The folder summary must consider
 - Folder summaries of child folders
 
 ### Small-Folder Docmap Merge
-- After generating or updating a folder's `docmap.md`, count the folder's immediate file entries plus immediate child-folder entries represented in that docmap.
+- Every folder's `docmap.md` must first be generated and written to disk in its actual source folder, exactly where that folder lives in the repository. Never withhold a write, or write a folder's docmap to a temporary, staged, cached, or any other non-source location in anticipation of a merge — the merge decision below is a separate, later pass, not a reason to skip or redirect the initial write.
+- Merging is a distinct post-processing pass performed only after every folder in the current DRF's subtree already has its own `docmap.md` written to its real source folder. Do not evaluate or apply the merge decision while a folder's docmap is first being generated.
+- During the post-processing merge pass, count each folder's immediate file entries plus immediate child-folder entries represented in that written docmap.
 - If the total count is less than 10, merge that folder's docmap content into its parent folder's `docmap.md` rather than keeping a separate child index.
 - Perform merges from the deepest folders upward so that a parent receives the final content of all eligible descendants.
 - Preserve the merged folder's summary, file summaries, child-folder summaries, tags, and TODO/FIXME/NOTE entries in the parent index.
@@ -276,7 +281,7 @@ The folder summary must consider
 - Remove deleted files
 - Preserve unchanged summaries
 - Update folder summaries when needed
-- Apply the Small-Folder Docmap Merge rule after each folder index is generated or incrementally updated
+- Always write or update each folder's `docmap.md` in its real source folder first; apply the Small-Folder Docmap Merge rule only afterward, as a separate post-processing pass across all folders in the DRF's subtree, never as part of generating or incrementally updating an individual folder index
 - Rename detection not required
 - Do not run a full sweep automatically
 - Full sweep is only when explicitly requested by the developer
@@ -366,32 +371,32 @@ Authentication Change
   - Use each DRF's `docmap_plan.md` to store the plan of the indexing operation at granular steps and to track progress of the index generation execution for that DRF. 
   - ALWAYS Get the user's approval on plan BEFORE starting the plan execution. 
   - If a DRF's `docmap_plan.md` exists, then update the file. 
-2. Before updating indexes, check whether the relevant folder already has a `docmap.md`.
-  - If a `docmap.md` exists, run the docmap-based change detection script against it:
+2. Before generating or updating indexes for a folder, ALWAYS run the change detection script, even if the folder's `docmap.md` does not exist yet (first-time generation may have been interrupted):
     - On Windows PowerShell: `./scripts/detectchanges.ps1 <folder-or-docmap-path>/docmap.md`
     - On Bash: `./scripts/detectchanges.sh <folder-or-docmap-path>/docmap.md`
+    - Treat the reported list as the authoritative set of files (and new folders) that still need to be considered for docmap generation. Do not derive it with ad-hoc scripts.
+    - If the `docmap.md` is missing, all files in that folder tree are reported as `ADDED`. When resuming at a DRF, run the script on the deepest folders first so folders that already have a `docmap.md` are compared against it instead of being regenerated.
     - The script reads the file entries and sizes recorded in the folder-level `docmap.md`, resolves each filename relative to the parent directory of that `docmap.md`, and compares them against the files currently present on disk.
-    - Files whose recorded size no longer matches current file size are reported as `MODIFIED`; files present in the docmap but missing from disk are `DELETED`; files present on disk but not listed in the docmap are `ADDED`.
+    - Files whose recorded size no longer matches current file size are reported as `MODIFIED`; files present in the docmap but missing from disk are `DELETED`; files present on disk but not listed in the docmap are `ADDED`; newly found folders are reported as `ADDED` with a trailing `/`.
     - Use this output to decide if the folder’s `docmap.md` needs regeneration or a targeted incremental update.
-  - If no `docmap.md` exists for the folder, use the filelist scripts instead to build the current file inventory and use it as the basis for initial index generation or update planning.
-3. For incremental update of docmaps, apply the detectchanges workflow only for folders that already have a `docmap.md`.
-  - For folders without an existing `docmap.md`, generate the index from the `filelist.ps1`/`filelist.sh` inventory instead of trying to compare against a missing docmap. Do not construct a custom `rg --files` pipeline to compute the eligible file count or folder list for this case.
+3. Apply the detectchanges workflow to all folders, including those without an existing `docmap.md`.
+  - For folders without a `docmap.md`, generate the index for the files reported as `ADDED`; the filelist scripts are not needed for this.
   - After identifying affected files, regenerate or update that folder’s `docmap.md` and then propagate the update to any ancestor indexes that reference it, up to and including that DRF's root `DOCMAP.md`.
 5. For each folder within the current DRF's subtree, starting from the deepest folder and moving upward, do the following:
   1. identify the eligible text files (documents and source code) for this folder.
   2. Use the current folder contents and the relevant `docmap.md` as the input set for index generation in each folder.
   3. Generate file summaries. Extract metadata (semantic tags, TODO/FIXME/NOTE) while generating the file summary. File summary must be generated using the LLM summarization.
   4. Generate folder summary.
-  5. Use the template as per `./references/folderdocmap_tmpl.md` to generate this folder’s `docmap.md`.
-  6. Perform incremental update of folder level `docmap.md`
-  7. **Use the 'subagent' to generate and execute steps for individual folder.**
-6. Skip dependency graph generation for now.
-7. Generate the **Specialized Repository Navigation Maps** at the current DRF.
-8. Use the template as per `./references/rootdocmap_tmpl.md` to generate (and/or update) the current DRF's root `DOCMAP.md`. Always update that DRF's root index even if you are only updating some specific subfolder of the project.
-9. Review and validate the generated `DOCMAP.md` and folder-level `docmap.md` files to ensure accuracy and completeness.
-10. AGENTS.md must contain instructions about how to use the docmaps effectively. Check if the AGENTS.md file exists. If it exists, review and update it as neccessary. If it does not exist, then create it. Use the `references\agents_tmpl.md` template for guidance for updating the AGENTS.md file.
-11. Update the "**Executation Log**" section of `docmap_plan.md` after each incremental update. 
-12. If multiple DRFs were confirmed in Step 1, repeat Steps 2–11 for each remaining DRF.
+  5. Use the template as per `./references/folderdocmap_tmpl.md` to generate this folder’s `docmap.md`, and write it immediately to that folder's own location on disk. Do not defer this write and do not redirect it to a staged or cached location — every folder gets its own written `docmap.md` regardless of how small it is; the Small-Folder Docmap Merge rule is applied later, in step 6, not here.
+  6. **Use the 'subagent' to generate and execute steps for individual folder.**
+6. Only after every folder in the current DRF's subtree has a `docmap.md` written to its real source folder, perform the Small-Folder Docmap Merge rule as a single post-processing pass: evaluate entry counts deepest-folder-first and merge eligible folders into their parents as described in "Small-Folder Docmap Merge" and "Incremental Update Rules".
+7. Skip dependency graph generation for now.
+8. Generate the **Specialized Repository Navigation Maps** at the current DRF.
+9. Use the template as per `./references/rootdocmap_tmpl.md` to generate (and/or update) the current DRF's root `DOCMAP.md`. Always update that DRF's root index even if you are only updating some specific subfolder of the project.
+10. Review and validate the generated `DOCMAP.md` and folder-level `docmap.md` files to ensure accuracy and completeness.
+11. AGENTS.md must contain instructions about how to use the docmaps effectively. Check if the AGENTS.md file exists. If it exists, review and update it as neccessary. If it does not exist, then create it. Use the `references\agents_tmpl.md` template for guidance for updating the AGENTS.md file.
+12. Update the "**Executation Log**" section of `docmap_plan.md` after each incremental update. 
+13. If multiple DRFs were confirmed in Step 1, repeat Steps 2–12 for each remaining DRF.
 
 # Confidence Rules
 

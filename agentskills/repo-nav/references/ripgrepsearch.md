@@ -55,11 +55,13 @@ Use the following flag only when task **EXPLICITLY** requires them
 ## Repository Scan Contract
 
 - Check availability first: use `Get-Command rg -ErrorAction SilentlyContinue` on Windows PowerShell or `command -v rg` on Unix-like shells.
-- Do not use this section to build the first-time eligible-file count or folder/file inventory for a folder. That inventory must come from `../scripts/filelist.ps1` / `../scripts/filelist.sh` (see the skill's "Reference Workflow and Tools" and "Use of inventory scripts" sections). Do not hand-write an `rg --files` pipeline (with custom `-g` globs, folder-splitting, or counting logic) to reproduce what those scripts already do.
-- When available, use `rg --files` only for targeted, already-scoped content or filename searches after a `filelist`-based or `docmap.md`-based inventory exists; retain results for grouping, candidate selection, metadata extraction, and final checks instead of rescanning the repository for each phase.
-- `rg --files` already honors `.gitignore`, `.ignore`, and `.git/info/exclude`. Do not copy repository ignore patterns into additional globs. The only normal workflow-specific exclusion is `--glob '!**/docmap.md'` when generated indexes must be omitted from the input inventory.
+- Establish one authoritative inventory with recommended inventory scripts. That inventory must come from `../scripts/filelist.ps1` / `../scripts/filelist.sh` (see the skill's "Reference Workflow and Tools" and "Use of inventory scripts" sections). Do not hand-write an `rg --files` pipeline (with custom `-g` globs, folder-splitting, or counting logic) to reproduce what those scripts already do.
+- Retain the inventory for grouping, candidate selection, metadata extraction, and final checks. Do not rescan the repository for each phase
+- In case it is not possible to use inventory scripts, `rg --files` only for targeted, already-scoped content or filename searches after a `filelist`-based or `docmap.md`-based inventory exists;
+- Invetory scripts and `rg --files` already honors `.gitignore`, `.ignore`, and `.git/info/exclude`. Do not copy repository ignore patterns into additional globs. The only normal workflow-specific exclusion is `--glob '!**/docmap.md'` when generated indexes must be omitted from the input inventory.
 - Apply file-type, hidden-name, configuration, binary, `AGENTS.md`, and `CLAUDE.md` eligibility filtering after discovery. Do not replace the authoritative inventory with recursive PowerShell enumeration.
 - Keep discovery, folder selection, metadata extraction, index generation, and validation as separate phases. A validation command must consume the selected folder or retained inventory; it must not silently perform a new full-repository scan.
+- 
 - If `rg` is unavailable, use the platform-native fallback only: `Get-ChildItem -Recurse -File` and `Select-String` on Windows, or `find` and `grep` on Unix-like systems. Keep fallback searches scoped and honor ignore rules where supported.
 
 ### Listing existing docmap files

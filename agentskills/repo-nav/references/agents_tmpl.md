@@ -21,3 +21,82 @@ Use the repository navigation maps (docmaps) in this order:
 3. Then read the authoritative folder-level `docmap.md` files under the relevant package or app folder.
 4. Only read source files after narrowing to the right module or feature area.
 
+# Additional  Behavioral Requirements
+
+## Primary File Selection Must Be Docmaps‑Driven
+You must determine file relevance exclusively from DOCMAPS during the primary selection phase.
+
+- DOCMAPS is the authoritative description of file purpose.
+- File selection must be based on DOCMAPS entries.
+- You must not infer file relevance from filenames, directory structure, or keyword similarity during primary selection.
+
+## Heuristic Scanning Allowed Only as Secondary Fallback
+Heuristic scanning (grep, find, ripgrep, keyword search, symbol search, regex search or complete directory traversal) is prohibited during primary file selection.
+
+Heuristic scanning is allowed only if:
+- DOCMAPS-based selection produces zero candidate files, AND
+- The task cannot proceed without identifying relevant files.
+
+When heuristic scanning is used:
+- It must be explicitly declared as fallback.
+- All heuristic-selected files must be justified.
+- You must re-evaluate heuristic candidates against DOCMAPS (if applicable).
+- Any heuristic-selected file that contradicts DOCMAPS must be discarded.
+
+## Mandatory File-Selection Pipeline
+You must follow this pipeline exactly:
+
+Step 1 — DOCMAPS Primary Selection
+Identify candidate files based solely on DOCMAPS descriptions.
+
+Step 2 — Zero-Result Check
+If DOCMAPS produces zero candidate files, YOU may proceed to fallback heuristic scanning.
+
+Step 3 — Fallback Heuristic Selection (Only If Step 2 = Zero Files)
+Use grep/find/keyword search to identify potential files.
+Heuristic scanning must be explicitly declared as fallback.
+
+Step 4 — Produce FILE SELECTION JUSTIFICATION
+You must output a section titled:
+
+```
+FILE SELECTION JUSTIFICATION
+```
+For each candidate file:
+- Quote the DOCMAPS entry (if DOCMAPS-selected).
+- OR explain fallback heuristic reasoning (if DOCMAPS produced zero results).
+- Explain why the file is relevant to the task.
+
+Step 5 — Modify Only Selected Files
+You must modify only the files selected and justified in the FILE SELECTION JUSTIFICATION section.
+
+4. Discarding Improperly Selected Files
+If YOU detect that a file was selected using heuristics during the primary DOCMAPS phase, or without proper fallback conditions:
+
+- The file must be discarded.
+- You must not open or modify it.
+- The file must not be included in subsequent context.
+- You must re-run the selection pipeline.
+
+5. Self-Verification Requirement
+Before producing final output, You must verify:
+- DOCMAPS was used as the primary decision source.
+- Heuristic scanning was used only if DOCMAPS produced zero results.
+- Every selected file has valid justification.
+- No implicit or unjustified file access occurred.
+
+If any condition fails, the agent must revise its reasoning.
+
+6. Failure Mode Handling
+If DOCMAPS produces zero results and heuristic scanning also produces zero results:
+- YOu must not guess.
+- YOu must request clarification from the user
+
+7. Absolute Rules for file selection for reading and/or writing
+These rules override all others:
+
+- DOCMAPS is the primary authority.
+- Heuristic scanning is allowed only when DOCMAPS selects zero files.
+- Only justified files may be modified.
+- No implicit or unjustified file access.
+- Self-verification is mandatory.
