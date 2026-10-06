@@ -1,6 +1,6 @@
 # Bash Operations
 
-Use this reference for Bash operations on Unix-like systems that supplement the authoritative `rg --files` inventory. Bash is for filesystem operations and comparisons that ripgrep cannot express, not for replacing repository discovery.
+Use this reference for Bash operations on Unix-like systems that supplement the authoritative `filelist`/`detectchanges` script output. Bash is for filesystem operations and comparisons that ripgrep cannot express, not for replacing repository discovery.
 
 ## Content Search
 

@@ -59,7 +59,7 @@ DO NOT deviate from this SKILL instructions during the execution of the repo-nav
   - These scripts read the file entries and sizes recorded in a `docmap.md`, resolve each filename relative to the docmap's parent folder, and compare them with the current filesystem state.
   - If the `docmap.md` does not exist (e.g. generation was interrupted), every file in that folder tree is reported as `ADDED`.
   - If a folder under an existing docmap is not covered by it and has no docmap of its own, the folder is reported as an `ADDED` row (name ending in `/`) followed by all its files as `ADDED`.
-  - The script output is the authoritative list of files that still need to be processed. Do not build this list with ad-hoc scripts or the filelist scripts.
+  - The script output is the authoritative list of files that still need to be processed. Do not build this list with ad-hoc scripts, or the filelist scripts.
   - At the Designated Root Folder (see below) the docmap file name is `DOCMAP.md`; at every other folder it is `docmap.md`.
 
 ## Designated Root Folder (DRF)
@@ -104,7 +104,7 @@ The generated indexes/docmap shall help agents:
 - All folder-level index files must be generated using the template `folderdocmap_tmpl.md`.
 
 ## Behavior
-The skill establishes one authoritative repository inventory, processes eligible folders from deepest to shallowest, and generates index files containing:
+The skill establishes one authoritative repository inventory using only the `filelist` scripts (and the change list using only the `detectchanges` scripts), processes eligible folders from deepest to shallowest, and generates index files containing:
 - YAML frontmatter metadata
 - Folder-level summary (4–5 lines)
 - File listings with short summaries
@@ -136,9 +136,14 @@ This file is the primary entry point for all AI agents working on that DRF's pro
 
 ## File/Folder Inclusion/Exclusion Rules
 
-### Use of inventory scripts (`filelist.ps1` and `filelist.sh`)
+### Use of inventory scripts (`filelist.ps1` and `filelist.sh`, `detectchanges.ps1` and `detectchanges.sh`)
 
-The `filelist` scripts are optional helper tools for ad-hoc repository file listing. They respect repository ignore rules and may be used to inspect files in a folder, but change detection, incremental docmap updates, and resuming interrupted generation use the dedicated `detectchanges` scripts instead of any retained inventory workflow.
+The inventory scripts are the **only permitted** way to compute a **full file inventory** of a folder. They respect repository ignore rules.
+
+- You **MUST** run `filelist.ps1` (Windows) or `filelist.sh` (Linux/macOS) whenever you need the full list of files in a folder, such as when generating a DOCMAP from scratch (no existing DOCMAP).
+- You **MUST NOT** build a full inventory with any other method, such as `ls`, `dir`, `Get-ChildItem`, `find`, `glob`, `git ls-files`, `tree`, or IDE/agent file-listing tools. Do not infer or hand-write file lists from memory.
+- Treat the script output as the complete and final inventory. Do not modify it manually; never add files it did not list.
+- For **changed-file detection** (especially when a DOCMAP already exists), incremental docmap updates, and resuming interrupted generation, you **MUST** use the `detectchanges` scripts instead of `filelist`. Do not diff full inventories manually or use other methods to find changes.
 
 - Use `-Glob "<pattern>"` to restrict inventory output to matching file types, for example `-Glob "*.{ps1,md}"`. 
 - By default, each script lists only files directly in the given folder. 
@@ -193,7 +198,7 @@ This is a required prerequisite for this skill. If `rg` is not available, stop i
 - On Windows PowerShell, run `Get-Command rg -ErrorAction SilentlyContinue`.
 - On Unix-like shells, run `command -v rg`.
 
-If the check succeeds, load and follow the detailed ripgrep instructions in `./references/ripgrepsearch.md`. Use `rg --files` as the first and authoritative repository-discovery command, followed by targeted content or filename searches from that reference.
+If the check succeeds, load and follow the detailed ripgrep instructions in `./references/ripgrepsearch.md`. Use the `filelist` scripts as the first and authoritative repository-discovery/inventory step, followed by targeted content searches from that reference.
 
 If the check fails:
 
@@ -276,7 +281,7 @@ The folder summary must consider
 
 ## Incremental Update Rules
 - Load existing index files if present
-- Detect changed files using file size only
+- Detect changed files using only the `detectchanges` scripts (file size comparison)
 - Re-summarize only files with changed file size
 - Remove deleted files
 - Preserve unchanged summaries
@@ -380,11 +385,11 @@ Authentication Change
     - Files whose recorded size no longer matches current file size are reported as `MODIFIED`; files present in the docmap but missing from disk are `DELETED`; files present on disk but not listed in the docmap are `ADDED`; newly found folders are reported as `ADDED` with a trailing `/`.
     - Use this output to decide if the folder’s `docmap.md` needs regeneration or a targeted incremental update.
 3. Apply the detectchanges workflow to all folders, including those without an existing `docmap.md`.
-  - For folders without a `docmap.md`, generate the index for the files reported as `ADDED`; the filelist scripts are not needed for this.
+  - For folders without a `docmap.md`, generate the index for the files reported as `ADDED`; the filelist scripts are not needed for this. Use `filelist` only when a full inventory is required (e.g. planning, counting entries); never replace either script with another listing method.
   - After identifying affected files, regenerate or update that folder’s `docmap.md` and then propagate the update to any ancestor indexes that reference it, up to and including that DRF's root `DOCMAP.md`.
 5. For each folder within the current DRF's subtree, starting from the deepest folder and moving upward, do the following:
-  1. identify the eligible text files (documents and source code) for this folder.
-  2. Use the current folder contents and the relevant `docmap.md` as the input set for index generation in each folder.
+  1. identify the eligible text files (documents and source code) for this folder from the `detectchanges` output (or `filelist` output when a full inventory is needed) only.
+  2. Use that script output and the relevant `docmap.md` as the input set for index generation in each folder; do not list the folder contents any other way.
   3. Generate file summaries. Extract metadata (semantic tags, TODO/FIXME/NOTE) while generating the file summary. File summary must be generated using the LLM summarization.
   4. Generate folder summary.
   5. Use the template as per `./references/folderdocmap_tmpl.md` to generate this folder’s `docmap.md`, and write it immediately to that folder's own location on disk. Do not defer this write and do not redirect it to a staged or cached location — every folder gets its own written `docmap.md` regardless of how small it is; the Small-Folder Docmap Merge rule is applied later, in step 6, not here.

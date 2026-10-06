@@ -1,6 +1,6 @@
 # PowerShell Operations
 
-Use this reference for PowerShell operations that supplement the authoritative `rg --files` inventory. PowerShell is for filesystem operations and comparisons that ripgrep cannot express, not for replacing repository discovery.
+Use this reference for PowerShell operations that supplement the authoritative `filelist`/`detectchanges` script output. PowerShell is for filesystem operations and comparisons that ripgrep cannot express, not for replacing repository discovery.
 
 ## Content Search
 
