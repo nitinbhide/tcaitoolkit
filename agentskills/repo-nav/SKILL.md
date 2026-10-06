@@ -397,8 +397,8 @@ Authentication Change
 6. Only after every folder in the current DRF's subtree has a `docmap.md` written to its real source folder, perform the Small-Folder Docmap Merge rule as a single post-processing pass: evaluate entry counts deepest-folder-first and merge eligible folders into their parents as described in "Small-Folder Docmap Merge" and "Incremental Update Rules".
 7. Skip dependency graph generation for now.
 8. Generate the **Specialized Repository Navigation Maps** at the current DRF.
-9. Use the template as per `./references/rootdocmap_tmpl.md` to generate (and/or update) the current DRF's root `DOCMAP.md`. Always update that DRF's root index even if you are only updating some specific subfolder of the project.
-10. Review and validate the generated `DOCMAP.md` and folder-level `docmap.md` files to ensure accuracy and completeness.
+9. Use the template as per `./references/rootdocmap_tmpl.md` to generate (and/or update) the current DRF's root `DOCMAP.md`. Always update that DRF's root index even if you are only updating some specific subfolder of the project. Create/Update the root `DOCMAP.md` ONLY after "Small-Folder Docmap Merge" is completed.
+10. Review and validate the generated root `DOCMAP.md` and folder-level `docmap.md` files to ensure accuracy and completeness.
 11. AGENTS.md must contain instructions about how to use the docmaps effectively. Check if the AGENTS.md file exists. If it exists, review and update it as neccessary. If it does not exist, then create it. Use the `references\agents_tmpl.md` template for guidance for updating the AGENTS.md file.
 12. Update the "**Executation Log**" section of `docmap_plan.md` after each incremental update. 
 13. If multiple DRFs were confirmed in Step 1, repeat Steps 2–12 for each remaining DRF.
