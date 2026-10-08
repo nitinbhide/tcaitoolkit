@@ -67,7 +67,8 @@ A repository may contain multiple independent projects (a monorepo). The **Desig
 
 - **Default:** If the user does not specify one, the DRF is the physical top-level folder of the repository.
 - **Explicit designation:** The user may designate any folder (typically a subproject's top-level folder) as a DRF instead.
-- **Multiple DRFs:** A repository may have more than one DRF. Treat each DRF as an independent indexing run, scoped strictly to its own subtree, with its own `docmap_plan.md`, its own root `DOCMAP.md`, and its own Specialized Repository Navigation Maps. Never read or write into a sibling DRF's subtree while processing another DRF.
+- **DRF memory folder:** Store each DRF's plan and merge-staging state under `<project root>/.agents/memory/<DRF-key>/`, where the project root is the physical top-level folder of the repository. Derive `<DRF-key>` from the DRF path relative to the project root by replacing each `/` or `\` path separator with `_` (for example, `src\com.drf` becomes `src_com.drf`). Use `root` as the key when the DRF is the project root.
+- **Multiple DRFs:** A repository may have more than one DRF. Treat each DRF as an independent indexing run, scoped strictly to its own subtree, with its own `<project root>/.agents/memory/<DRF-key>/docmap_plan.md`, its own root `DOCMAP.md`, and its own Specialized Repository Navigation Maps. Never read or write into a sibling DRF's subtree while processing another DRF.
 - **Confirm before starting:** Always confirm the DRF(s) for the current run with the user before generating the indexing operation plan. If unspecified, state that the physical repository top will be used as the default DRF.
 - **Root Protection:** A DRF's own `DOCMAP.md` is never merged into a parent folder's docmap, even below the small-folder merge threshold, and even when the DRF is not the physical repository top.
 - **Folders outside any DRF:** Folders outside every designated DRF's subtree are out of scope for the current run and must be left untouched.
@@ -122,7 +123,7 @@ The skill establishes one authoritative repository inventory using only the `fil
   Must be generated using the template defined in `./references/folderdocmap_tmpl.md`
 
 - **Indexing Plan File (`docmap_plan.md`)**  
-  Must be generated and tracked using the template defined in `./references/docmap_plan_tmpl.md`
+  Must be generated and tracked at `<project root>/.agents/memory/<DRF-key>/docmap_plan.md` using the template defined in `./references/docmap_plan_tmpl.md`. Derive the key as described in "DRF memory folder" above.
 
 The skill must fill these templates with actual repository data.
 
@@ -372,10 +373,10 @@ Authentication Change
 1. ALWAYS Prepare the **indexing operation plan** using the following steps. **Instructions for indexing operation plan creation**
 
   - Confirm the Designated Root Folder(s) (DRF) for this run with the user; default to the physical repository top when none is specified.
-  - Use the plan template as per `./references/docmap_plan_tmpl.md` to create and update `<DRF>/.agents/memory/docmap_plan.md`, scoped to each DRF's subtree.
-  - Use each DRF's `docmap_plan.md` to store the plan of the indexing operation at granular steps and to track progress of the index generation execution for that DRF. 
+  - Derive the DRF key as described in "DRF memory folder" above. Use the plan template as per `./references/docmap_plan_tmpl.md` to create and update `<project root>/.agents/memory/<DRF-key>/docmap_plan.md`, scoped to that DRF's subtree.
+  - Use each DRF's plan to store the indexing operation at granular steps and track its execution progress. Keep merge-staging state under `<project root>/.agents/memory/<DRF-key>/repo-nav/` as well.
   - ALWAYS Get the user's approval on plan BEFORE starting the plan execution. 
-  - If a DRF's `docmap_plan.md` exists, then update the file. 
+  - If the DRF's plan file exists, update it in place.
 2. Before generating or updating indexes for a folder, ALWAYS run the change detection script, even if the folder's `docmap.md` does not exist yet (first-time generation may have been interrupted):
     - On Windows PowerShell: `./scripts/detectchanges.ps1 <folder-or-docmap-path>/docmap.md`
     - On Bash: `./scripts/detectchanges.sh <folder-or-docmap-path>/docmap.md`

@@ -2,7 +2,7 @@
 
 **Purpose and Use of this template**
 
-Use this template to generate and update the plan file at `/.agents/memory/docmap_plan.md`.
+Use this template to generate and update the plan file at `<project root>/.agents/memory/<DRF-key>/docmap_plan.md`. Derive `<DRF-key>` from the DRF path relative to the physical project root by replacing each `/` or `\` path separator with `_` (for example, `src\com.drf` becomes `src_com.drf`). Use `root` when the DRF is the project root.
 The plan tracks repository inventory, execution order, folder merge decisions, incremental change detection, and execution progress for initial generation, incremental updates, and resumption after interruptions.
 
 ---
@@ -91,7 +91,7 @@ Folders MUST be ordered by Depth descending (deepest first), then lexicographica
 Status Lifecycle & Merge Protocol:
 - PENDING: Queued for execution.
 - IN_PROGRESS: Subagent or worker currently analyzing files in folder and generating or validating the folder `docmap.md`.
-- MARKED_FOR_MERGE: Folder analyzed and effective entries < 10. Summary and file entries are staged in agent memory (/.agents/memory/repo-nav/<path>/) awaiting parent folder incorporation. Child docmap.md is NOT published.
+- MARKED_FOR_MERGE: Folder analyzed and effective entries < 10. Summary and file entries are staged in agent memory (`<project root>/.agents/memory/<DRF-key>/repo-nav/<path>/`) awaiting parent folder incorporation. Child docmap.md is NOT published.
 - MERGED_INTO_PARENT: Parent folder has processed and incorporated this child's staged summaries with rewritten relative links. Child docmap.md is confirmed deleted or absent from disk.
 - Child-folder links may reference only surviving standalone child indexes. Absorbed folders are represented inline in the parent and must not retain a child-folder link.
 - COMPLETED: Standalone docmap.md generated, validated, and effective entry count >= 10 (or root DOCMAP.md).
@@ -131,12 +131,12 @@ Effective Entries = Direct Files + Immediate Child Docmap Links + Absorbed Child
 
 1. **On Session Interruption / Resume**:
    - Re-read the active repo-nav skill instructions and re-confirm Mandatory Execution Compliance from Section 0 before taking any new action.
-   - Read `/.agents/memory/docmap_plan.md`.
+  - Read `<project root>/.agents/memory/<DRF-key>/docmap_plan.md` for the DRF being resumed.
    - Locate the highest-depth (deepest) folder with status `IN_PROGRESS`, `MARKED_FOR_MERGE`, or `PENDING`.
    - If an `IN_PROGRESS` folder exists:
      - Re-open the folder's current `docmap.md` or use the filelist fallback inventory if the folder has no docmap yet.
      - Count effective entries:
-       - If effective entries $< 10$ and not root: stage content in `/.agents/memory/repo-nav/<folder-path>/` and mark status `MARKED_FOR_MERGE`. Ensure no child `docmap.md` is left on disk.
+      - If effective entries $< 10$ and not root: stage content in `<project root>/.agents/memory/<DRF-key>/repo-nav/<folder-path>/` and mark status `MARKED_FOR_MERGE`. Ensure no child `docmap.md` is left on disk.
        - If effective entries $\ge 10$ or root: write `docmap.md`, validate, and mark status `COMPLETED`.
    - If a folder is `MARKED_FOR_MERGE`:
      - Verify staged memory exists, then proceed to its parent folder when the queue reaches it.
