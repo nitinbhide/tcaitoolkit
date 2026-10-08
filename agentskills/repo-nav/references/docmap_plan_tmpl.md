@@ -5,13 +5,15 @@
 Use this template to generate and update the plan file at `<project root>/.agents/memory/<DRF-key>/docmap_plan.md`. Derive `<DRF-key>` from the DRF path relative to the physical project root by replacing each `/` or `\` path separator with `_` (for example, `src\com.drf` becomes `src_com.drf`). Use `root` when the DRF is the project root.
 The plan tracks repository inventory, execution order, folder merge decisions, incremental change detection, and execution progress for initial generation, incremental updates, and resumption after interruptions.
 
+Execution log entries belong in the sibling file `<project root>/.agents/memory/<DRF-key>/docmap_plan_log.md`, not in this plan. Use the template `docmap_plan_log_tmpl.md` to create the log file. Append entries without changing or removing prior entries; update the log's `updated_at` metadata when appending.
+
 ---
 
 ## Template Format
 
 ```markdown
 ---
-plan_version: "1.1.0"
+plan_version: "1.2.0"
 designated_root_folder: "<designated root folder. Default is repository root>"
 mode: "<full_baseline | incremental>"
 status: "<PENDING_APPROVAL | IN_PROGRESS | COMPLETED | FAILED>"
@@ -132,6 +134,7 @@ Effective Entries = Direct Files + Immediate Child Docmap Links + Absorbed Child
 1. **On Session Interruption / Resume**:
    - Re-read the active repo-nav skill instructions and re-confirm Mandatory Execution Compliance from Section 0 before taking any new action.
   - Read `<project root>/.agents/memory/<DRF-key>/docmap_plan.md` for the DRF being resumed.
+  - Read the sibling `docmap_plan_log.md` if it exists so new log entries can be appended without altering prior entries.
    - Locate the highest-depth (deepest) folder with status `IN_PROGRESS`, `MARKED_FOR_MERGE`, or `PENDING`.
    - If an `IN_PROGRESS` folder exists:
      - Re-open the folder's current `docmap.md` or use the filelist fallback inventory if the folder has no docmap yet.
@@ -150,7 +153,6 @@ Effective Entries = Direct Files + Immediate Child Docmap Links + Absorbed Child
    - Always update `DOCMAP.md` at root as the final folder step before or alongside specialized maps.
 ```
 
+## Executation Logs
 
-## Executation Log
-
-- "<ISO-8601 Timestamp>" : <Steps executed>. 
+- Execution log entries for this plan are stored in the sibling file `docmap_plan_log.md`; append new entries there and do not copy them into this plan.

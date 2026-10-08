@@ -401,7 +401,7 @@ Authentication Change
 9. Use the template as per `./references/rootdocmap_tmpl.md` to generate (and/or update) the current DRF's root `DOCMAP.md`. Always update that DRF's root index even if you are only updating some specific subfolder of the project. Create/Update the root `DOCMAP.md` ONLY after "Small-Folder Docmap Merge" is completed.
 10. Review and validate the generated root `DOCMAP.md` and folder-level `docmap.md` files to ensure accuracy and completeness.
 11. AGENTS.md must contain instructions about how to use the docmaps effectively. Check if the AGENTS.md file exists. If it exists, review and update it as neccessary. If it does not exist, then create it. Use the `references\agents_tmpl.md` template for guidance for updating the AGENTS.md file.
-12. Update the "**Executation Log**" section of `docmap_plan.md` after each incremental update. 
+12. After each plan-execution step, including baseline, incremental, and resumed runs, append an entry to `<project root>/.agents/memory/<DRF-key>/docmap_plan_log.md`. Create the file from `./references/docmap_plan_log_tmpl.md` if it does not exist. Log entries are append-only: do not edit or remove existing entries. Update the log's `updated_at` metadata when appending. Do not put execution-log entries in `docmap_plan.md`.
 13. If multiple DRFs were confirmed in Step 1, repeat Steps 2–12 for each remaining DRF.
 
 # Confidence Rules
