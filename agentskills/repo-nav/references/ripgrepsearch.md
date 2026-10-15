@@ -67,6 +67,12 @@ Use the following flag only when task **EXPLICITLY** requires them
 ### Listing existing docmap files
 - Use `rg --files -g "{docmap,DOCMAP}.md"` to list all the existing docmap files in the repository.
 
+### Listing root docmaps of Designated Root Folders
+- Run from the project root: `rg --files -g "**/DOCMAP.md" -g "!/DOCMAP.md"`
+- `**/DOCMAP.md` matches only the exact name `DOCMAP.md` (ripgrep globs are case-sensitive by default, so `docmap.md` and `Docmap.md` are not matched). Do not add `--glob-case-insensitive` or `-i`.
+- `!/DOCMAP.md` excludes the project-root `DOCMAP.md`, so only docmaps of Designated Root Folders below the project root are listed.
+- Output paths are relative to the project root; each parent folder is a Designated Root Folder.
+
 ## Ripgrep Validation Contract
 
 - Use `rg -n` for marker discovery and `rg --only-matching` for child-link extraction. Do not parse child links with `[regex]::Matches`.
