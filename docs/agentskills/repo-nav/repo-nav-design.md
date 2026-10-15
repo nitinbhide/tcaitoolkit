@@ -8,7 +8,7 @@ Modern AI coding agents face significant friction when introduced to complex or 
 - Fragmented architectural mental models and hallucinations regarding system boundaries.
 - High risk of missed dependencies, overlooked regression tests, or changes in the wrong layer.
 
-The `repo-nav` skill solves this by generating an authoritative, hierarchical system of Markdown index files (`DOCMAP.md` at the project root and `docmap.md` in eligible subfolders), supplemented by cross-cutting navigation maps.
+The `repo-nav` skill solves this by generating an authoritative, hierarchical system of Markdown index files (`DOCMAP.md` at the project root and/or at each Designated Root Folder, and `docmap.md` in eligible subfolders), supplemented by cross-cutting navigation maps at each Designated Root Folder.
 
 ### 1.2 Evolution from Specification to Current Skill Architecture
 The initial concept in [docs/agentic-skills/repo-nav/repo-nav-spec.md](docs/agentic-skills/repo-nav/repo-nav-spec.md) established the foundational requirement: a pure Markdown index adhering to **progressive disclosure** without external dependencies. 
@@ -19,16 +19,18 @@ As captured in the latest [agentskills/repo-nav/SKILL.md](agentskills/repo-nav/S
 3. **Small-Folder Merge Optimization (< 10 entries):** Pruning sparse folder hierarchies to maximize agent reading density.
 4. **Formalized Two-Tier State Tracking & Resumption:** Utilizing `docmap_plan.md` and folder-scoped `filelist.md` to guarantee robust execution and interruption recovery.
 5. **Strict Shell & Tooling Contracts:** Using native PowerShell (Windows) or Bash (Unix) without ad-hoc helper scripts (Python/Node.js).
-6. **Configurable Designated Root Folder:** Decoupling the location of the root `DOCMAP.md` and the cross-cutting maps from the physical top of the repository, so that a single version-control repository containing multiple independent projects (a monorepo) can designate one root per project instead of forcing a single repository-wide root.
+6. **Configurable Designated Root Folders:** Supporting multiple logical project roots and their cross-cutting maps in one repository, while also allowing a separate project-wide root `DOCMAP.md` to summarize the repository and link to those roots.
 
 ### 1.3 Designated Root Folder (DRF)
-The original design assumed exactly one root: the top-level folder of the repository. In practice, a single repository frequently hosts multiple independent projects or products side by side (for example `agentic_cc/`, `agentskills/`, and other top-level folders in this very repository each behave like separate projects). Forcing a single repository-wide `DOCMAP.md` and a single set of cross-cutting maps at the physical repository top loses per-project cohesion and produces a root index that mixes unrelated business domains.
+The original design assumed exactly one root: the top-level folder of the repository. In practice, a single repository frequently hosts multiple independent projects or products side by side (for example `agentic_cc/`, `agentskills/`, and other top-level folders in this very repository each behave like separate projects). A project-wide root `DOCMAP.md` and multiple DRF root docmaps serve different purposes and may coexist: the project-wide index summarizes the repository and helps identify the relevant DRF, while each DRF index and its cross-cutting maps describe only that DRF's scope.
 
 To address this, `repo-nav` introduces the **Designated Root Folder (DRF)**: the folder that the skill treats as the logical root for a given indexing run.
 - **Default:** When not otherwise specified, the DRF is the physical top-level folder of the repository (the previous, implicit behavior is preserved).
 - **Explicit designation:** The user (or an existing `docmap_plan.md`) may designate any folder within the repository as a DRF, typically the top-level folder of an individual subproject (e.g. `agentic_cc/` or `agentskills/repo-nav/`).
 - **Multiple DRFs per repository:** A repository may have more than one DRF, one per subproject. Each DRF is processed as an independent indexing run with its own root `DOCMAP.md`, its own cross-cutting maps, and its own `docmap_plan.md`, scoped entirely to the DRF's subtree. Processing one DRF never reads or writes into the subtree of a sibling DRF.
-- **Root DOCMAP.md location:** The root `DOCMAP.md` and the cross-cutting maps (`FEATURE_MAP.md`, `ARCHITECTURE_MAP.md`, `TECHNOLOGY_MAP.md`, `TESTING_MAP.md`, `CHANGE_IMPACT_MAP.md`) are always written at the DRF, not necessarily at the physical repository top. If the DRF is the repository top, this is unchanged from prior behavior.
+- **Project-wide root index:** The project root may have its own `DOCMAP.md` summarizing the repository as a whole and linking to its DRF root docmaps. It is distinct from the DRF indexes when the project root is not itself a DRF.
+- **DRF root indexes and maps:** Each DRF's root `DOCMAP.md` and cross-cutting maps (`FEATURE_MAP.md`, `ARCHITECTURE_MAP.md`, `TECHNOLOGY_MAP.md`, `TESTING_MAP.md`, `CHANGE_IMPACT_MAP.md`) are written at that DRF and describe only its subtree. If the project root is itself a DRF, its one `DOCMAP.md` serves as both the project-wide root index and that DRF's root index; do not create duplicate indexes at the same path.
+- **Project root and DRFs coexist:** A project-wide root index can coexist with one or more DRF root indexes, typically when the DRFs are subfolders. The project-wide index provides repository-level orientation; agents follow it to the relevant DRF and then use that DRF's maps for detailed navigation.
 - **Folder hierarchy stays physical below the DRF:** Below the DRF, folder-level `docmap.md` generation, bottom-up post-order processing, and the small-folder merge rule behave exactly as described in the rest of this document, scoped to the DRF's subtree.
 - **Root Protection still applies per DRF:** The DRF's own `DOCMAP.md` is never merged into a parent folder's docmap, even if its effective entry count is below the merge threshold, and even when the DRF is not the physical repository top (see Section 2.3).
 - **Folders outside any DRF subtree:** Folders in the repository that are not part of any designated DRF subtree are out of scope for the current indexing run and are left untouched.
@@ -64,8 +66,8 @@ Progressive disclosure is the governing architectural principle of `repo-nav`. I
 ```
 
 ### 2.1 The Three-Level Navigation Hierarchy
-1. **Level 1: Root `DOCMAP.md`**  
-   The single entry point for any coding agent working on a given project. It summarizes that project's architecture, business domain, language/tooling profile, module dependency graph, and links directly to first-level directories and cross-cutting maps. The root `DOCMAP.md` is written at the project's Designated Root Folder (DRF, see Section 1.3), which is the physical repository top by default but may instead be a subproject folder in a multi-project repository.
+1. **Level 1: Project and DRF root `DOCMAP.md` files**
+   When present, the project-wide root `DOCMAP.md` summarizes the repository and directs agents to the relevant DRF. Each DRF root `DOCMAP.md` summarizes that DRF's architecture, business domain, language/tooling profile, module dependency graph, and links to its first-level directories and cross-cutting maps. The project-wide index and multiple DRF indexes may coexist; if the project root is itself a DRF, its single root docmap serves both roles.
 2. **Level 2: Folder `docmap.md`**  
    Provides localized context for a subsystem or module. It explains *why* the folder exists, *what* responsibilities it owns, guidance on *when to read or modify* files in this folder, and short evidence-based summaries for each contained file.
 3. **Level 3: Source & Documentation Files**  
@@ -345,5 +347,5 @@ An index generation or update run is verified complete and valid when:
 1. **Structural Completeness:** Every eligible folder has either a dedicated `docmap.md` or a documented absorption entry in its parent docmap.
 2. **Relative Link Integrity:** Every child link in a docmap points to an existing `docmap.md` or an existing source file using valid relative paths.
 3. **Accurate Metadata:** All file sizes, tags, line-numbered TODO markers, and file counts match the physical filesystem.
-4. **Progressive Disclosure Utility:** A coding agent can start at the Designated Root Folder's `DOCMAP.md` (e.g. `/DOCMAP.md` for the default single-project case), select relevant submodules, and pinpoint the exact files to read or modify without scanning or reading unneeded files.
+4. **Progressive Disclosure Utility:** A coding agent can start at the project-wide root `DOCMAP.md` when available, follow it to the relevant DRF's `DOCMAP.md`, select relevant submodules, and pinpoint the exact files to read or modify without scanning or reading unneeded files. When the project root is itself a DRF or no separate project-wide index exists, start at the relevant DRF's root docmap.
 5. **DRF Isolation:** For a multi-project repository, each Designated Root Folder's `DOCMAP.md` and cross-cutting maps describe only that DRF's own subtree, and no folder is claimed by more than one DRF.

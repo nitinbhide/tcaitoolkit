@@ -32,7 +32,7 @@ Agents should use index files to identify relevant folders and files before read
 What will be your strategy guideline for cross cutting indexes ? 
 
 ## Multi-Project Repositories
-The original assumption was that the root index file and the cross-cutting maps always live at the physical top of the repository. A single repository can host multiple independent projects, so it must be possible to designate any folder as a root folder and generate that project's root `DOCMAP.md` and cross-cutting maps there instead of, or in addition to, the physical repository top. See [repo-nav-design.md](./repo-nav-design.md) (Designated Root Folder) for the current design.
+The original assumption was that the root index file and the cross-cutting maps always live at the physical top of the repository. A single repository can host multiple independent projects, so it must be possible to designate multiple folders as Designated Root Folders (DRFs), each with its own root `DOCMAP.md` and cross-cutting maps. The project root may also have a separate, repository-wide `DOCMAP.md` that links to the DRF indexes; both levels can coexist. If the project root itself is a DRF, its one `DOCMAP.md` serves both roles. See [repo-nav-design.md](./repo-nav-design.md) (Designated Root Folder) for the current design.
 
 **CAUTION**
 This document describes the initial thoughts of repo-nav SKILL. It was originally called the repoindexer SKILL. The implementation and design is incrementally improved. And the current implementation has many more features and ideas compared to this spec document
