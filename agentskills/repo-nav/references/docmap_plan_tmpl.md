@@ -138,7 +138,7 @@ Effective Entries = Direct Files + Immediate Child Docmap Links + Absorbed Child
    - Re-read the active repo-nav skill instructions and re-confirm Mandatory Execution Compliance from Section 0 before taking any new action.
   - Read `<project root>/.agents/memory/<DRF-key>/docmap_plan.md` for the DRF being resumed.
   - Read the sibling `docmap_plan_log.md` if it exists so new log entries can be appended without altering prior entries.
-   - Locate the highest-depth (deepest) folder with status `IN_PROGRESS`, `MARKED_FOR_MERGE`, or `PENDING`.
+  - Locate the highest-depth (deepest) folder with status `IN_PROGRESS`, `MARKED_FOR_MERGE`, or `PENDING`.
    - If an `IN_PROGRESS` folder exists:
      - Re-open the folder's current `docmap.md` or use the filelist fallback inventory if the folder has no docmap yet.
      - Count effective entries:
@@ -154,8 +154,9 @@ Effective Entries = Direct Files + Immediate Child Docmap Links + Absorbed Child
 3. **State Transition Invariants**:
    - Never re-analyze folders marked `COMPLETED`, `MERGED_INTO_PARENT`, or `SKIPPED_CLEAN`.
    - Always update `DOCMAP.md` at root as the final folder step before or alongside specialized maps.
-```
 
 ## Executation Logs
 
 - Execution log entries for this plan are stored in the sibling file `docmap_plan_log.md`; append new entries there and do not copy them into this plan.
+- Path to executation log file `./docmap_plan_log.md`
+```

@@ -405,7 +405,7 @@ Authentication Change
     - In **Root Docmaps of Designated Root Folders**, include every DRF's root `DOCMAP.md`, using paths relative to the project root. Use instructions from `references\ripgrepsearch.md` as a guide.
     - The project-wide root docmap and DRF root docmaps may coexist. If the project root is itself a DRF, its `DOCMAP.md` serves both roles and should be listed only once.
     - Remove unused placeholder entries and any empty listing sections when applying the template.
-12. After each plan-execution step, including baseline, incremental, and resumed runs, append an entry to `<project root>/.agents/memory/<DRF-key>/docmap_plan_log.md`. Create the file from `./references/docmap_plan_log_tmpl.md` if it does not exist. Log entries are append-only: do not edit or remove existing entries. Update the log's `updated_at` metadata when appending. Do not put execution-log entries in `docmap_plan.md`.
+12. After each plan-execution step, including baseline, incremental, and resumed runs, append an entry to `<project root>/.agents/memory/<DRF-key>/docmap_plan_log.md`. Create the file from `./references/docmap_plan_log_tmpl.md` if it does not exist. Log entries are append-only: do not edit or remove existing entries. Update the log's `updated_at` metadata when appending. Execution log entries are stored only in this sibling `docmap_plan_log.md`; never put or copy them into `docmap_plan.md`. When resuming an interrupted run, read the sibling `docmap_plan_log.md` (only if neccessary) along with `docmap_plan.md`, so new entries are appended without altering prior entries.
 13. If multiple DRFs were confirmed in Step 1, repeat Steps 2–12 for each remaining DRF.
 
 # Confidence Rules
