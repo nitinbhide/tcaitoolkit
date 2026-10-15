@@ -7,30 +7,40 @@ Add following section to project/repository root AGENTS.md or CLAUDE.md file so 
 
 ## Source and Documentation Index
 
-The root `DOCMAP.md` and the cross-cutting maps are the preferred entry points for repository navigation. They are authoritative for high-level understanding and for deciding where to read source code and documentation.
+The project root may have its own `DOCMAP.md` describing the repository as a whole, in addition to multiple Designated Root Folders (DRFs), each with its own root `DOCMAP.md` and cross-cutting maps. These indexes have different scopes and may coexist. Start with the project-root docmap when available to understand the repository and identify the relevant DRF; then use that DRF's maps as the preferred entry points for its scope. If the project root is itteself a DRF, its single `DOCMAP.md` serves both roles and should not be listed twice.
 
-Use the repository navigation maps (docmaps) in this order:
+### Project Root Docmap
 
-1. Start at `DOCMAP.md` for the repository overview, package entry points, and top-level navigation.
-2. Read the cross-cutting maps to understand capability, architecture, technology, testing, and change-impact before drilling into implementation:
+- `<project-root-DOCMAP-path>` — <repository-wide scope>
+
+### Root Docmaps of Designated Root Folders
+
+List of 
+- `<path-to-designated-root-folder>/DOCMAP.md` — <scope or project summarized by this DRF>
+
+## How and When to repository navigation maps (docmaps)
+Use the repository navigation maps for the relevant DRF in this order:
+
+1. Start at the relevant DRF's `DOCMAP.md` for its overview, package entry points, and top-level navigation. If the project-root docmap identifies the relevant DRF, follow its link or path.
+2. Read that DRF's cross-cutting maps to understand capability, architecture, technology, testing, and change-impact before drilling into implementation:
    - `FEATURE_MAP.md`
    - `ARCHITECTURE_MAP.md`
    - `TECHNOLOGY_MAP.md`
    - `TESTING_MAP.md`
    - `CHANGE_IMPACT_MAP.md`
-3. Then read the authoritative folder-level `docmap.md` files under the relevant package or app folder.
+3. Then read the authoritative folder-level `docmap.md` files under the relevant package or app folder within that DRF.
 4. Only read source files after narrowing to the right module or feature area.
 
-# Additional  Behavioral Requirements
+## Additional Behavioral Requirements
 
-## Primary File Selection Must Be Docmaps‑Driven
+### Primary File Selection Must Be Docmaps‑Driven
 You must determine file relevance exclusively from DOCMAPS during the primary selection phase.
 
 - DOCMAPS is the authoritative description of file purpose.
 - File selection must be based on DOCMAPS entries.
 - You must not infer file relevance from filenames, directory structure, or keyword similarity during primary selection.
 
-## Heuristic Scanning Allowed Only as Secondary Fallback
+### Heuristic Scanning Allowed Only as Secondary Fallback
 Heuristic scanning (grep, find, ripgrep, keyword search, symbol search, regex search or complete directory traversal) is prohibited during primary file selection.
 
 Heuristic scanning is allowed only if:
@@ -43,7 +53,7 @@ When heuristic scanning is used:
 - You must re-evaluate heuristic candidates against DOCMAPS (if applicable).
 - Any heuristic-selected file that contradicts DOCMAPS must be discarded.
 
-## Mandatory File-Selection Pipeline
+### Mandatory File-Selection Pipeline
 You must follow this pipeline exactly:
 
 Step 1 — DOCMAPS Primary Selection
@@ -70,7 +80,7 @@ For each candidate file:
 Step 5 — Modify Only Selected Files
 You must modify only the files selected and justified in the FILE SELECTION JUSTIFICATION section.
 
-4. Discarding Improperly Selected Files
+### Discarding Improperly Selected Files
 If YOU detect that a file was selected using heuristics during the primary DOCMAPS phase, or without proper fallback conditions:
 
 - The file must be discarded.
@@ -78,7 +88,7 @@ If YOU detect that a file was selected using heuristics during the primary DOCMA
 - The file must not be included in subsequent context.
 - You must re-run the selection pipeline.
 
-5. Self-Verification Requirement
+### Self-Verification Requirement
 Before producing final output, You must verify:
 - DOCMAPS was used as the primary decision source.
 - Heuristic scanning was used only if DOCMAPS produced zero results.
@@ -87,12 +97,12 @@ Before producing final output, You must verify:
 
 If any condition fails, the agent must revise its reasoning.
 
-6. Failure Mode Handling
+### Failure Mode Handling
 If DOCMAPS produces zero results and heuristic scanning also produces zero results:
 - YOu must not guess.
 - YOu must request clarification from the user
 
-7. Absolute Rules for file selection for reading and/or writing
+### Absolute Rules for File Selection for Reading and/or Writing
 These rules override all others:
 
 - DOCMAPS is the primary authority.

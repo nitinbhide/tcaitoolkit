@@ -400,7 +400,11 @@ Authentication Change
 8. Generate the **Specialized Repository Navigation Maps** at the current DRF.
 9. Use the template as per `./references/rootdocmap_tmpl.md` to generate (and/or update) the current DRF's root `DOCMAP.md`. Always update that DRF's root index even if you are only updating some specific subfolder of the project. Create/Update the root `DOCMAP.md` ONLY after "Small-Folder Docmap Merge" is completed.
 10. Review and validate the generated root `DOCMAP.md` and folder-level `docmap.md` files to ensure accuracy and completeness.
-11. AGENTS.md must contain instructions about how to use the docmaps effectively. Check if the AGENTS.md file exists. If it exists, review and update it as neccessary. If it does not exist, then create it. Use the `references\agents_tmpl.md` template for guidance for updating the AGENTS.md file.
+11. Ensure the project-root `AGENTS.md` contains instructions for using docmaps effectively. If it exists, review and update its docmap guidance; otherwise create it. Use `references\agents_tmpl.md` as the text template to add to `AGENTS.md`, not as instructions to copy verbatim about editing the file. Replace the path and scope placeholders with the actual docmap entries:
+    - In **Project Root Docmap**, include the project-wide `DOCMAP.md` only if it exists.
+    - In **Root Docmaps of Designated Root Folders**, include every DRF's root `DOCMAP.md`, using paths relative to the project root.
+    - The project-wide root docmap and DRF root docmaps may coexist. If the project root is itself a DRF, its `DOCMAP.md` serves both roles and should be listed only once.
+    - Remove unused placeholder entries and any empty listing sections when applying the template.
 12. After each plan-execution step, including baseline, incremental, and resumed runs, append an entry to `<project root>/.agents/memory/<DRF-key>/docmap_plan_log.md`. Create the file from `./references/docmap_plan_log_tmpl.md` if it does not exist. Log entries are append-only: do not edit or remove existing entries. Update the log's `updated_at` metadata when appending. Do not put execution-log entries in `docmap_plan.md`.
 13. If multiple DRFs were confirmed in Step 1, repeat Steps 2–12 for each remaining DRF.
 
@@ -437,6 +441,5 @@ The generated indexes/docmaps are successful when a coding agent can:
 7. Determine likely modification locations
 8. Coding Agents will use progressive disclosure to avoid unnecessary file reads
 9. In a multi-project repository, identify the correct Designated Root Folder for a task without reading unrelated sibling projects' docmaps
-
 
 
