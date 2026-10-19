@@ -36,8 +36,8 @@ During every execution step, the operator must follow the active "repo-nav" skil
 
 - No workflow deviations: do not replace the reference workflow with ad hoc scanning or non-shell helper scripts.
 - Full inventory and file counts: use `filelist.ps1` on Windows or `filelist.sh` on Linux/macOS whenever a full inventory or eligible-file count is required. These scripts are the only permitted way to produce that inventory. Treat their output as the complete, authoritative inventory; do not add to it manually or use another listing method.
-- Changed-file lists: use `detectchanges.ps1` on Windows or `detectchanges.sh` on Linux/macOS for changed-file detection, incremental updates, and resuming interrupted generation. Run it for every target folder, including folders without an existing `docmap.md`; in that case, all files in the folder tree are reported as `ADDED`. Treat the script output as the authoritative list of files and folders to process. Do not derive or diff this list manually or substitute `filelist` for change detection.
-- Use `filelist` only when a full inventory or count is needed; use `detectchanges` to determine which files and folders need processing. Both script outputs are authoritative for their respective purposes.
+- Determine the run mode by checking for a root `DOCMAP.md` at the physical project root or current DRF. If either exists, the run is incremental and `detectchanges.ps1` / `detectchanges.sh` is the authoritative change list for each folder. If neither exists, the run is full baseline, including when resuming an interrupted first-time generation; use `filelist.ps1` / `filelist.sh` for the authoritative inventory and continue from the checkpointed plan. Do not use `detectchanges` in full-baseline mode.
+- Use `filelist` for full-baseline inventories and for any required full inventory or count. Use `detectchanges` only for incremental runs where a project-root or current DRF root `DOCMAP.md` exists. Both script outputs are authoritative for their respective purposes.
 - Mandatory reference usage:
   - Use the guidance from `ripgrepsearch.md` from "repo-nav" skill when `rg` is available.
   - Use the "repo-nav" skill PowerShell guidance (`powershell.md` for path handling and validations on Windows.
@@ -60,18 +60,19 @@ During every execution step, the operator must follow the active "repo-nav" skil
 - **Repository Root**: `<absolute or root-relative path>`
 - **Discovery Tool**: `rg`
 - **Execution Strategy**: Bottom-up (deepest leaf folders to repository root)
-- **Change Detection Strategy**: Use `detectchanges.ps1` / `detectchanges.sh` for every target folder, including folders without a `docmap.md`; use `filelist.ps1` / `filelist.sh` only when a full inventory or eligible-file count is required.
+- **Run Mode**: `<full_baseline | incremental>`, determined by whether a root `DOCMAP.md` exists at the physical project root or current DRF.
+- **Change Detection Strategy**: For incremental mode, use `detectchanges.ps1` / `detectchanges.sh` for each target folder. For full-baseline mode, including resumption before either root `DOCMAP.md` has been created, use `filelist.ps1` / `filelist.sh` as the authoritative inventory.
 - **Small-Folder Merge Threshold**: `< 10 direct entries (direct files + immediate child docmap links + absorbed files)`
 - **Fallback Inventory Command**: `scripts/filelist.ps1 <folder-path> <output-file> [-Recurse]` or `scripts/filelist.sh <folder-path> <output-file> [-Recurse]`
 - **Docmap Change Detection Command**: `scripts/detectchanges.ps1 <folder-or-docmap-path>/docmap.md` or `scripts/detectchanges.sh <folder-or-docmap-path>/docmap.md`
 
 If `rg` is unavailable, stop the run. Do not select a fallback discovery tool or create an inventory with recursive filesystem scanning.
 
-## 2. Incremental Change Detection (Only for mode: incremental)
+## 2. Change Detection
 <!-- If mode is full_baseline, mark this section as 'N/A - Full Baseline Scan' -->
 
-- If the target folder already contains a `docmap.md`, use the `detectchanges` script for that docmap to compare recorded sizes against the current file system.
-- If the folder has no `docmap.md`, use `filelist` to generate the current folder inventory and treat that as the initial listing for index generation or update planning.
+- If mode is `full_baseline`, mark this section as `N/A - Full Baseline Scan`; use the filelist inventory and the recorded plan to continue or resume.
+- If mode is `incremental`, run `detectchanges` for each target folder and use its output as the authoritative list of changes.
 - Comparison rules:
   - `MODIFIED`: recorded docmap size differs from current file size
   - `ADDED`: file exists on disk but is not listed in the docmap
@@ -96,8 +97,8 @@ Folders MUST be ordered by Depth descending (deepest first), then lexicographica
 Status Lifecycle & Merge Protocol:
 - PENDING: Queued for execution.
 - IN_PROGRESS: Subagent or worker currently analyzing files in folder and generating or validating the folder `docmap.md`.
-- MARKED_FOR_MERGE: Folder analyzed and effective entries < 10. Summary and file entries are staged in agent memory (`<project root>/.agents/memory/<DRF-key>/repo-nav/<path>/`) awaiting parent folder incorporation. Child docmap.md is NOT published.
-- MERGED_INTO_PARENT: Parent folder has processed and incorporated this child's staged summaries with rewritten relative links. Child docmap.md is confirmed deleted or absent from disk.
+- MARKED_FOR_MERGE: Folder docmap has been written to its source folder, and its effective entries are < 10. It awaits the separate post-processing merge pass.
+- MERGED_INTO_PARENT: Parent has incorporated this child's generated content with rewritten relative links; the child's docmap is removed only after successful incorporation.
 - Child-folder links may reference only surviving standalone child indexes. Absorbed folders are represented inline in the parent and must not retain a child-folder link.
 - COMPLETED: Standalone docmap.md generated, validated, and effective entry count >= 10 (or root DOCMAP.md).
 - SPLIT_REQUIRED: (Incremental mode) Folder was previously merged in parent, but added files increased its count to >= 10; requires dedicated docmap.md generation and removal of inlined entries from parent docmap.
@@ -111,7 +112,7 @@ Effective Entries = Direct Files + Immediate Child Docmap Links + Absorbed Child
 | Depth | Folder Path | Direct Files | Effective Entries | Invalidation Reason | Status | Target Docmap | Absorbed By (Parent) | Surviving Docmap |
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
 | 3 | `src/auth/crypto` | 11 | 11 | DIRECT_CHANGE | COMPLETED | `src/auth/crypto/docmap.md` | - | `src/auth/crypto/docmap.md` |
-| 3 | `src/auth/tokens` | 3 | 3 | FULL_BASELINE | MERGED_INTO_PARENT | (staged in memory) | `src/auth` | `src/auth/docmap.md` |
+| 3 | `src/auth/tokens` | 3 | 3 | FULL_BASELINE | MERGED_INTO_PARENT | `src/auth/tokens/docmap.md` | `src/auth` | `src/auth/docmap.md` |
 | 2 | `src/auth` | 6 | 10 | CHILD_INVALIDATED | IN_PROGRESS | `src/auth/docmap.md` | - | `src/auth/docmap.md` |
 | 2 | `src/utils` | 12 | 12 | UNCHANGED | SKIPPED_CLEAN | `src/utils/docmap.md` | - | `src/utils/docmap.md` |
 | 1 | `src` | 2 | 4 | CHILD_INVALIDATED | PENDING | `src/docmap.md` | - | `src/docmap.md` |
@@ -140,20 +141,19 @@ Effective Entries = Direct Files + Immediate Child Docmap Links + Absorbed Child
   - Read the sibling `docmap_plan_log.md` if it exists so new log entries can be appended without altering prior entries.
   - Locate the highest-depth (deepest) folder with status `IN_PROGRESS`, `MARKED_FOR_MERGE`, or `PENDING`.
    - If an `IN_PROGRESS` folder exists:
-     - Re-open the folder's current `docmap.md` or use the filelist fallback inventory if the folder has no docmap yet.
-     - Count effective entries:
-      - If effective entries $< 10$ and not root: stage content in `<project root>/.agents/memory/<DRF-key>/repo-nav/<folder-path>/` and mark status `MARKED_FOR_MERGE`. Ensure no child `docmap.md` is left on disk.
-       - If effective entries $\ge 10$ or root: write `docmap.md`, validate, and mark status `COMPLETED`.
+     - Check for a root `DOCMAP.md` at the physical project root or current DRF to confirm the run mode. If either exists, run `detectchanges` for the folder's docmap path and use its output as the authoritative remaining work list. If neither exists, use the full-baseline `filelist` inventory and the plan's checkpointed progress; do not run `detectchanges`.
+     - Complete or update the folder's docmap in its actual source folder and validate it. Do not use the merge decision as a reason to defer or redirect this write.
+     - Resume the bottom-up queue from the recorded state, then perform the small-folder merge as a separate post-processing pass after every folder in the DRF has had its own docmap written.
    - If a folder is `MARKED_FOR_MERGE`:
-     - Verify staged memory exists, then proceed to its parent folder when the queue reaches it.
+     - Verify the merge state, then continue the merge post-processing pass from the deepest eligible folder upward.
    - Continue processing remaining `PENDING` items in queue order.
 2. **Cascading Merge Handling**:
-   - When a parent folder processes, it must check all immediate child folders in the queue marked `MARKED_FOR_MERGE`.
-   - The parent incorporates their staged summaries, rewrites their links relative to itself, and updates child status to `MERGED_INTO_PARENT`.
-   - If the parent's resulting effective count is still $< 10$ (and not root `/`), the parent itself transitions to `MARKED_FOR_MERGE` for absorption into the grandparent.
+   - After all folder docmaps have been written, process eligible merges deepest-folder-first.
+   - Incorporate each child's generated content into its parent, rewrite links relative to the parent, and remove the child's standalone `docmap.md` only after successful incorporation. Update merge status in the plan.
+   - If the parent's resulting effective count is still $< 10$ and it is not a DRF, it is eligible for absorption into its parent.
 3. **State Transition Invariants**:
-   - Never re-analyze folders marked `COMPLETED`, `MERGED_INTO_PARENT`, or `SKIPPED_CLEAN`.
-   - Always update `DOCMAP.md` at root as the final folder step before or alongside specialized maps.
+   - Preserve completed work and unchanged summaries; use `detectchanges` in incremental mode and the `filelist` inventory in full-baseline mode to establish remaining work.
+   - Complete folder docmaps and the merge pass before generating the DRF's specialized maps and root `DOCMAP.md`.
 
 ## Executation Logs
 
