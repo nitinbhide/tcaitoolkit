@@ -98,6 +98,8 @@ The generated indexes/docmap shall help agents:
 - Determine which files to read
 - Determine which files to modify
 - Avoid unnecessary repository exploration
+- Facilitate cross-navigation between related files and folders
+- Understand the database schema.
 
 ---
 ## Inputs
@@ -116,6 +118,7 @@ The skill establishes one authoritative repository inventory using only the `fil
 - Folder-level summary (4–5 lines)
 - File listings with short summaries
 - Semantic tags
+- A conditional per-file `Database` entry listing only the names of tables, views, and indexes defined in that file
 - TODO / FIXME / NOTE detections
 - Child folder references
 - Dependency graph generation is reserved for a future requirement and is not calculated or inferred in the current version
@@ -224,6 +227,7 @@ Use only shell scripts (powershell, bash, batch files) for automation and reposi
 - File Summary: concise summary in one paragraph about 4–5 sentences
 - File summaries must be generated from the actual file contents using LLM analysis. Do not generate or use helper scripts, lookup tables, hard-coded text, fixed templates, or extension-based rules to produce summaries for `.py`, `.md`, `.java`, test, config, script, or other file types. Do not use fixed templates.
 - Before summarizing a file, read enough of that file to identify evidence for its purpose, responsibilities, key concepts, and relationships. If the file content does not provide enough evidence, say so with `confidence: low` instead of inventing a summary.
+- Inspect file contents for database-related function definitions or calls, SQL statements, and ORM queries or model declarations. Use these as evidence to determine whether the file itself defines any database tables, views, or indexes; do not treat queries, references, or use of existing objects as definitions. If it defines one or more tables, views, or indexes, list only their names in that file's `Database` entry. Omit the `Database` entry if the file defines none. Do not include table schemas, view definitions, SQL text, or query details in the entry.
 - Detect TODO / FIXME / NOTE. Detect TODO, FIXME, and NOTE case-insensitively in comments and documentation text. Record each occurrence with its line number and exact marker.
 - Generate lowercase, deduplicated, alphabetically sorted tags describing the file’s technologies, role, and major concepts.
 - Child folders must be ordered lexicographically by relative path
@@ -375,6 +379,46 @@ Authentication Change
   -> AuthenticationTests.java
 ```
 
+## SCHEMA_MAP.md
+Contains : 
+- Database schema definitions and relationships.
+- Mapping between database tables and application entities.
+- Any additional notes or constraints related to the schema.
+- Indexing strategy for schema-related files.
+
+Example
+```text
+Table: User
+  Columns:
+    - id: integer, primary key
+    - username: varchar(255), unique
+    - email: varchar(255), unique
+    - password_hash: varchar(255)
+  Relationships:
+    - has_many: posts
+  Foreign keys:
+    - user_id -> User.id
+  Indexes applied on the table:
+    - user_id 
+
+Table: Post
+  Columns:
+    - id: integer, primary key
+    - user_id: integer, foreign key -> User.id
+    - title: varchar(255)
+    - content: text
+  Relationships:
+    - belongs_to: user
+
+View : UserPosts 
+  SQL Definition:
+    - SELECT u.id AS user_id, u.username, u.email, p.id AS post_id, p.title, p.content
+      FROM User u
+      JOIN Post p ON u.id = p.user_id
+  Definition:
+    - Combines user information with their associated posts.
+```
+
 ## Steps
 1. ALWAYS Prepare the **indexing operation plan** using the following steps. **Instructions for indexing operation plan creation**
 
@@ -402,7 +446,10 @@ Authentication Change
   6. **Use the 'subagent' to generate and execute steps for individual folder.**
 6. Only after every folder in the current DRF's subtree has a `docmap.md` written to its real source folder, perform the Small-Folder Docmap Merge rule as a single post-processing pass: evaluate entry counts deepest-folder-first and merge eligible folders into their parents as described in "Small-Folder Docmap Merge" and "Incremental Update Rules".
 7. Skip dependency graph generation for now.
-8. Generate the **Specialized Repository Navigation Maps** at the current DRF.
+8. Generate the **Specialized Repository Navigation Maps** at the current DRF. 
+  - Use the docmap information to generate specialized navigation maps that facilitate repository exploration and cross-referencing.
+  - Ensure that these maps are updated whenever the underlying docmaps change, maintaining consistency across the repository.
+  - 
 9. Use the template as per `./references/rootdocmap_tmpl.md` to generate (and/or update) the current DRF's root `DOCMAP.md`. Always update that DRF's root index even if you are only updating some specific subfolder of the project. Create/Update the root `DOCMAP.md` ONLY after "Small-Folder Docmap Merge" is completed.
 10. Review and validate the generated root `DOCMAP.md` and folder-level `docmap.md` files to ensure accuracy and completeness.
 11. Ensure the project-root `AGENTS.md` contains instructions for using docmaps effectively. If it exists, review and update its docmap guidance; otherwise create it. Use `references\agents_tmpl.md` as the text template to add to `AGENTS.md`, not as instructions to copy verbatim about editing the file. Replace the path and scope placeholders with the actual docmap entries:

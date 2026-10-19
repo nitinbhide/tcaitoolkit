@@ -70,11 +70,13 @@ For a project-root overview that combines multiple DRFs, list each DRF's root in
 - `<filename1>` : <one concise  paragraph summary/description.>
     - Size : <file size in bytes>
     - Tags: [<tags>]
+    - Database: [<include only when this file defines tables, views, or indexes; list only their names, never objects merely queried or used; omit this subsection when none are defined; do not include schemas or view definitions>]
     - TODO/FIXME/NOTE: <only if there is a TODO/FIXME/NOTE>
 
 - `<filename2>` : <one concise  paragraph summary/description.>
     - Size : <file size in bytes>
     - Tags: [<tags>]
+    - Database: [<include only when this file defines tables, views, or indexes; list only their names, never objects merely queried or used; omit this subsection when none are defined; do not include schemas or view definitions>]
     - TODO/FIXME/NOTE: <only if there is a TODO/FIXME/NOTE>
 
 (Repeat for all files)
