@@ -46,10 +46,10 @@ Tip: explicitly load the DRF's `.agents/memory/<DRF-key>/docmap_plan.md` into th
 
 Incremental update:
 
-> Update repo-nav for `services/billing` after recent source changes. Use `detectchanges`, preserve unchanged summaries, update affected ancestors and DRF maps, and do not run a full sweep.
+> Update repo-nav for `services/billing` after recent source changes. Identify changed files, preserve unchanged summaries, update affected ancestors and DRF maps, and do not run a full regeneration.
 
 ## Baseline, resume, and updates
 
-The existence of a root `DOCMAP.md` at the project root or current DRF selects the mode. If one exists, use `detectchanges` for incremental updates; otherwise, use `filelist` for the full-baseline inventory. This also applies when resuming an interrupted first-time run: if neither root docmap exists, continue from the plan using `filelist`, even if some folder docmaps were written. The plan tracks progress; append to the execution log rather than replacing it.
+The existence of a root `DOCMAP.md` at the project root or current DRF selects the mode. If one exists, update the existing maps based on detected changes; otherwise, create the initial maps. When resuming an interrupted first-time run, continue from the saved plan even if some folder docmaps have already been written. The plan tracks progress; append to the execution log rather than replacing it.
 
-`detectchanges` compares recorded and current file sizes, reporting added, modified, and deleted files and new folders. Unchanged summaries are retained, and affected changes flow up to the DRF root. Same-size edits and renames may not be detected; request a full sweep when needed. Repo-nav requires `rg` and its inventory/change-detection scripts.
+Incremental updates refresh summaries for changed or new files, remove deleted files, retain unchanged summaries, and propagate updates to affected parent maps and the DRF root. Request a full regeneration when needed.
