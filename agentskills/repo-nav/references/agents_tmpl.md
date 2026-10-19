@@ -7,7 +7,7 @@ Add following section to project/repository root AGENTS.md or CLAUDE.md file so 
 
 ## Source and Documentation Index
 
-The project root may have its own `DOCMAP.md` describing the repository as a whole, in addition to multiple Designated Root Folders (DRFs), each with its own root `DOCMAP.md` and cross-cutting maps. These indexes have different scopes and may coexist. Start with the project-root docmap when available to understand the repository and identify the relevant DRF; then use that DRF's maps as the preferred entry points for its scope. If the project root is itteself a DRF, its single `DOCMAP.md` serves both roles and should not be listed twice.
+Large repositories may use multiple Designated Root Folders (DRFs) for substantial modules or packages, each with its own root `DOCMAP.md` and cross-cutting maps. The physical project-root `DOCMAP.md` provides the repository-wide overview, combining high-level summaries and links to the DRF maps. Start there to identify the relevant DRF, then use that DRF's maps as entry points for its scope. If the project root is itself the sole DRF, its single `DOCMAP.md` serves both roles and should not be listed twice.
 
 ### Project Root Docmap
 

@@ -1,5 +1,5 @@
 ---
-folder: "<designated root folder. Default '/'>"
+folder: "<repository root or designated root folder>"
 generated_on: "<timestamp>"
 num_files: <integer>
 semantic_tags: [<tags>]
@@ -8,7 +8,7 @@ dependencies: []
 ---
 
 # Repository Overview
-<4–5 line summary of the entire repository, its purpose, major components, and architectural themes.>
+<For a DRF root index: summarize the designated subtree. For a project-root overview of multiple DRFs: summarize the repository and its major modules using the completed DRF indexes.>
 
 - Repository purpose
 - Business domain
@@ -39,9 +39,19 @@ The `dependencies` metadata field remains an empty list until dependency extract
 # Repository Navigation
 
 ## Specialized Cross Navigation Maps
-List of specialized navigation maps generated. Use the format
+For a DRF index, list the specialized maps generated for that DRF. In a project-root overview, list them under their corresponding DRF below unless project-wide maps were explicitly generated.
 
 - `<navigation map file name>` : one line purpose of the map.
+
+## Designated Root Folders
+For a project-root overview that combines multiple DRFs, list each DRF's root index and all five cross-navigation maps, with a brief scope summary. Derive this section from the completed DRF indexes. Omit this section when this file is the sole DRF index.
+
+- `<relative/path/DOCMAP.md>` — <DRF scope>
+- `<relative/path/FEATURE_MAP.md>` — <map purpose>
+- `<relative/path/ARCHITECTURE_MAP.md>` — <map purpose>
+- `<relative/path/TECHNOLOGY_MAP.md>` — <map purpose>
+- `<relative/path/TESTING_MAP.md>` — <map purpose>
+- `<relative/path/CHANGE_IMPACT_MAP.md>` — <map purpose>
 
 ## Merged Child Folders
 `docmap.md` of following child folders are merged in this file.

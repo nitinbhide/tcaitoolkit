@@ -34,6 +34,7 @@ DO NOT deviate from this SKILL instructions during the execution of the repo-nav
 
 ## Reference Workflow and Tools
 - Use PowerShell on Windows and Bash on Unix-like systems. 
+- For a user-oriented explanation of project roots, docmaps, checkpoints, and common prompts, see [`references/help.md`](references/help.md).
 - `rg` (ripgrep) is a hard prerequisite for this skill. Do not begin repository discovery, inventory creation, or docmap generation until `rg` is confirmed available.
 - Use the reference files in this section as part of the workflow. 
   - First check whether `rg` is available, then follow [`references/ripgrepsearch.md`](references/ripgrepsearch.md) for repository discovery, retained inventories, content searches, and `rg`-based validation. 
@@ -53,22 +54,22 @@ DO NOT deviate from this SKILL instructions during the execution of the repo-nav
   - Entire hierarchy of given folder,  on Windows PowerShell`./scripts/filelist.ps1 <folder-path> <output-file> -Recurse`
   - Entire hierarchy of given folder,  on Bash: `./scripts/filelist.sh <folder-path> <output-file> -Recurse`
 
-- For change detection, incremental docmap updates, and resuming an interrupted first-time generation, use the dedicated `detectchanges` scripts. They work whether or not the `docmap.md` exists:
+- Select the run mode by checking whether a root `DOCMAP.md` exists at the physical project root or the current Designated Root Folder. If either exists, treat the run as incremental and use the dedicated `detectchanges` scripts to identify changes. If neither exists, treat the run as a full baseline, including when resuming an interrupted first-time generation; use the `filelist` scripts for the authoritative inventory and continue from the checkpointed plan:
   - On Windows PowerShell: `./scripts/detectchanges.ps1 <folder-or-docmap-path>/docmap.md`
   - On Bash: `./scripts/detectchanges.sh <folder-or-docmap-path>/docmap.md`
   - These scripts read the file entries and sizes recorded in a `docmap.md`, resolve each filename relative to the docmap's parent folder, and compare them with the current filesystem state.
-  - If the `docmap.md` does not exist (e.g. generation was interrupted), every file in that folder tree is reported as `ADDED`.
   - If a folder under an existing docmap is not covered by it and has no docmap of its own, the folder is reported as an `ADDED` row (name ending in `/`) followed by all its files as `ADDED`.
   - The script output is the authoritative list of files that still need to be processed. Do not build this list with ad-hoc scripts, or the filelist scripts.
   - At the Designated Root Folder (see below) the docmap file name is `DOCMAP.md`; at every other folder it is `docmap.md`.
 
 ## Designated Root Folder (DRF)
-A repository may contain multiple independent projects (a monorepo). The **Designated Root Folder (DRF)** is the folder treated as the logical root for one indexing run: it is where that run's root `DOCMAP.md` and Specialized Repository Navigation Maps are written.
+A **Designated Root Folder (DRF)** is the logical root for one indexing run: it is where that run's root `DOCMAP.md` and Specialized Repository Navigation Maps are written. DRFs are particularly useful in large repositories where major modules or packages need their own detailed navigation hierarchy and cross-cutting maps. A repository may have multiple DRFs, each scoped to a substantial module or project.
 
 - **Default:** If the user does not specify one, the DRF is the physical top-level folder of the repository.
-- **Explicit designation:** The user may designate any folder (typically a subproject's top-level folder) as a DRF instead.
+- **Explicit designation:** The user may designate one or more folders (typically module or package roots) as DRFs instead. Prefer DRFs for large, independently navigable areas; avoid splitting small or tightly coupled folders unnecessarily.
+- **Repository root index:** When multiple DRFs are used, the physical project root `DOCMAP.md` is the repository-wide overview. It summarizes the repository at a high level and combines or links to each DRF's root `DOCMAP.md` and specialized maps. Build this overview from the DRF indexes; do not duplicate their detailed content or rescan source files. If the project root is itself the sole DRF, its `DOCMAP.md` serves as both the repository overview and DRF root index.
 - **DRF memory folder:** Store each DRF's plan and merge-staging state under `<project root>/.agents/memory/<DRF-key>/`, where the project root is the physical top-level folder of the repository. Derive `<DRF-key>` from the DRF path relative to the project root by replacing each `/` or `\` path separator with `_` (for example, `src\com.drf` becomes `src_com.drf`). Use `root` as the key when the DRF is the project root.
-- **Multiple DRFs:** A repository may have more than one DRF. Treat each DRF as an independent indexing run, scoped strictly to its own subtree, with its own `<project root>/.agents/memory/<DRF-key>/docmap_plan.md`, its own root `DOCMAP.md`, and its own Specialized Repository Navigation Maps. Never read or write into a sibling DRF's subtree while processing another DRF.
+- **Multiple DRFs:** Treat each DRF as an independent indexing run, scoped strictly to its own subtree, with its own `<project root>/.agents/memory/<DRF-key>/docmap_plan.md`, root `DOCMAP.md`, and Specialized Repository Navigation Maps. Never read or write into a sibling DRF's subtree while processing another DRF. After all selected DRFs are complete, create or update the repository-root overview `DOCMAP.md` to connect their maps.
 - **Confirm before starting:** Always confirm the DRF(s) for the current run with the user before generating the indexing operation plan. If unspecified, state that the physical repository top will be used as the default DRF.
 - **Root Protection:** A DRF's own `DOCMAP.md` is never merged into a parent folder's docmap, even below the small-folder merge threshold, and even when the DRF is not the physical repository top.
 - **Folders outside any DRF:** Folders outside every designated DRF's subtree are out of scope for the current run and must be left untouched.
@@ -102,6 +103,7 @@ The generated indexes/docmap shall help agents:
 ## Outputs
 - Markdown index files written directly into each folder of the repository.
 - The root index file must be generated at each Designated Root Folder using the template `rootdocmap_tmpl.md`.
+- When multiple DRFs are used, a repository-root `DOCMAP.md` must summarize and link to the DRF root indexes and cross-navigation maps. If the project root is itself the sole DRF, its root index fulfills both roles.
 - All folder-level index files must be generated using the template `folderdocmap_tmpl.md`.
 
 ## Behavior
@@ -144,7 +146,7 @@ The inventory scripts are the **only permitted** way to compute a **full file in
 - You **MUST** run `filelist.ps1` (Windows) or `filelist.sh` (Linux/macOS) whenever you need the full list of files in a folder, such as when generating a DOCMAP from scratch (no existing DOCMAP).
 - You **MUST NOT** build a full inventory with any other method, such as `ls`, `dir`, `Get-ChildItem`, `find`, `glob`, `git ls-files`, `tree`, or IDE/agent file-listing tools. Do not infer or hand-write file lists from memory.
 - Treat the script output as the complete and final inventory. Do not modify it manually; never add files it did not list.
-- For **changed-file detection** (especially when a DOCMAP already exists), incremental docmap updates, and resuming interrupted generation, you **MUST** use the `detectchanges` scripts instead of `filelist`. Do not diff full inventories manually or use other methods to find changes.
+- For **incremental runs**, identified by an existing root `DOCMAP.md` at the physical project root or current DRF, you **MUST** use the `detectchanges` scripts for change detection. For full-baseline runs, including an interrupted first-time generation where neither root docmap exists, use the `filelist` scripts for the authoritative inventory and resume from the plan. Do not substitute ad hoc scans for either workflow.
 
 - Use `-Glob "<pattern>"` to restrict inventory output to matching file types, for example `-Glob "*.{ps1,md}"`. 
 - By default, each script lists only files directly in the given folder. 
@@ -282,7 +284,7 @@ The folder summary must consider
 
 ## Incremental Update Rules
 - Load existing index files if present
-- Detect changed files using only the `detectchanges` scripts (file size comparison)
+- For incremental mode (a project-root or current DRF root `DOCMAP.md` exists), detect changed files using only the `detectchanges` scripts (file size comparison); for full-baseline mode, use `filelist` inventories.
 - Re-summarize only files with changed file size
 - Remove deleted files
 - Preserve unchanged summaries
@@ -377,16 +379,15 @@ Authentication Change
   - Use each DRF's plan to store the indexing operation at granular steps and track its execution progress. Keep merge-staging state under `<project root>/.agents/memory/<DRF-key>/repo-nav/` as well.
   - ALWAYS Get the user's approval on plan BEFORE starting the plan execution. 
   - If the DRF's plan file exists, update it in place.
-2. Before generating or updating indexes for a folder, ALWAYS run the change detection script, even if the folder's `docmap.md` does not exist yet (first-time generation may have been interrupted):
+2. Select the run mode by checking whether a root `DOCMAP.md` exists at the physical project root or current DRF. If either exists, treat the run as incremental and before updating each folder run its change detection script:
     - On Windows PowerShell: `./scripts/detectchanges.ps1 <folder-or-docmap-path>/docmap.md`
     - On Bash: `./scripts/detectchanges.sh <folder-or-docmap-path>/docmap.md`
     - Treat the reported list as the authoritative set of files (and new folders) that still need to be considered for docmap generation. Do not derive it with ad-hoc scripts.
-    - If the `docmap.md` is missing, all files in that folder tree are reported as `ADDED`. When resuming at a DRF, run the script on the deepest folders first so folders that already have a `docmap.md` are compared against it instead of being regenerated.
     - The script reads the file entries and sizes recorded in the folder-level `docmap.md`, resolves each filename relative to the parent directory of that `docmap.md`, and compares them against the files currently present on disk.
     - Files whose recorded size no longer matches current file size are reported as `MODIFIED`; files present in the docmap but missing from disk are `DELETED`; files present on disk but not listed in the docmap are `ADDED`; newly found folders are reported as `ADDED` with a trailing `/`.
     - Use this output to decide if the folder’s `docmap.md` needs regeneration or a targeted incremental update.
-3. Apply the detectchanges workflow to all folders, including those without an existing `docmap.md`.
-  - For folders without a `docmap.md`, generate the index for the files reported as `ADDED`; the filelist scripts are not needed for this. Use `filelist` only when a full inventory is required (e.g. planning, counting entries); never replace either script with another listing method.
+   If neither root `DOCMAP.md` exists, treat the run as full baseline: use `filelist.ps1`/`filelist.sh` to create the authoritative inventory, including when resuming an interrupted first-time generation. Continue from the plan's recorded progress; do not use `detectchanges` in this mode.
+3. In incremental mode, apply the detectchanges workflow to all folders in the DRF subtree. In full-baseline mode, use the authoritative `filelist` inventory to determine files for processing.
   - After identifying affected files, regenerate or update that folder’s `docmap.md` and then propagate the update to any ancestor indexes that reference it, up to and including that DRF's root `DOCMAP.md`.
 5. For each folder within the current DRF's subtree, starting from the deepest folder and moving upward, do the following:
   1. identify the eligible text files (documents and source code) for this folder from the `detectchanges` output (or `filelist` output when a full inventory is needed) only.
@@ -407,6 +408,7 @@ Authentication Change
     - Remove unused placeholder entries and any empty listing sections when applying the template.
 12. After each plan-execution step, including baseline, incremental, and resumed runs, append an entry to `<project root>/.agents/memory/<DRF-key>/docmap_plan_log.md`. Create the file from `./references/docmap_plan_log_tmpl.md` if it does not exist. Log entries are append-only: do not edit or remove existing entries. Update the log's `updated_at` metadata when appending. Execution log entries are stored only in this sibling `docmap_plan_log.md`; never put or copy them into `docmap_plan.md`. When resuming an interrupted run, read the sibling `docmap_plan_log.md` (only if neccessary) along with `docmap_plan.md`, so new entries are appended without altering prior entries.
 13. If multiple DRFs were confirmed in Step 1, repeat Steps 2–12 for each remaining DRF.
+14. After all selected DRFs are complete, create or update the physical project-root `DOCMAP.md` as the repository-wide overview, combining high-level summaries and links to each DRF root `DOCMAP.md` and its cross-navigation maps. Base it only on the generated DRF indexes. If the physical project root is itself a DRF, do not create a duplicate index; ensure its existing `DOCMAP.md` serves both purposes.
 
 # Confidence Rules
 
@@ -441,5 +443,3 @@ The generated indexes/docmaps are successful when a coding agent can:
 7. Determine likely modification locations
 8. Coding Agents will use progressive disclosure to avoid unnecessary file reads
 9. In a multi-project repository, identify the correct Designated Root Folder for a task without reading unrelated sibling projects' docmaps
-
-
