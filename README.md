@@ -19,9 +19,11 @@ This skill generates docmap markdown files for improving the repository navigati
 ### Installing Skills
 Use the [`instskill.bat`](./agentskills/instskill.bat) or [`instskill.sh`](./agentskills/instskill.sh) scripts in [agentskills](./agentskills) folder to install the skill in your coding repository. The install script will detect which Coding Agent you are using and install the SKILL files in appropriate folder.
 
-```
+```bat
 instskill.bat <skill-name> <your project root folder>
+```
 or
+```bash
 instskill.sh <skill-name> <your project root folder>
 ```
 _NOTE_ : _All the above skills are undergoing changes and not fully stabilized yet. Feel free to use and share your feedback._
