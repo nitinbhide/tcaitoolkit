@@ -3,6 +3,7 @@ name: repo-nav
 description: Generate hierarchical Markdown index files (docmap.md) for a project repository folder structure using progressive disclosure. Also called as Repository Navigation Index generation or docmap generation
 version: 1.1.0
 author: Nitin Bhide (nitinbhide@thinkingcraftsman.in)
+license: Apache 2.0
 tags:
   - indexing
   - repository-structure
