@@ -35,6 +35,7 @@ DO NOT deviate from this SKILL instructions during the execution of the repo-nav
 ## Reference Workflow and Tools
 - Use PowerShell on Windows and Bash on Unix-like systems. 
 - For a user-oriented explanation of project roots, docmaps, checkpoints, and common prompts, see [`references/help.md`](references/help.md).
+- If the user asks for help, present the contents of `references/help.md` first. After presenting it, check whether `rg` is available before proceeding with any other repo-nav operation; if it is unavailable, follow the instructions below.
 - `rg` (ripgrep) is a hard prerequisite for this skill. Do not begin repository discovery, inventory creation, or docmap generation until `rg` is confirmed available.
 - Use the reference files in this section as part of the workflow. 
   - First check whether `rg` is available, then follow [`references/ripgrepsearch.md`](references/ripgrepsearch.md) for repository discovery, retained inventories, content searches, and `rg`-based validation. 
