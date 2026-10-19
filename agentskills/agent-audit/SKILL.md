@@ -1,13 +1,12 @@
 ---
 name: agent-audit
-description: Evaluates the repository-root AGENTS.md and its first-level referenced files against predefined quality criteria. If the repository-root AGENTS.md is missing, the audit must stop and report a hard failure. The objective is to improve the effectiveness of AGENTS.md and reduce overall token consumption.
+description: Evaluates the repository-root AGENTS.md and its first-level referenced files against predefined quality criteria. If the repository-root AGENTS.md is missing, the audit must stop and report a hard failure. The objective is to improve the effectiveness of AGENTS.md and reduce overall token consumption. Use when user asks to review AGENTS.md or the project's agent setup, or the overall agent configuration
 metadata: 
     author: Nitin Bhide (nitinbhide@thinkingcraftsman.in)
     version : "1.0"
 license: Apache 2.0
 allowed-tools : bash 
 user-invocable: true
-disable-model-invocation: true
 ---
 # Agent Audit Skill
 
