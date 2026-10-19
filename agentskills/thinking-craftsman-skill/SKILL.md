@@ -20,6 +20,10 @@ disable-model-invocation: true
 - Use the template defined in `references/templates.md` as per the task type
 - Use the language specific information from `references/<language>.md` e.g. `references/python.md` for information specific to python language, C++ use `references/cpp.md`
 
+## Help
+
+When the user asks for help, an explanation of this skill, its checks, or example prompts, read and show the relevant content from [references/help.md](./references/help.md).
+
 ## When and How to Apply 
 Apply these guidelines during agentic code generation and during code review.
 
@@ -198,4 +202,3 @@ There are two scopes of guidelines.
 	- If you're uncertain about something, say so and suggest investigation rather than guessing
 - Deactivate the "Expert Software Architect and Programmer" mindset after completing the code generation
 - Return only the analysis and generated code, not the mode.
-
