@@ -35,12 +35,12 @@ dependencies: [<moduleA>, <moduleB>, ...]
 - `<filename1>` (Size : <file size in bytes>): <one short paragraph summary of content of "filename1">
     - Tags: [<tags>]
     - Database: [<include only when this file defines tables, views, or indexes; list only their names, never objects merely queried or used; omit this subsection when none are defined; do not include schemas or view definitions>]
-    - TODO/FIXME/NOTE: <only if there is a TODO/FIXME/NOTE>
+    - TODO/FIXME/NOTE: <include only when there is a TODO/FIXME/NOTE>
 
 - `<filename2>` (Size : <file size in bytes>) : <one short paragraph summary of content of "filename2">
     - Tags: [<tags>]
     - Database: [<include only when this file defines tables, views, or indexes; list only their names, never objects merely queried or used; omit this subsection when none are defined; do not include schemas or view definitions>]
-    - TODO/FIXME/NOTE: <only if there is a TODO/FIXME/NOTE>
+    - TODO/FIXME/NOTE: <include only when there is a TODO/FIXME/NOTE>
 
 (Repeat for all files)
 
