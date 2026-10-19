@@ -5,7 +5,6 @@ metadata:
     author: Nitin Bhide (nitinbhide@thinkingcraftsman.in)
     version : "1.0"
 license: Apache 2.0
-allowed-tools : 
 user-invocable: true
 disable-model-invocation: true
 ---
