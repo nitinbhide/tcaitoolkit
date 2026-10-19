@@ -13,6 +13,9 @@ disable-model-invocation: true
 
 This skill evaulates AGENTS.md file at the root of the project for following criteria. Objective is to improve the quality of results fromLLMs, reduce the number of turns in agent loop and reduce the LLM token consumptions 
 
+For a user-oriented explanation of the audit's purpose, common checks, report, and example prompts, see [`references/help.md`](references/help.md).
+- If the user asks for help with this skill, present the contents of [`references/help.md`](references/help.md) first, without starting an audit.
+
 ## How to Audit the AGENTS.md file
 - Audit only the repository-root `AGENTS.md` file.
 - If the repository root does not contain an `AGENTS.md` file, stop immediately and report that the audit could not run because the repository-root `AGENTS.md` is missing.
