@@ -316,9 +316,9 @@ The folder summary must consider
 
 In addition to folder indexes, generate the following cross-cutting indexes when possible.
 
-Use the generated authoritative `DOCMAP.md` and folder-level `docmap.md` files as the source of truth for all cross-cutting map generation. Do not re-scan the repository or source files for these maps; derive everything from the authoritative docmap hierarchy.
+Use the generated authoritative `DOCMAP.md` and folder-level `docmap.md` files as the source of truth for cross-cutting map generation. Do not re-scan the repository. For `SCHEMA_MAP.md` only, use `Database` entries in the docmaps to identify source files, then inspect those files for database definitions.
 
-Cross-cutting maps may include only relationships and facts explicitly present in the authoritative docmap hierarchy. Do not perform separate issue, dependency, architecture, or change-impact analysis while generating these maps. If a requested category is not represented in the docmaps, mark it as `Not available in the generated docmaps` rather than inferring or fabricating content.
+Other cross-cutting maps may include only relationships and facts explicitly present in the authoritative docmap hierarchy. Do not perform separate issue, dependency, architecture, or change-impact analysis while generating these maps. If a requested category is not represented in the docmaps, mark it as `Not available in the generated docmaps` rather than inferring or fabricating content.
 
 Generate these maps at each Designated Root Folder (DRF, see "Designated Root Folder (DRF)" above), scoped only to that DRF's own subtree. In a multi-project repository, each DRF gets its own independent set of these files; do not merge or cross-reference maps across sibling DRFs.
 
@@ -380,6 +380,7 @@ Authentication Change
 ```
 
 ## SCHEMA_MAP.md
+Lists all database tables, views, and indexes defined in the DRF in one place, and maps each to its source file.
 Contains : 
 - Database schema definitions and relationships.
 - Mapping between database tables and application entities.
@@ -389,6 +390,7 @@ Contains :
 Example
 ```text
 Table: User
+  Defined in file : <file path relative to the DRF>
   Columns:
     - id: integer, primary key
     - username: varchar(255), unique
@@ -449,9 +451,9 @@ View : UserPosts
 8. Generate the **Specialized Repository Navigation Maps** at the current DRF. 
   - Use the docmap information to generate specialized navigation maps that facilitate repository exploration and cross-referencing.
   - Ensure that these maps are updated whenever the underlying docmaps change, maintaining consistency across the repository.
-  - 
+  - To generate `SCHEMA_MAP.md`, inspect all surviving folder-level `docmap.md` files in the DRF subtree and collect the files listed in their `Database` sections. Read only those source files to document each defined table's schema and relationships, each view's SQL definition, and each index's definition. Map every object to its defining file using a path relative to the DRF. Include entity mappings and schema constraints when supported by the source; do not infer or fabricate missing details.
 9. Use the template as per `./references/rootdocmap_tmpl.md` to generate (and/or update) the current DRF's root `DOCMAP.md`. Always update that DRF's root index even if you are only updating some specific subfolder of the project. Create/Update the root `DOCMAP.md` ONLY after "Small-Folder Docmap Merge" is completed.
-10. Review and validate the generated root `DOCMAP.md` and folder-level `docmap.md` files to ensure accuracy and completeness.
+10. Review and validate the generated `SCHEMA_MAP.md`, root `DOCMAP.md`, and folder-level `docmap.md` files to ensure accuracy and completeness.
 11. Ensure the project-root `AGENTS.md` contains instructions for using docmaps effectively. If it exists, review and update its docmap guidance; otherwise create it. Use `references\agents_tmpl.md` as the text template to add to `AGENTS.md`, not as instructions to copy verbatim about editing the file. Replace the path and scope placeholders with the actual docmap entries:
     - In **Project Root Docmap**, include the project-wide `DOCMAP.md` only if it exists.
     - In **Root Docmaps of Designated Root Folders**, include every DRF's root `DOCMAP.md`, using paths relative to the project root. Use instructions from `references\ripgrepsearch.md` as a guide.
