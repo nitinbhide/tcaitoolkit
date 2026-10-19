@@ -5,6 +5,7 @@ num_files: <integer>
 semantic_tags: [<tags>]
 todos_present: <true/false>
 dependencies: [<moduleA>, <moduleB>, ...]
+format : 1.1
 ---
 
 # Folder Overview

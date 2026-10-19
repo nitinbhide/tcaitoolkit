@@ -5,6 +5,7 @@ num_files: <integer>
 semantic_tags: [<tags>]
 todos_present: <true/false>
 dependencies: []
+format : 1.1
 ---
 
 # Repository Overview
