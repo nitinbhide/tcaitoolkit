@@ -104,7 +104,8 @@ Designated Root Folder (defaults to Repository Root)
 ├── ARCHITECTURE_MAP.md     (Patterns, Layers, Boundaries, System Constraints)
 ├── TECHNOLOGY_MAP.md       (Languages, Frameworks, Build Tools, Versions)
 ├── TESTING_MAP.md          (Suites, Test Strategy, Coverage Matrix)
-└── CHANGE_IMPACT_MAP.md    (Common Change Scenarios & Blast Radii)
+|── CHANGE_IMPACT_MAP.md    (Common Change Scenarios & Blast Radii)
+└── SCHEMA_MAP.md             (Database schema related information)
 ```
 
 In a multi-project repository, each Designated Root Folder produces its own independent set of these six files, scoped to its own subtree. A single repository may therefore contain several such sets, one per DRF, in addition to any folders left unindexed because they fall outside every DRF's subtree.
@@ -151,6 +152,12 @@ Anticipates ripple effects for frequent modification scenarios, minimizing regre
   - Primary file changes required.
   - Secondary/downstream files requiring updates (serializers, clients, mock fixtures).
   - Verification test suites that must be executed for the scenario.
+
+### 3.6 `SCHEMA_MAP.md`
+Lists all the database tables, views, indexes define in the DRF at one place. Maps the tables, views, indexes to their source code files.
+
+**NOTE**: 
+SCHEMA_MAP.md is special compared to other cross navigation maps. To generate SCHEMA_MAP.md, analyze all the docmap.md files, if there is "Database" section defined for a file, then read the identify the table schema, view sql definition, index definition and update it in SCHEMA_MAP.md. 
 
 ---
 
