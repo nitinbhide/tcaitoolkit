@@ -7,10 +7,11 @@ This project is a set of utilities to help human software developers adopt AI Co
 
 ## Project Structure
 
-- `doc/` - documents folder
-- `doc/agentskills/` - folder for specification and design documents of various Agent Skills
-- `agentic_cc/` - source of python cookie cutter to generate the folder structure for a new project. Use this when you want to start a new project with use of AI Coding Agents from the day one.
-- `agentskills/` - Useful agent skills like grill-me, repo-nav, agent-audit, thinking-craftsman-skill for coding and code reviews etc.
+- `./docs/` - documents folder
+- `./docs/agentskills/` - folder for specification and design documents of various Agent Skills
+- `./docs/docindex.md` - index of specification and design documents.
+- `./agentic_cc/` - source of python cookie cutter to generate the folder structure for a new project. Use this when you want to start a new project with use of AI Coding Agents from the day one.
+- `./agentskills/` - Useful agent skills like grill-me, repo-nav, agent-audit, thinking-craftsman-skill for coding and code reviews etc.
 
 ## Testing Bash Scripts from Windows with WSL
 
