@@ -45,24 +45,29 @@ if ($pathItem.PSIsContainer) {
     throw "Path must be a directory or a docmap.md/DOCMAP.md file."
 }
 
+# One multiline match (default Rust regex engine) per file entry that has a
+# Database subsection. Only indented lines may sit between the file entry and
+# its Database line, so the match cannot cross into the next file entry.
+$databasePattern = '(?m)^[ \t]*-[ \t]*`(?P<file>[^`\r\n]+)`[^\n]*\n(?:[ \t]+[^\n]*\n)*?[ \t]+-[ \t]*Database[ \t]*:[ \t]*\[(?P<objects>[^\]\r\n]*)\]'
+$databaseReplacement = '${file}' + [char]9 + '${objects}'
+
 $databaseObjectsByFile = @{}
 foreach ($docMapPath in $docMapPaths) {
     $resolvedDocMapPath = (Resolve-Path -LiteralPath $docMapPath -ErrorAction Stop).Path
     $docMapDirectory = Split-Path -Parent $resolvedDocMapPath
-    $currentFile = $null
 
-    foreach ($line in (Get-Content -LiteralPath $resolvedDocMapPath -Encoding UTF8)) {
-        if ($line -match '^\s*-\s*`(?<file>[^`]+)`') {
-            $currentFile = $Matches.file.Trim()
-            continue
-        }
+    $entryMatches = @(& rg -U -N -o --replace $databaseReplacement $databasePattern $resolvedDocMapPath)
+    if ($LASTEXITCODE -gt 1) {
+        throw "ripgrep failed while parsing '$resolvedDocMapPath'."
+    }
 
-        if (-not $currentFile -or $line -notmatch '^\s*-\s*Database\s*:\s*\[(?<objects>[^\]]*)\]') {
-            continue
-        }
+    foreach ($entry in $entryMatches) {
+        $separatorIndex = $entry.IndexOf([char]9)
+        $currentFile = $entry.Substring(0, $separatorIndex).Trim()
+        $objectList = $entry.Substring($separatorIndex + 1)
 
         $names = @(
-            $Matches.objects -split '[,;]' |
+            $objectList -split '[,;]' |
                 ForEach-Object { $_.Trim().Trim('`') } |
                 Where-Object { $_ -and $_ -notmatch '[<>]' } |
                 Select-Object -Unique

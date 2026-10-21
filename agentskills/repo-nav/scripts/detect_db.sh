@@ -49,6 +49,12 @@ else
   exit 1
 fi
 
+# One multiline match (default Rust regex engine) per file entry that has a
+# Database subsection. Only indented lines may sit between the file entry and
+# its Database line, so the match cannot cross into the next file entry.
+database_pattern='(?m)^[ \t]*-[ \t]*`(?P<file>[^`\r\n]+)`[^\n]*\n(?:[ \t]+[^\n]*\n)*?[ \t]+-[ \t]*Database[ \t]*:[ \t]*\[(?P<objects>[^\]\r\n]*)\]'
+database_replacement='${file}'$'\t''${objects}'
+
 declare -A database_objects_by_file=()
 declare -A seen_objects=()
 
@@ -60,57 +66,18 @@ for docmap in "${docmap_paths[@]}"; do
     docmap_directory=""
   fi
 
-  parsed_entries="$(
-    awk '
-      function trim(value) {
-        sub(/^[[:space:]]+/, "", value)
-        sub(/[[:space:]]+$/, "", value)
-        return value
-      }
-
-      /^[[:space:]]*-[[:space:]]*`/ {
-        start = index($0, "`")
-        remainder = substr($0, start + 1)
-        end = index(remainder, "`")
-        if (end > 0) {
-          current_file = trim(substr(remainder, 1, end - 1))
-        }
-        next
-      }
-
-      /^[[:space:]]*-[[:space:]]*Database[[:space:]]*:/ {
-        if (current_file == "" || !match($0, /\[[^]]*\]/)) {
-          next
-        }
-        contents = substr($0, RSTART + 1, RLENGTH - 2)
-        count = split(contents, parts, /[,;]/)
-        names = ""
-        for (i = 1; i <= count; i++) {
-          name = trim(parts[i])
-          gsub(/`/, "", name)
-          if (name == "" || name ~ /[<>]/) {
-            continue
-          }
-          duplicate = 0
-          split(names, existing, /, /)
-          for (j in existing) {
-            if (existing[j] == name) {
-              duplicate = 1
-              break
-            }
-          }
-          if (!duplicate) {
-            names = names (names == "" ? "" : ", ") name
-          }
-        }
-        if (names != "") {
-          printf "%s\t%s\n", current_file, names
-        }
-      }
-    ' "$resolved_docmap"
-  )"
+  set +e
+  parsed_entries="$(rg -U -N -o --replace "$database_replacement" "$database_pattern" "$resolved_docmap")"
+  rg_status=$?
+  set -e
+  if ((rg_status > 1)); then
+    echo "ripgrep failed while parsing '$resolved_docmap'." >&2
+    exit "$rg_status"
+  fi
 
   while IFS=$'\t' read -r file_name object_names; do
+    file_name="${file_name#"${file_name%%[![:space:]]*}"}"
+    file_name="${file_name%"${file_name##*[![:space:]]}"}"
     [[ -z "$file_name" || -z "$object_names" ]] && continue
     if [[ -n "$docmap_directory" ]]; then
       relative_file="$docmap_directory/$file_name"
@@ -119,11 +86,12 @@ for docmap in "${docmap_paths[@]}"; do
     fi
     relative_file="${relative_file//\\//}"
 
-    IFS=',' read -r -a names <<< "$object_names"
+    IFS=',' read -r -a names <<< "${object_names//;/,}"
     for name in "${names[@]}"; do
       name="${name#"${name%%[![:space:]]*}"}"
       name="${name%"${name##*[![:space:]]}"}"
-      [[ -z "$name" ]] && continue
+      name="${name//\`/}"
+      [[ -z "$name" || "$name" == *[\<\>]* ]] && continue
       object_key="$relative_file"$'\034'"$name"
       if [[ -z "${seen_objects[$object_key]:-}" ]]; then
         seen_objects["$object_key"]=1
