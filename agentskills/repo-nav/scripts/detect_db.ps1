@@ -66,10 +66,15 @@ foreach ($docMapPath in $docMapPaths) {
         $currentFile = $entry.Substring(0, $separatorIndex).Trim()
         $objectList = $entry.Substring($separatorIndex + 1)
 
+        # A placeholder such as "<... tables, views, or indexes>" contains commas, so reject it before splitting.
+        if ($objectList -match '[<>]') {
+            continue
+        }
+
         $names = @(
             $objectList -split '[,;]' |
                 ForEach-Object { $_.Trim().Trim('`') } |
-                Where-Object { $_ -and $_ -notmatch '[<>]' } |
+                Where-Object { $_ } |
                 Select-Object -Unique
         )
         if (-not $names) {

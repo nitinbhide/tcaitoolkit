@@ -86,12 +86,15 @@ for docmap in "${docmap_paths[@]}"; do
     fi
     relative_file="${relative_file//\\//}"
 
+    # A placeholder such as "<... tables, views, or indexes>" contains commas, so reject it before splitting.
+    [[ "$object_names" == *[\<\>]* ]] && continue
+
     IFS=',' read -r -a names <<< "${object_names//;/,}"
     for name in "${names[@]}"; do
       name="${name#"${name%%[![:space:]]*}"}"
       name="${name%"${name##*[![:space:]]}"}"
       name="${name//\`/}"
-      [[ -z "$name" || "$name" == *[\<\>]* ]] && continue
+      [[ -z "$name" ]] && continue
       object_key="$relative_file"$'\034'"$name"
       if [[ -z "${seen_objects[$object_key]:-}" ]]; then
         seen_objects["$object_key"]=1
