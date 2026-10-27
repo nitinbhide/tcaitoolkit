@@ -28,6 +28,7 @@ Use the repository navigation maps for the relevant DRF in this order:
    - `TECHNOLOGY_MAP.md`
    - `TESTING_MAP.md`
    - `CHANGE_IMPACT_MAP.md`
+   - `SCHEMA_MAP.md`
 3. Then read the authoritative folder-level `docmap.md` files under the relevant package or app folder within that DRF.
 4. Only read source files after narrowing to the right module or feature area.
 

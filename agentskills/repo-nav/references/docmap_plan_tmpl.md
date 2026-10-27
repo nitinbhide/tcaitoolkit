@@ -130,6 +130,7 @@ Effective Entries = Direct Files + Immediate Child Docmap Links + Absorbed Child
 - [ ] `TECHNOLOGY_MAP.md` — Languages, frameworks, runtime versions, build tooling
 - [ ] `TESTING_MAP.md` — Test suites, strategy, coverage areas, feature-to-test mapping
 - [ ] `CHANGE_IMPACT_MAP.md` — Common modification scenarios and affected file cascades
+- [ ] `SCHEMA_MAP.md` - Lists all database tables, views, and indexes defined in the DRF in one place, and maps each to its source file.
 
 ---
 

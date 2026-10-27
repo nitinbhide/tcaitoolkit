@@ -42,7 +42,14 @@ The `dependencies` metadata field remains an empty list until dependency extract
 ## Specialized Cross Navigation Maps
 For a DRF index, list the specialized maps generated for that DRF. In a project-root overview, list them under their corresponding DRF below unless project-wide maps were explicitly generated.
 
-- `<navigation map file name>` : one line purpose of the map.
+
+- `FEATURE_MAP.md` — Major business capabilities mapped to requirements, design, source, tests
+- `ARCHITECTURE_MAP.md` — Architectural patterns, layer definitions, and system constraints
+- `TECHNOLOGY_MAP.md` — Languages, frameworks, runtime versions, build tooling
+- `TESTING_MAP.md` — Test suites, strategy, coverage areas, feature-to-test mapping
+- `CHANGE_IMPACT_MAP.md` — Common modification scenarios and affected file cascades
+- `SCHEMA_MAP.md` - Lists all database tables, views, and indexes defined in the DRF in one place, and maps each to its source file.
+
 
 ## Designated Root Folders
 For a project-root overview that combines multiple DRFs, list each DRF's root index and all five cross-navigation maps, with a brief scope summary. Derive this section from the completed DRF indexes. Omit this section when this file is the sole DRF index.
