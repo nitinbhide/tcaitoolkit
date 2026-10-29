@@ -1,6 +1,6 @@
 ---
 name: thinking-craftsman-skill
-description: This skill defines the coding and code review guidelines based on principles documented by Nitin Bhide (Thinking Craftsman). These guidelines are independant of programming language or technology stack. Use when users needs coding and code review practices aligned with Thinking Craftsman principles.
+description: This skill defines the coding and code review guidelines based on principles documented by Nitin Bhide (Thinking Craftsman). These guidelines are independant of programming language or technology stack. Use when users needs coding and code review practices aligned with Thinking Craftsman principles. Use when (a) performing code generation or code review tasks. (b) the user asks for a "thinking craftsman" review of a specific change, file, or PR. (c) the user seeks guidance on best practices for coding and code review aligned with Thinking Craftsman principles.
 metadata: 
     author: Nitin Bhide (nitinbhide@thinkingcraftsman.in)
     version : "1.0"
@@ -199,5 +199,6 @@ There are two scopes of guidelines.
 	- Make small, focused changes that preserve behavior and public APIs unless the task explicitly requires otherwise.
 	- Modify only approved files and do not modify the `docs/` folder unless explicitly requested.
 	- If you're uncertain about something, say so and suggest investigation rather than guessing
+- After generating the code, review and validate it against the guidelines in this skill (including **Review Only** guidelines). If anything fails, fix it and repeat the review and validation.
 - Deactivate the "Expert Software Architect and Programmer" mindset after completing the code generation
 - Return only the analysis and generated code, not the mode.
