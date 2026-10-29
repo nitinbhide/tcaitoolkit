@@ -43,7 +43,6 @@ mkdir -p "$AGENT_SKILL_ROOT"
 SCRIPT_DIR=$(dirname "$0")
 SOURCE_SKILL_PATH="$SCRIPT_DIR/$SKILL_NAME"
 DEST_SKILL_PATH="$AGENT_SKILL_ROOT/$SKILL_NAME"
-BACKUP_SKILL_PATH="$DEST_SKILL_PATH.bak"
 
 if [ ! -d "$SOURCE_SKILL_PATH" ]; then
     echo "Error: Skill '$SKILL_NAME' not found at '$SCRIPT_DIR'."
@@ -52,17 +51,18 @@ fi
 
 echo "Installing skill '$SKILL_NAME' to '$AGENT_SKILL_ROOT'..."
 
-# If a backup folder already exists, delete it
-if [ -d "$BACKUP_SKILL_PATH" ]; then
-    echo "Removing existing backup: $BACKUP_SKILL_PATH"
-    rm -rf "$BACKUP_SKILL_PATH"
-fi
-
-# If the skill folder already exists in the destination, rename it to .bak
-if [ -d "$DEST_SKILL_PATH" ]; then
-    echo "Backing up existing skill folder to $SKILL_NAME.bak"
-    mv "$DEST_SKILL_PATH" "$BACKUP_SKILL_PATH"
-fi
+# Back up the skill in every possible destination folder
+for root in .agents .github .claude; do
+    existing="$INSTALL_PATH/$root/skills/$SKILL_NAME"
+    if [ -d "$existing" ]; then
+        if [ -d "$existing.bak" ]; then
+            echo "Removing existing backup: $existing.bak"
+            rm -rf "$existing.bak"
+        fi
+        echo "Backing up existing skill folder to $existing.bak"
+        mv "$existing" "$existing.bak"
+    fi
+done
 
 # Copy the skill folder to the install path
 echo "Copying skill folder..."

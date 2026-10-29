@@ -40,20 +40,12 @@ if not defined AGENT_SKILL_ROOT (
 set "SOURCE_SKILL_PATH=%~dp0%SKILL_NAME%"
 set "DEST_SKILL_PATH=%AGENT_SKILL_ROOT%\%SKILL_NAME%"
 set "BACKUP_SKILL_NAME=%SKILL_NAME%.bak"
-set "BACKUP_SKILL_PATH=%DEST_SKILL_PATH%.bak"
 
 echo Installing skill '%SKILL_NAME%' to '%AGENT_SKILL_ROOT%'...
 
-REM If a backup folder already exists, delete it
-if exist "%BACKUP_SKILL_PATH%" (
-    echo Removing existing backup: %BACKUP_SKILL_PATH%
-    rmdir /s /q "%BACKUP_SKILL_PATH%"
-)
-
-REM If the skill folder already exists in the destination, rename it to .bak
-if exist "%DEST_SKILL_PATH%" (
-    echo Backing up existing skill folder to %BACKUP_SKILL_PATH%
-    ren "%DEST_SKILL_PATH%" "%BACKUP_SKILL_NAME%"
+REM Back up the skill in every possible destination folder
+for %%R in (".agents" ".github" ".claude") do (
+    call :backup_skill "%INSTALL_PATH%\%%~R\skills\%SKILL_NAME%"
 )
 
 REM Copy the skill folder to the install path
@@ -65,4 +57,17 @@ if %errorlevel% equ 0 (
 ) else (
     echo An error occurred during installation.
 )
+exit /b %errorlevel%
+
+:backup_skill
+set "SKILL_DIR=%~1"
+if exist "%SKILL_DIR%" (
+    if exist "%SKILL_DIR%.bak" (
+        echo Removing existing backup: %SKILL_DIR%.bak
+        rmdir /s /q "%SKILL_DIR%.bak"
+    )
+    echo Backing up existing skill folder to %SKILL_DIR%.bak
+    ren "%SKILL_DIR%" "%BACKUP_SKILL_NAME%"
+)
+exit /b 0
 
