@@ -17,7 +17,11 @@ user-invocable: true
 - **Invoke directly when:** the user asks for a "thinking craftsman" review of a specific change, file, or PR.
 - **Invoke via:** `/tcreview` (single-perspective review) 
 - Use the template defined in `references/templates.md` as per the task type
-- Use the language specific information from `references/<language>.md` e.g. `references/python.md` for information specific to python language, C++ use `references/cpp.md`
+- Use the language specific information from `references/<language>.md` 
+	- python: e.g. `references/python.md` for information specific to python language
+	- C++: e.g. `references/cpp.md` for information specific to C++ language
+	- Java: e.g. `references/java.md` for information specific to Java language
+	- C#: e.g. `references/csharp.md` for information specific to C# language
 
 ## Help
 
