@@ -6,6 +6,8 @@ Thinking Craftsman Coding Skill provides language- and technology-independent pr
 
 The skill can guide implementation as well as review. It does not replace project-specific specifications, conventions, tests, or language-specific guidance; those should be consulted when relevant.
 
+The skills are developed by Nitin Bhide (Thinking Craftsman). More details are available on [http://thinkingcraftsman.in](http://thinkingcraftsman.in)
+
 ## Common checks
 
 - **Requirements and context:** Read the task, relevant specifications, design decisions, and code comments before proposing or reviewing changes. Surface uncertainty rather than guessing.
