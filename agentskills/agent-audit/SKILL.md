@@ -10,7 +10,7 @@ user-invocable: true
 ---
 # Agent Audit Skill
 
-This skill evaulates AGENTS.md file at the root of the project for following criteria. Objective is to improve the quality of results fromLLMs, reduce the number of turns in agent loop and reduce the LLM token consumptions 
+This skill evaulates AGENTS.md file at the root of the project for following criteria. Objective is to improve the quality of results from LLMs, reduce the number of turns in agent loop and reduce the LLM token consumptions 
 
 For a user-oriented explanation of the audit's purpose, common checks, report, and example prompts, see [`references/help.md`](references/help.md).
 - If the user asks for help with this skill, present the contents of [`references/help.md`](references/help.md) first, without starting an audit.
