@@ -16,3 +16,4 @@ If a question can be answered by exploring the codebase, explore the codebase in
 
 If this is source code file (e.g. python, c++, java, typescript, javascript, rust, html etc), then do not ask questions. Tell your user that you cannot analyze source code files and quit.
 
+If the user asks for help with the grill-me skill, read and show the relevant content from [references/help.md](./references/help.md).
