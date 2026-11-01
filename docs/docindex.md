@@ -13,8 +13,21 @@ The implementation of skill is in folder `/agentskills/repo-nav/`
 
 ### grill-me skill
 
+The purpose of the "grill-me" skill is to interview the user about natural-language documents to clarify ambiguities, conflicts, and missing details until a shared understanding is reached. It is particularly useful for stress-testing documents and ensuring comprehensive coverage of important aspects.
+
 The implementation of skill is in folder `/agentskills/grill-me/`
 
-- [Grill Me Clarification](./grill-me/grill-me-clarification.md) Specificaition and clarification document for grill-me agent skill
+- [Grill Me Clarification](./agentskills/grill-me/grill-me-clarification.md) Specificaition and clarification document for grill-me agent skill
+
+### agent-audit skill
+
+"agent-audit" skill evaluates the repository-root `AGENTS.md` to improve agent effectiveness and reduce unnecessary turns and token consumption. It reports recommendations only and never edits files.
+
+The implementation of skill is in folder `/agentskills/agent-audit/`
+
+- [Agent Audit Clarification](./agentskills/agent-audit/agent-audit-clarification.md) Specificaition and clarification document for Agent audit agent skill
+
+
+
 
 
