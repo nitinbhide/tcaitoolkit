@@ -24,9 +24,15 @@ Grill-me is for natural-language text, not standalone source code, diagrams, CAD
 
 5. If non-prose material can be understood together with the surrounding text, analyze them together; otherwise, tell the user that separate review is required.
 
-6. Continue until the important ambiguities, conflicts, and missing decisions have been discussed and the user confirms the shared understanding. Then create a separate `<docname>_clarifications.md` file containing the agreed clarifications and any unresolved items. Save it in the same folder as the original file. For multiple source files, use a topic-based filename and the folder of the first selected file. If the source is pasted text without a source folder, ask where to save it.
+6. Continue until the important ambiguities, conflicts, and missing decisions have been discussed and the user confirms the shared understanding. Then create a separate clarification file containing the agreed clarifications and any unresolved items. Follow the naming and location rules below.
 
-7. After creating the clarifications file, ask the user to choose whether to update the original with the agreed clarifications and add a link to the clarifications file at the end, or leave the original's content unchanged and add only a link to the clarifications file at the end.
+7. After creating the clarifications file, ask the user to choose whether to update the original natural-language document with the agreed clarifications and add a link to the clarifications file at the end, or leave the original document's content unchanged and add only a link to the clarifications file at the end.
+
+## Naming and Location of the Clarification File
+
+- When grilling is about one natural-language document, name the clarification file `<filename>_clarification.md`, using the document's name without its extension (for example, `design.md` becomes `design_clarification.md`). Save it in the same folder as the document. Here, "document" means the prose being reviewed, regardless of file type; it does not mean a source-code file.
+- When grilling is about a set of natural-language documents, use a concise topic-based `<topic>_clarification.md` name and save it in the same folder as the first selected document.
+- When grilling is not specific to one or more natural-language documents, save the clarification file in the project's `.agents/memory/` folder. Create the folder if needed and choose a concise filename based on the discussion content, ending in `_clarification.md`.
 
 ## Help
 If the user asks for help with the grill-me skill, read and show the relevant content from [references/help.md](./references/help.md).
