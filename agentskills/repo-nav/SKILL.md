@@ -226,7 +226,7 @@ Use only shell scripts (powershell, bash, batch files) for automation and reposi
 - Folder Summary: concise summary in one paragraph about 4–5 sentences
 - File Summary: concise summary in one paragraph about 4–5 sentences
 - File summaries must be generated from the actual file contents using LLM analysis. Do not generate or use helper scripts, lookup tables, hard-coded text, fixed templates, or extension-based rules to produce summaries for `.py`, `.md`, `.java`, test, config, script, or other file types. Do not use fixed templates.
-- Before summarizing a file, read enough of that file to identify evidence for its purpose, responsibilities, key concepts, and relationships. If the file content does not provide enough evidence, say so with `confidence: low` instead of inventing a summary.
+- Before summarizing a file, read enough of that file to identify evidence for **its purpose, responsibilities, key concepts, and relationships, implicit and explicit assumptions, known limitations and bugs**. Generate the summary based on identified evidence. If the file content does not provide enough evidence, say so with `confidence: low` instead of inventing a summary. 
 - Inspect file contents for database-related function definitions or calls, SQL statements, and ORM queries or model declarations. Use these as evidence to determine whether the file itself defines any database tables, views, or indexes; do not treat queries, references, or use of existing objects as definitions. If it defines one or more tables, views, or indexes, list only their names in that file's `Database` entry. Omit the `Database` entry if the file defines none. Do not include table schemas, view definitions, SQL text, or query details in the entry.
 - Detect TODO / FIXME / NOTE. Detect TODO, FIXME, and NOTE case-insensitively in comments and documentation text. Record each occurrence with its line number and exact marker.
 - Generate lowercase, deduplicated, alphabetically sorted tags describing the file’s technologies, role, and major concepts.
@@ -243,30 +243,42 @@ Use only shell scripts (powershell, bash, batch files) for automation and reposi
   - Avoid marketing language
   - Describe intent before implementation
 
-### Documentation (e.g. *.md, *.rst) File Summary Considerations
+**General File and Folder Summary Rules**
+- Write one concise paragraph of about 4–5 sentences, 
+- No unsupported claims and implementation trivia
+- Report `confidence: low` if the file does not provide enough evidence for a reliable summary. 
+- Select only the questions that materially clarify this file; do not force every detail into the summary.
+
+### File Summary
+
+#### Documentation (e.g. *.md, *.rst) File Summary Considerations
 The file summary must consider 
 - what is documented in this file (e.g. test case, usecase, specification, architecture, design, tech stack etc)
 - purpose of the file 
 - what are the key concepts in this file ?
 - What are the responsibilities, types of files, semantic themes
 
-### Source code (e.g. *.cpp, *.java, *.py ) File Summary Considerations
-The file summary must consider 
-- What is feature/functionality implemented in this file ?
-- What classes/structs/interfaces are defined/implemented in this file? and What are their responsibilities/purposes? _(NOTE : Don't just list them; explain their roles and how they interact with each other.)_
-- what are the design patterns, architecture patterns, unique data structures and algorithms used in this file ?
-- what are the key concepts in this file ?
-- How does this file interact with other files in the project?
-- Are there any known bugs/limitations ? Report only explicitly documented or directly observable limitations. Do not perform separate bug analysis.
-- What are the responsibilities, roles, and semantic themes?
+#### Source code File Summary Considerations
+Typical file extensions for source code include e.g. *.cpp, *.java, *.py, *.js, *.ts, *.go, *.rb, *.php, *.cs, *.swift, *.kt, *.m, *.scala, *.rs, *.sh, *.bat, *.ps1, *.pl, *.lua, *.r, *.dart, *.hs, *.erl, *.ex, *.exs, *.clj, *.cljs, *.groovy, *.vb, *.fs, *.fsx, *.jl, *.sql. This is not an exhaustive or authoritative list.
+For source code, build a concise account of the file's behavior and role from its definitions and executable logic. Use the following questions to identify the most useful evidence:
 
-**Good Example of Summary**
-Implements authentication using the Passkey, JWT and OAuth2. Considers security considers like 2FA and progressive delays for authentication failures. Uses Factory and Observer patterns. SHA1024 hash algorithm is used. 
-Implements class `AuthManager` that coordinates authentication using the various authentication methods.
-Limitation- Automatic logout after some time is not implemented yet.
+- **Purpose and responsibility:** What feature or behavior does this file implement, and what responsibility does it own? Describe intent before implementation details.
+- **Important definitions:** Which classes, functions, types, or constants are central to that responsibility? Explain what the important definitions do and how they collaborate; do not produce an inventory of every symbol.
+- **Behavior and flow:** What are the important inputs, outputs, state changes, side effects, or error paths? Summarize the main control or data flow when it helps explain the behavior.
+- **Algorithms and design:** Mention a significant algorithm, data structure, or design pattern only when it is clearly evidenced by the code and helps explain how the file works. Do not infer a named pattern from superficial resemblance.
+- **Relationships:** Describe important interactions with other files or components when supported by imports, calls, types, or other direct evidence. Distinguish what this file defines from functionality it calls or consumes.
+- **Assumptions and limitations:** Include assumptions or limitations only when they are explicitly documented or directly observable in this file. Do not perform a separate bug analysis or present an inference as a known bug.
 
-**Bad Example of Summary**
-Implement JWTAuth, PasskeyAuth classes. Derived from AuthBase class.
+**Good Example of Source Code File Summary**
+Implements configuration loading for the application by reading a file, validating required values, and returning a settings object to callers. The `ConfigLoader` coordinates parsing and validation, while `Settings` holds the resulting values. Invalid or missing required values are reported through the loader's error path rather than returned as usable settings. The file delegates file access to the filesystem API and does not define persistence or application startup behavior.
+
+**Bad Example of Source Code File Summary**
+Defines `ConfigLoader`, `Settings`, `ConfigError`, `parse_config`, and `validate_settings`. Uses a factory pattern and has bugs when settings are missing.
+
+#### File Summary Considerations for file types other than source code and documentation
+- Consider the file's role, content structure, and interactions with other files. 
+- Focus on the purpose, key definitions or elements, behavior, and relationships relevant to that file type. 
+- Avoid summarizing trivial details or making unsupported claims.
 
 ### Folder Summary Considerations
 The folder summary must consider
