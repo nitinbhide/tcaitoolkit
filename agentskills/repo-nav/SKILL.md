@@ -58,7 +58,7 @@ DO NOT deviate from this SKILL instructions during the execution of the repo-nav
   - Entire hierarchy of given folder,  on Windows PowerShell`./scripts/filelist.ps1 <folder-path> <output-file> -Recurse`
   - Entire hierarchy of given folder,  on Bash: `./scripts/filelist.sh <folder-path> <output-file> -Recurse`
 
-- Select the run mode by checking whether a root `DOCMAP.md` exists at the physical project root or the current Designated Root Folder. If either exists, treat the run as incremental and use the dedicated `detectchanges` scripts to identify changes. If neither exists, treat the run as a full baseline, including when resuming an interrupted first-time generation; use the `filelist` scripts for the authoritative inventory and continue from the checkpointed plan:
+- Select the run mode as described in [Run Mode Detection](#run-mode-detection). For incremental runs, use the dedicated `detectchanges` scripts to identify changes; for full-baseline runs, use the `filelist` scripts for the authoritative inventory and continue from the checkpointed plan:
   - On Windows PowerShell: `./scripts/detectchanges.ps1 <folder-or-docmap-path>/docmap.md`
   - On Bash: `./scripts/detectchanges.sh <folder-or-docmap-path>/docmap.md`
   - These scripts read the file entries and sizes recorded in a `docmap.md`, resolve each filename relative to the docmap's parent folder, and compare them with the current filesystem state.
@@ -77,6 +77,14 @@ A **Designated Root Folder (DRF)** is the logical root for one indexing run: it 
 - **Confirm before starting:** Always confirm the DRF(s) for the current run with the user before generating the indexing operation plan. If unspecified, state that the physical repository top will be used as the default DRF.
 - **Root Protection:** A DRF's own `DOCMAP.md` is never merged into a parent folder's docmap, even below the small-folder merge threshold, and even when the DRF is not the physical repository top.
 - **Folders outside any DRF:** Folders outside every designated DRF's subtree are out of scope for the current run and must be left untouched.
+
+## Run Mode Detection
+
+Determine the run mode independently for each confirmed DRF, using only whether that DRF's own root `DOCMAP.md` exists:
+
+- If the current DRF has a root `DOCMAP.md`, use **incremental mode**. Run the `detectchanges` script for each folder in the DRF subtree, using that folder's index (`DOCMAP.md` at the DRF root and `docmap.md` in other folders), and process the reported changes.
+- If the current DRF does not have a root `DOCMAP.md`, use **full-baseline mode**. Use the `filelist` scripts to create the authoritative inventory and continue from the plan if resuming an interrupted run. This remains a full baseline even when a `DOCMAP.md` exists at the physical project root outside the current DRF.
+- When the physical project root is itself the current DRF, its root `DOCMAP.md` determines that DRF's run mode. A project-root `DOCMAP.md` does not determine the mode for any other DRF.
 
 ## Scope and boundaries
 
@@ -153,7 +161,7 @@ The inventory scripts are the **only permitted** way to compute a **full file in
 - You **MUST** run `filelist.ps1` (Windows) or `filelist.sh` (Linux/macOS) whenever you need the full list of files in a folder, such as when generating a DOCMAP from scratch (no existing DOCMAP).
 - You **MUST NOT** build a full inventory with any other method, such as `ls`, `dir`, `Get-ChildItem`, `find`, `glob`, `git ls-files`, `tree`, or IDE/agent file-listing tools. Do not infer or hand-write file lists from memory.
 - Treat the script output as the complete and final inventory. Do not modify it manually; never add files it did not list.
-- For **incremental runs**, identified by an existing root `DOCMAP.md` at the physical project root or current DRF, you **MUST** use the `detectchanges` scripts for change detection. For full-baseline runs, including an interrupted first-time generation where neither root docmap exists, use the `filelist` scripts for the authoritative inventory and resume from the plan. Do not substitute ad hoc scans for either workflow.
+- Follow [Run Mode Detection](#run-mode-detection) to choose between `detectchanges` and `filelist`; do not substitute ad hoc scans for either workflow.
 
 - Use `-Glob "<pattern>"` to restrict inventory output to matching file types, for example `-Glob "*.{ps1,md}"`. 
 - By default, each script lists only files directly in the given folder. 
@@ -304,7 +312,7 @@ The folder summary must consider
 
 ## Incremental Update Rules
 - Load existing index files if present
-- For incremental mode (a project-root or current DRF root `DOCMAP.md` exists), detect changed files using only the `detectchanges` scripts (file size comparison); for full-baseline mode, use `filelist` inventories.
+- Follow [Run Mode Detection](#run-mode-detection). In incremental mode, detect changed files using only the `detectchanges` scripts (file size comparison).
 - Re-summarize only files with changed file size
 - Remove deleted files
 - Preserve unchanged summaries
@@ -441,15 +449,14 @@ View : UserPosts
   - Use each DRF's plan to store the indexing operation at granular steps and track its execution progress. Keep merge-staging state under `<project root>/.agents/memory/<DRF-key>/repo-nav/` as well.
   - ALWAYS Get the user's approval on plan BEFORE starting the plan execution. 
   - If the DRF's plan file exists, update it in place.
-2. Select the run mode by checking whether a root `DOCMAP.md` exists at the physical project root or current DRF. If either exists, treat the run as incremental and before updating each folder run its change detection script:
+2. Select the run mode as described in [Run Mode Detection](#run-mode-detection). In incremental mode, before updating each folder run its change detection script:
     - On Windows PowerShell: `./scripts/detectchanges.ps1 <folder-or-docmap-path>/docmap.md`
     - On Bash: `./scripts/detectchanges.sh <folder-or-docmap-path>/docmap.md`
     - Treat the reported list as the authoritative set of files (and new folders) that still need to be considered for docmap generation. Do not derive it with ad-hoc scripts.
     - The script reads the file entries and sizes recorded in the folder-level `docmap.md`, resolves each filename relative to the parent directory of that `docmap.md`, and compares them against the files currently present on disk.
     - Files whose recorded size no longer matches current file size are reported as `MODIFIED`; files present in the docmap but missing from disk are `DELETED`; files present on disk but not listed in the docmap are `ADDED`; newly found folders are reported as `ADDED` with a trailing `/`.
     - Use this output to decide if the folder’s `docmap.md` needs regeneration or a targeted incremental update.
-   If neither root `DOCMAP.md` exists, treat the run as full baseline: use `filelist.ps1`/`filelist.sh` to create the authoritative inventory, including when resuming an interrupted first-time generation. Continue from the plan's recorded progress; do not use `detectchanges` in this mode.
-3. In incremental mode, apply the detectchanges workflow to all folders in the DRF subtree. In full-baseline mode, use the authoritative `filelist` inventory to determine files for processing.
+3. In full-baseline mode, use `filelist.ps1`/`filelist.sh` to create the authoritative inventory, including when resuming an interrupted first-time generation. Continue from the plan's recorded progress; do not use `detectchanges` in this mode. In incremental mode, apply the detectchanges workflow to all folders in the DRF subtree.
   - After identifying affected files, regenerate or update that folder’s `docmap.md` and then propagate the update to any ancestor indexes that reference it, up to and including that DRF's root `DOCMAP.md`.
 5. For each folder within the current DRF's subtree, starting from the deepest folder and moving upward, do the following:
   1. identify the eligible text files (documents and source code) for this folder from the `detectchanges` output (or `filelist` output when a full inventory is needed) only.
