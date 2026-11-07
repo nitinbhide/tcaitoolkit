@@ -36,8 +36,7 @@ The original assumption was that the root index file and the cross-cutting maps 
 
 ## Incremental Update 
 
-The incremental update of docmaps and cross cutting maps is required. Over time, as developers work on a project, there may be significant changes in responsibility /design of source files. These changes must be reflected in the docmaps. However, not all files will undergo changes. To save the time and efforts, we should detect which source files are changed and then detect which docmaps require update. 
-- Use a script to detect which files are changed. The docmaps contain information about the file size. Use the size information to detect which files are updated and which docmaps now require updation. The script is named 'detectchanges'. 
+Docmaps and cross-cutting maps must be updated as source files change. To avoid reviewing every map after each change, identify the changed files and update only the maps affected. The `detectchanges` script compares file sizes recorded in the docmaps to identify changed files and the maps that need updating.
 - [Specifications of detectchanges](./detectchanges-spec.md)
 
 **CAUTION**
