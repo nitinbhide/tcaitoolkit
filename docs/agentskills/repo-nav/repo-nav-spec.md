@@ -34,6 +34,12 @@ What will be your strategy guideline for cross cutting indexes ?
 ## Multi-Project Repositories
 The original assumption was that the root index file and the cross-cutting maps always live at the physical top of the repository. A single repository can host multiple independent projects, so it must be possible to designate multiple folders as Designated Root Folders (DRFs), each with its own root `DOCMAP.md` and cross-cutting maps. The project root may also have a separate, repository-wide `DOCMAP.md` that links to the DRF indexes; both levels can coexist. If the project root itself is a DRF, its one `DOCMAP.md` serves both roles. See [repo-nav-design.md](./repo-nav-design.md) (Designated Root Folder) for the current design.
 
+## Incremental Update 
+
+The incremental update of docmaps and cross cutting maps is required. Over time, as developers work on a project, there may be significant changes in responsibility /design of source files. These changes must be reflected in the docmaps. However, not all files will undergo changes. To save the time and efforts, we should detect which source files are changed and then detect which docmaps require update. 
+- Use a script to detect which files are changed. The docmaps contain information about the file size. Use the size information to detect which files are updated and which docmaps now require updation. The script is named 'detectchanges'. 
+- [Specifications of detectchanges](./detectchanges-spec.md)
+
 **CAUTION**
 This document describes the initial thoughts of repo-nav SKILL. It was originally called the repoindexer SKILL. The implementation and design is incrementally improved. And the current implementation has many more features and ideas compared to this spec document
 
