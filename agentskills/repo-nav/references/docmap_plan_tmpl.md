@@ -38,6 +38,7 @@ During every execution step, the operator must follow the active "repo-nav" skil
 - Full inventory and file counts: use `filelist.ps1` on Windows or `filelist.sh` on Linux/macOS whenever a full inventory or eligible-file count is required. These scripts are the only permitted way to produce that inventory. Treat their output as the complete, authoritative inventory; do not add to it manually or use another listing method.
 - Determine the run mode by checking for a root `DOCMAP.md` at the physical project root or current DRF. If either exists, the run is incremental and `detectchanges.ps1` / `detectchanges.sh` is the authoritative change list for each folder. If neither exists, the run is full baseline, including when resuming an interrupted first-time generation; use `filelist.ps1` / `filelist.sh` for the authoritative inventory and continue from the checkpointed plan. Do not use `detectchanges` in full-baseline mode.
 - Use `filelist` for full-baseline inventories and for any required full inventory or count. Use `detectchanges` only for incremental runs where a project-root or current DRF root `DOCMAP.md` exists. Both script outputs are authoritative for their respective purposes.
+- If an authoritative `filelist`, `detectchanges`, or `detect_db` script fails, stop the entire run and report the failure as required by the skill. Do not repair, retry, or substitute the script.
 - Mandatory reference usage:
   - Use the guidance from `ripgrepsearch.md` from "repo-nav" skill when `rg` is available.
   - Use the "repo-nav" skill PowerShell guidance (`powershell.md` for path handling and validations on Windows.
@@ -63,7 +64,7 @@ During every execution step, the operator must follow the active "repo-nav" skil
 - **Run Mode**: `<full_baseline | incremental>`, determined by whether a root `DOCMAP.md` exists at the physical project root or current DRF.
 - **Change Detection Strategy**: For incremental mode, use `detectchanges.ps1` / `detectchanges.sh` for each target folder. For full-baseline mode, including resumption before either root `DOCMAP.md` has been created, use `filelist.ps1` / `filelist.sh` as the authoritative inventory.
 - **Small-Folder Merge Threshold**: `< 10 direct entries (direct files + immediate child docmap links + absorbed files)`
-- **Fallback Inventory Command**: `scripts/filelist.ps1 <folder-path> <output-file> [-Recurse]` or `scripts/filelist.sh <folder-path> <output-file> [-Recurse]`
+- **Full Inventory Command**: `scripts/filelist.ps1 <folder-path> <output-file> [-Recurse]` or `scripts/filelist.sh <folder-path> <output-file> [-Recurse]`
 - **Docmap Change Detection Command**: `scripts/detectchanges.ps1 <folder-or-docmap-path>/docmap.md` or `scripts/detectchanges.sh <folder-or-docmap-path>/docmap.md`
 
 If `rg` is unavailable, stop the run. Do not select a fallback discovery tool or create an inventory with recursive filesystem scanning.

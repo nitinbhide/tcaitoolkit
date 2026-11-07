@@ -51,6 +51,14 @@ DO NOT deviate from this SKILL instructions during the execution of the repo-nav
   - Do not construct ad hoc `rg --files` pipelines (e.g. inline PowerShell/Bash one-liners combining `rg --files` with custom globs, `ForEach-Object`/`awk`/`sed` folder-splitting, or manual counting) as a substitute for the `filelist` scripts. Any request for an eligible file count or a folder/file inventory must be satisfied by invoking `filelist.ps1`/`filelist.sh`, not by hand-rolling an equivalent `rg` command.
 - If `rg` is not available, stop immediately and instruct the user: install ripgrep from https://github.com/burntsushi/ripgrep, restart the editor, and then retry the repo-nav skill.
 
+### Authoritative Script Failure
+
+The `filelist`, `detectchanges`, and `detect_db` scripts, including their platform-specific versions, are authoritative for their respective purposes throughout this workflow. Check each invocation for failure before using its output. If any invocation fails for any reason, including a missing dependency, execution error, or timeout:
+
+- Stop the entire repo-nav run immediately, including work delegated to subagents. Do not use partial output or continue generating or updating indexes, maps, or plans.
+- Report the failed script and command, the available error message or exit status, and that the run was stopped. Do not report the run as successful.
+- Do not repair, modify, or retry the authoritative script, switch to another platform's script, or create or use a substitute, workaround, or alternative command to perform its work. Leave resolution to the user before a new run.
+
 - Use the inventory scripts (`filelist.ps1` / `filelist.sh`) as the **required** mechanism for producing the eligible-file count and file/folder inventory. Inventory scripts internally use the `rg` command. They generate a Markdown table listing repository files and sizes.
   
   - For single folder, no recursion, On Windows PowerShell: `./scripts/filelist.ps1 <folder-path> <output-file>`

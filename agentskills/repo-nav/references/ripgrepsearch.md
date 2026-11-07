@@ -7,7 +7,7 @@ Use `rg -h` (or `rg --help`) to view the help and available options for ripgrep.
 
 Use this priority order:
 
-1. ripgrep/rg based scripts from scripts folder (e.g. `filelist` or `detectchanges`).  If the scripts are not sufficient for the task then only add custom ad-hoc `rg` commands
+1. ripgrep/rg based scripts from scripts folder (e.g. `filelist` or `detectchanges`). If an authoritative script fails, follow the skill's Authoritative Script Failure rule; never substitute custom commands for its work.
 2. `rg --files` (file discovery)
 3. `rg <pattern>` (content search)
 4. `rg --files | rg <pattern>` (filename search)
@@ -57,12 +57,12 @@ Use the following flag only when task **EXPLICITLY** requires them
 - Check availability first: use `Get-Command rg -ErrorAction SilentlyContinue` on Windows PowerShell or `command -v rg` on Unix-like shells.
 - Establish one authoritative inventory with recommended inventory scripts. That inventory must come from `../scripts/filelist.ps1` / `../scripts/filelist.sh` (see the skill's "Reference Workflow and Tools" and "Use of inventory scripts" sections). Do not hand-write an `rg --files` pipeline (with custom `-g` globs, folder-splitting, or counting logic) to reproduce what those scripts already do.
 - Retain the inventory for grouping, candidate selection, metadata extraction, and final checks. Do not rescan the repository for each phase
-- In case it is not possible to use inventory scripts, `rg --files` only for targeted, already-scoped content or filename searches after a `filelist`-based or `docmap.md`-based inventory exists;
+- Use `rg --files` only for targeted, already-scoped filename searches after an inventory exists, not as a substitute for an unavailable or failed inventory script.
 - Invetory scripts and `rg --files` already honors `.gitignore`, `.ignore`, and `.git/info/exclude`. Do not copy repository ignore patterns into additional globs. The only normal workflow-specific exclusion is `--glob '!**/docmap.md'` when generated indexes must be omitted from the input inventory.
 - Apply file-type, hidden-name, configuration, binary, `AGENTS.md`, and `CLAUDE.md` eligibility filtering after discovery. Do not replace the authoritative inventory with recursive PowerShell enumeration.
 - Keep discovery, folder selection, metadata extraction, index generation, and validation as separate phases. A validation command must consume the selected folder or retained inventory; it must not silently perform a new full-repository scan.
 - 
-- If `rg` is unavailable, use the platform-native fallback only: `Get-ChildItem -Recurse -File` and `Select-String` on Windows, or `find` and `grep` on Unix-like systems. Keep fallback searches scoped and honor ignore rules where supported.
+- If `rg` is unavailable, stop as required by the skill; do not use a platform-native fallback.
 
 ### Listing existing docmap files
 - Use `rg --files -g "{docmap,DOCMAP}.md"` to list all the existing docmap files in the repository.

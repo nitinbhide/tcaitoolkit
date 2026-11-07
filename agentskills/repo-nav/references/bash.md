@@ -11,7 +11,7 @@ rg -n 'TODO|FIXEME|NOTE' .
 rg -n 'TODO|FIXEME|NOTE' docs -g '*.md'
 ```
 
-Use `grep` only as a platform-native fallback when ripgrep is unavailable.
+If ripgrep is unavailable, stop the skill; do not use `grep` as a fallback.
 
 ## Path Handling
 
