@@ -322,9 +322,10 @@ The folder summary must consider
 - Load existing index files if present
 - Follow [Run Mode Detection](#run-mode-detection). In incremental mode, detect changed files using only the `detectchanges` scripts (file size comparison).
 - Re-summarize only files with changed file size
+- For each modified file, compare its existing summary with the summary generated from its current content, then make only the changes needed to keep the summary accurate. Preserve summaries for unchanged files verbatim.
 - Remove deleted files
-- Preserve unchanged summaries
-- Update folder summaries when needed
+- Update affected folder summaries from their current file and child-folder summaries. Compare each new summary with the existing one and make only the changes needed to reflect the updated content.
+- Update the DRF root `DOCMAP.md` and only the affected specialized maps. Compare each existing map with its updated content and make only the necessary changes; leave unaffected maps unchanged.
 - Always write or update each folder's `docmap.md` in its real source folder first; apply the Small-Folder Docmap Merge rule only afterward, as a separate post-processing pass across all folders in the DRF's subtree, never as part of generating or incrementally updating an individual folder index
 - Rename detection not required
 - Do not run a full sweep automatically
@@ -465,7 +466,7 @@ View : UserPosts
     - Files whose recorded size no longer matches current file size are reported as `MODIFIED`; files present in the docmap but missing from disk are `DELETED`; files present on disk but not listed in the docmap are `ADDED`; newly found folders are reported as `ADDED` with a trailing `/`.
     - Use this output to decide if the folder’s `docmap.md` needs regeneration or a targeted incremental update.
 3. In full-baseline mode, use `filelist.ps1`/`filelist.sh` to create the authoritative inventory, including when resuming an interrupted first-time generation. Continue from the plan's recorded progress; do not use `detectchanges` in this mode. In incremental mode, apply the detectchanges workflow to all folders in the DRF subtree.
-  - After identifying affected files, regenerate or update that folder’s `docmap.md` and then propagate the update to any ancestor indexes that reference it, up to and including that DRF's root `DOCMAP.md`.
+  - After identifying affected files, update the file summaries and folder summary as needed, then propagate necessary changes to ancestor indexes up to and including that DRF's root `DOCMAP.md`. Compare regenerated summaries with existing summaries and make only the changes needed to reflect current content.
 5. For each folder within the current DRF's subtree, starting from the deepest folder and moving upward, do the following:
   1. identify the eligible text files (documents and source code) for this folder from the `detectchanges` output (or `filelist` output when a full inventory is needed) only.
   2. Use that script output and the relevant `docmap.md` as the input set for index generation in each folder; do not list the folder contents any other way.
@@ -477,7 +478,7 @@ View : UserPosts
 7. Skip dependency graph generation for now.
 8. Generate the **Specialized Repository Navigation Maps** at the current DRF. 
   - Use the docmap information to generate specialized navigation maps that facilitate repository exploration and cross-referencing.
-  - Ensure that these maps are updated whenever the underlying docmaps change, maintaining consistency across the repository.
+  - Keep these maps consistent with the underlying docmaps. In incremental mode, update only maps affected by the changes; compare their existing content with the updated content and make only the necessary changes.
   - To generate `SCHEMA_MAP.md`, run `./scripts/detect_db.ps1 <DRF>` on Windows PowerShell or `./scripts/detect_db.sh <DRF>` on Bash. Treat the script's output as the authoritative list of files with table, view, or index definitions; do not discover additional source files by scanning. Read only the listed files to document each defined table's schema and relationships, each view's SQL definition, and each index's definition. Map every object to its defining file using a path relative to the DRF. Include entity mappings and schema constraints when supported by the source; do not infer or fabricate missing details. If the script reports no database definitions, do not scan source files for candidates.
 9. Use the template as per `./references/rootdocmap_tmpl.md` to generate (and/or update) the current DRF's root `DOCMAP.md`. Always update that DRF's root index even if you are only updating some specific subfolder of the project. Create/Update the root `DOCMAP.md` ONLY after "Small-Folder Docmap Merge" is completed.
 10. Review and validate the generated `SCHEMA_MAP.md`, root `DOCMAP.md`, and folder-level `docmap.md` files to ensure accuracy and completeness.

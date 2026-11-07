@@ -301,9 +301,10 @@ flowchart TD
     
     L --> M[Process Dirty Folders Bottom-Up]
     M --> N[Retain UNCHANGED File Summaries Verbatim]
-    N --> O[Re-summarize MODIFIED/ADDED files]
-    O --> P[Re-evaluate Small Folder Merge / Split Condition]
-    P --> Q[Update DRF's Root DOCMAP.md & Specialized Maps]
+    N --> O[Summarize MODIFIED/ADDED files; make only necessary edits to existing summaries]
+    O --> P[Refresh parent folder summaries with only necessary edits]
+    P --> Q[Re-evaluate Small Folder Merge / Split Condition]
+    Q --> R[Update DRF's Root DOCMAP.md & affected Specialized Maps]
 ```
 
 #### Step-by-Step Execution:
@@ -320,8 +321,8 @@ flowchart TD
 4. **Dynamic Merge / Split Handling:**
    - **Split Case (`SPLIT_REQUIRED`):** If added files push a previously absorbed folder to effective entries $\ge 10$, it splits out: generates a dedicated child `docmap.md` and replaces its inlined summaries in the parent docmap with a child docmap link.
    - **Merge Case (`MARKED_FOR_MERGE`):** If deleted files drop an independent folder below 10 entries, it merges into its parent and its child `docmap.md` is removed.
-5. **Targeted Bottom-Up Execution:** Execute LLM summarization *only* for the dirty queue. Clean folders are touched zero times.
-6. **Update Root & Cross-Cutting Maps:** Update the DRF's root `DOCMAP.md` and touch affected specialized maps at that DRF (e.g., update `TESTING_MAP.md` if test files changed). A change confined to one DRF's subtree does not touch a sibling DRF's maps.
+5. **Targeted Bottom-Up Summarization:** Execute LLM summarization *only* for the dirty queue. Preserve unchanged file summaries verbatim. For each modified file, compare its existing summary with the newly generated summary and make only the changes needed to reflect the current file content. Apply the same comparison-and-minimal-edit approach to each affected parent-folder summary. Clean folders are untouched.
+6. **Update Root & Cross-Cutting Maps:** Update the DRF's root `DOCMAP.md` and affected specialized maps at that DRF (e.g., update `TESTING_MAP.md` if test files changed). Compare each existing map with the updated content and make only the necessary changes. A change confined to one DRF's subtree does not touch a sibling DRF's maps.
 
 #### Interruption & Resumption (Scenario 2):
 If incremental processing is interrupted:

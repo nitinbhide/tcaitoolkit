@@ -78,6 +78,8 @@ If `rg` is unavailable, stop the run. Do not select a fallback discovery tool or
   - `MODIFIED`: recorded docmap size differs from current file size
   - `ADDED`: file exists on disk but is not listed in the docmap
   - `DELETED`: file is listed in the docmap but is missing from disk
+- For each modified file, compare the existing summary with one generated from the current file content and make only the necessary changes. Preserve unchanged file summaries verbatim.
+- Update affected parent-folder summaries by comparing the existing summary with one based on the updated file and child-folder summaries; make only the changes needed to reflect current content.
 
 ### Changed / Added / Deleted Files
 - `MODIFIED`: `<path/to/file1>` (Old Size: <bytes> bytes -> New Size: <bytes> bytes)
@@ -126,6 +128,8 @@ Effective Entries = Direct Files + Immediate Child Docmap Links + Absorbed Child
 ## 4. Specialized Cross-Cutting Maps Queue
 <!-- Cross-cutting maps generated after folder-level docmaps are complete -->
 
+In incremental mode, update only specialized maps affected by the changes. Compare each affected map's existing content with its updated content and make only the necessary changes. Always update the DRF root `DOCMAP.md`; leave unaffected specialized maps unchanged.
+
 - [ ] `FEATURE_MAP.md` — Major business capabilities mapped to requirements, design, source, tests
 - [ ] `ARCHITECTURE_MAP.md` — Architectural patterns, layer definitions, and system constraints
 - [ ] `TECHNOLOGY_MAP.md` — Languages, frameworks, runtime versions, build tooling
@@ -154,7 +158,7 @@ Effective Entries = Direct Files + Immediate Child Docmap Links + Absorbed Child
    - Incorporate each child's generated content into its parent, rewrite links relative to the parent, and remove the child's standalone `docmap.md` only after successful incorporation. Update merge status in the plan.
    - If the parent's resulting effective count is still $< 10$ and it is not a DRF, it is eligible for absorption into its parent.
 3. **State Transition Invariants**:
-   - Preserve completed work and unchanged summaries; use `detectchanges` in incremental mode and the `filelist` inventory in full-baseline mode to establish remaining work.
+   - Preserve completed work and unchanged summaries. In incremental mode, compare regenerated file, folder, and map content with the existing content and make only necessary changes. Use `detectchanges` in incremental mode and the `filelist` inventory in full-baseline mode to establish remaining work.
    - Complete folder docmaps and the merge pass before generating the DRF's specialized maps and root `DOCMAP.md`.
 
 ## Executation Logs
