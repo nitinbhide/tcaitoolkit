@@ -43,7 +43,7 @@ Docmaps and cross-cutting maps must be updated as source files change. To avoid 
     - Apply the same approach to the folder summary in the parent docmap.
     - For cross-cutting maps, compare the existing map with the updated content and make only the necessary changes.
 
-**CAUTION**
+# CAUTION
 This document describes the initial thoughts of repo-nav SKILL. It was originally called the repoindexer SKILL. The implementation and design is incrementally improved. And the current implementation has many more features and ideas compared to this spec document
 
 The latest design document is at [repo-nav-design.md](./repo-nav-design.md)
