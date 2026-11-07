@@ -38,12 +38,10 @@ The original assumption was that the root index file and the cross-cutting maps 
 
 Docmaps and cross-cutting maps must be updated as source files change. To avoid reviewing every map after each change, identify the changed files and update only the maps affected. The `detectchanges` script compares file sizes recorded in the docmaps to identify changed files and the maps that need updating.
 - [Specifications of detectchanges](./detectchanges-spec.md)
-- Because of the nature of Large Language Models, using LLMs for summarization in docmaps, means some amount of unpredictability. It is possible that there will signficant amount of text change in the incremental update for a given file. 
-    - To avoid this unneccesary update, the SKILL should consider the current file summary in the docmap and the new summary generated with current file content.
-    - Considering both, smallest possible patch must be generated for the file summary in the docmap. 
-    - This must be done for each file that is changed. 
-    - Similar process must be done for summary of folder in the parent docmap.
-    - The cross cutting maps must be updated with considering the current content of cross cutting map and the new summarized the cross cutting map and then smallest patch generated. 
+- LLM-generated summaries can vary, causing unnecessary text changes during incremental updates. To minimize churn:
+    - Compare each existing file summary with a summary generated from the current file content, then make the smallest necessary change to the docmap.
+    - Apply the same approach to the folder summary in the parent docmap.
+    - For cross-cutting maps, compare the existing map with the updated content and make only the necessary changes.
 
 **CAUTION**
 This document describes the initial thoughts of repo-nav SKILL. It was originally called the repoindexer SKILL. The implementation and design is incrementally improved. And the current implementation has many more features and ideas compared to this spec document
