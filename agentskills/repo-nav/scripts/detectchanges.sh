@@ -62,7 +62,7 @@ folder_root="$(dirname "$resolved_docmap_path")"
 # another backtick file entry.
 declare -A recorded_files=()
 declare -a docmap_entries=()
-docmap_pattern='(?ms)^\s*-\s*`(?<file>(?![^`]+/docmap\.md`)(?![^`/]+_MAP\.md`)[^`]+)`(?:(?:[^\r\n]*?\(\s*Size\s*:\s*)|(?:(?!^\s*-\s*`).)*?^\s*-\s*Size\s*:\s*)(?<size>[0-9][0-9,]*)\s+bytes'
+docmap_pattern='(?ms)^\s*-\s*`(?<file>(?![^`]+/docmap\.md`)(?![^`/]+_MAP\.md`)[^`]+)`(?:(?:[^\r\n]*?\(\s*Size\s*:\s*)|(?:(?!^\s*-\s*`).)*?^\s*-\s*Size\s*:\s*)(?<size>[0-9][0-9,]*)(?:\s+bytes|(?=\s*\)))'
 docmap_replacement='${file}'$'\t''${size}'
 
 while IFS=$'\t' read -r normalized size; do
@@ -95,6 +95,7 @@ done
 
 for merged_folder in "${!merged_folders[@]}"; do
   merged_folder_path="$folder_root/${merged_folder//\//\/}"
+  [[ -d "$merged_folder_path" ]] || continue
   while IFS= read -r file; do
     [[ -n "$file" ]] && inventory_files+=("$file")
   done < <(get_repo_nav_file_inventory "$merged_folder_path")

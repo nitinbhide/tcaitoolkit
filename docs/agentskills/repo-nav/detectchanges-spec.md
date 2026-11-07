@@ -52,6 +52,23 @@ If a folder exists on disk under a folder covered by a docmap, but is neither me
 - Then report every file in that folder tree (after the standard filtering) as `ADDED`, with paths relative to the docmap's parent folder.
 - Case 1 is the special case where the whole hierarchy (including the root) lacks docmaps.
 
+## Deleted merged child folder
+If a child folder whose contents were merged into a parent docmap is deleted, the parent docmap still records its files even though the folder no longer exists on disk. Detect merged-folder coverage from the paths recorded in the docmap, independently of whether those folders exist on disk. Compare every recorded file in that coverage against the current filesystem, including files whose parent folder or an ancestor folder is missing.
+
+- Report each missing recorded file as `DELETED`, using its path relative to the parent docmap, its recorded size as `Size in DocMap`, and `0` as `Actual Size`, consistent with existing deleted-file output. This applies to both filename and size formats described above.
+- Do not require the deleted folder to be discovered by `rg` or attempt to inventory it as an existing folder. Do not report its files as `ADDED` or `MODIFIED`.
+- Apply the existing merged-folder coverage rules; do not infer deletions for files owned by a separate child docmap that are not recorded in this docmap.
+- The repo-nav update consuming these results must remove the deleted file entries and obsolete references or summaries for the deleted folder from the parent docmap, while preserving unrelated entries. The detection script itself must not modify docmaps.
+
+For example, if the parent docmap records `child/a.py` with size 100 and `child/b.md` with size 200, and `child/` is deleted, its output includes:
+
+```markdown
+| Filename | Size in DocMap | Actual Size | Status |
+| --- | ---: | ---: | --- |
+| child/a.py | 100 | 0 | DELETED |
+| child/b.md | 200 | 0 | DELETED |
+```
+
 # Implementation
 
 ## Implementation Guidance
@@ -70,7 +87,7 @@ If a folder exists on disk under a folder covered by a docmap, but is neither me
 - **CAVEAT in using `rg`**.
     - Remember `rg` will list all the files recursively in the current folder and the child folders. However, the docmap.md contains files from the parent folder of docmap.md and the child folders where the child docmap.md is merged with parent docmap.md.
     - Hence naive use of `rg` will result in many files as 'added'. These files will be potentially in other child docmap.md files
-    - This will require some pre-processing to understand which child docmaps are merged with parent docmaps. 
+    - This will require some pre-processing to understand which child docmaps are merged with parent docmaps. Derive this coverage from the docmap even when a merged folder has been deleted; filesystem inventory cannot discover a missing folder.
     - The files in those merged folders are to be analyzed for modification detection. Remaining folders must be ignored. - Use the "filename and size regex pattern" to detect the "merged folder names" whose child docmaps are merged with this docmap file. 
     - Then modify the "filename and size regex pattern" and include the only files with no parent folder mentioned or the folders mentioned the ""merged folder names".
     - Remember to analyze only the immediate children of "merged folders" are to be analyzed and not all the recursive childerens.

@@ -45,7 +45,7 @@ if ($docMapMissing) {
 # Parse each file entry and its size as one multiline rg match. The two size
 # locations cover both documented forms; the boundary prevents crossing into
 # another backtick file entry.
-$docMapPattern = '(?ms)^\s*-\s*`(?<file>(?![^`]+/docmap\.md`)(?![^`/]+_MAP\.md`)[^`]+)`(?:(?:[^\r\n]*?\(\s*Size\s*:\s*)|(?:(?!^\s*-\s*`).)*?^\s*-\s*Size\s*:\s*)(?<size>[\d,]+)\s+bytes'
+$docMapPattern = '(?ms)^\s*-\s*`(?<file>(?![^`]+/docmap\.md`)(?![^`/]+_MAP\.md`)[^`]+)`(?:(?:[^\r\n]*?\(\s*Size\s*:\s*)|(?:(?!^\s*-\s*`).)*?^\s*-\s*Size\s*:\s*)(?<size>[\d,]+)(?:\s+bytes|(?=\s*\)))'
 $docMapReplacement = '${file}' + [char]9 + '${size}'
 
 $docMapMatches = if ($docMapMissing) { @() } else {
@@ -90,7 +90,9 @@ foreach ($entry in $recordedFiles.Keys) {
 
 foreach ($mergedFolder in $mergedFolders.Keys) {
     $mergedFolderPath = Join-Path $folderRoot $mergedFolder.Replace('/', [System.IO.Path]::DirectorySeparatorChar)
-    $inventoryFiles += @(Get-RepoNavFileInventory -Path $mergedFolderPath)
+    if (Test-Path -LiteralPath $mergedFolderPath -PathType Container) {
+        $inventoryFiles += @(Get-RepoNavFileInventory -Path $mergedFolderPath)
+    }
 }
 
 # Case 2: immediate child folders that are not covered by this docmap and have
