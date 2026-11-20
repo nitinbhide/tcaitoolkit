@@ -45,6 +45,10 @@ foreach ($file in $files) {
     }
 }
 
+if (-not $folderCounts.ContainsKey($resolvedPath)) {
+    $folderCounts[$resolvedPath] = 0
+}
+
 $root = $resolvedPath.TrimEnd([char[]]@('\', '/'))
 $rootPrefix = if ($root.Length -eq 0) {
     [System.IO.Path]::DirectorySeparatorChar.ToString()

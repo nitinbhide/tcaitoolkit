@@ -72,6 +72,8 @@ if [[ -n "$files" ]]; then
   done <<< "$files"
 fi
 
+folder_counts["$resolved_path"]="${folder_counts["$resolved_path"]:-0}"
+
 records=()
 for folder in "${!folder_counts[@]}"; do
   if [[ "$folder" == "$resolved_path" ]]; then
