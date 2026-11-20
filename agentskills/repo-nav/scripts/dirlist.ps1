@@ -1,11 +1,11 @@
 <#
 .SYNOPSIS
-Lists the unique directories that contain repository files.
+Lists directories containing repository files in a Markdown table.
 
 .DESCRIPTION
 Uses the same file inventory and rules as filelist.ps1 (ripgrep discovery,
 hidden paths and repo-nav documentation files excluded, empty files skipped),
-then outputs the unique parent directory of each file, sorted.
+then outputs each directory's depth and direct file count, deepest first.
 
 .EXAMPLE
 ./dirlist.ps1 .
@@ -33,16 +33,56 @@ $resolvedPath = (Resolve-Path -Path $Path).Path
 
 $files = @(Get-RepoNavFileInventory -Path $resolvedPath -Glob $Glob -Recurse:$Recurse)
 
-$dirs = @(foreach ($file in $files) {
+$folderCounts = @{}
+foreach ($file in $files) {
     $item = Get-Item -LiteralPath $file
     if ($item.Length -gt 0) {
-        $item.DirectoryName
+        $folder = $item.DirectoryName
+        if (-not $folderCounts.ContainsKey($folder)) {
+            $folderCounts[$folder] = 0
+        }
+        $folderCounts[$folder]++
     }
-}) | Sort-Object -Unique
+}
 
-if ($OutputFile) {
-    $dirs | Set-Content -Path $OutputFile -Encoding UTF8
+$root = $resolvedPath.TrimEnd([char[]]@('\', '/'))
+$rootPrefix = if ($root.Length -eq 0) {
+    [System.IO.Path]::DirectorySeparatorChar.ToString()
 }
 else {
-    $dirs
+    $root + [System.IO.Path]::DirectorySeparatorChar
+}
+
+$rows = @(
+    foreach ($folder in $folderCounts.Keys) {
+        if ($folder -eq $resolvedPath) {
+            $depth = 0
+        }
+        else {
+            $relativeFolder = $folder.Substring($rootPrefix.Length)
+            $depth = @($relativeFolder -split '[\\/]' | Where-Object { $_ }).Count
+        }
+
+        [PSCustomObject]@{
+            Depth = $depth
+            FolderPath = $folder
+            DirectFilesCount = $folderCounts[$folder]
+        }
+    }
+) | Sort-Object @{ Expression = 'Depth'; Descending = $true }, @{ Expression = 'FolderPath'; Descending = $false }
+
+$markdown = @(
+    "| Depth | Folder Path | Direct Files Count |",
+    "| ---: | --- | ---: |"
+) + ($rows | ForEach-Object {
+    $displayPath = $_.FolderPath.Replace('|', '\|')
+    "| $($_.Depth) | $displayPath | $($_.DirectFilesCount) |"
+})
+$markdownText = $markdown -join [Environment]::NewLine
+
+if ($OutputFile) {
+    $markdownText | Set-Content -Path $OutputFile -Encoding UTF8
+}
+else {
+    $markdownText
 }
