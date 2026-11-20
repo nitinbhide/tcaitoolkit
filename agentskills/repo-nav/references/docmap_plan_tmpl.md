@@ -96,6 +96,7 @@ If `rg` is unavailable, stop the run. Do not select a fallback discovery tool or
 ## 3. Folder Execution Queue (Bottom-Up Post-Order)
 <!--
 Folders MUST be ordered by Depth descending (deepest first), then lexicographically by relative path.
+Generate this execution queue using only `scripts/dirlist.ps1` or `scripts/dirlist.sh`; do not derive folder ordering or direct-file counts through other commands or manual scans.
 
 Status Lifecycle & Merge Protocol:
 - PENDING: Queued for execution.
